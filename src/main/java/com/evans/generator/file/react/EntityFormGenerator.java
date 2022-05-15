@@ -7,6 +7,7 @@ import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
 import com.evans.generator.file.react.EntityFormGenerator.JsonFormSchema.Type;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,15 +38,25 @@ public class EntityFormGenerator implements FileGenerator<EntityForm> {
           .stream()
           .collect(Collectors.toMap(
               Field::name,
-              this::resolveType
+              this::resolveType,
+              (u, v) -> {
+                //TODO this should probably be validated earlier?
+                throw new IllegalStateException("There cannot be 2 fields with the same name");
+              },
+              LinkedHashMap::new
           ));
+
+      var required = model.fields().stream()
+          .filter(Field::required)
+          .map(Field::name)
+          .toList();
 
       var schema = new JsonFormSchema(
           "Create a " + model.nameCapitalised(),
           "Description",
           "object",
           properties,
-          List.of()
+          required
       );
 
       return new ObjectMapper().writeValueAsString(schema);

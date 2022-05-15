@@ -101,10 +101,11 @@ public class Generator {
   public record Field(String name,
                       Class<?> type,
                       String simpleTypeName,
-                      boolean isId) {
+                      boolean isId,
+                      boolean required) {
 
-    public Field(String name, Class<?> type, boolean isId) {
-      this(name, type, type.getSimpleName(), isId);
+    public Field(String name, Class<?> type, boolean isId, boolean required) {
+      this(name, type, type.getSimpleName(), isId, isId || required);
     }
 
     public String getterName() {

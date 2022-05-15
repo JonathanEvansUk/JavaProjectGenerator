@@ -48,10 +48,10 @@ public class Main {
 
     generator.generate(List.of(
         Model.of("Bill", List.of(
-            new Field("id", Long.class, true),
-            new Field("amount", Double.class, false))),
+            new Field("id", Long.class, true, true),
+            new Field("amount", Double.class, false, false))),
         Model.of("User", List.of(
-            new Field("id", UUID.class, true)
+            new Field("id", UUID.class, true, true)
         ))
     ));
   }
