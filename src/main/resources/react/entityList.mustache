@@ -55,7 +55,7 @@ export default function {{model.nameCapitalised}}List() {
       <Table>
         <thead>
           <tr>
-            {tableHeaders.map(header => <th>{header}</th>)}
+            {tableHeaders.map(header => <th key={header}>{header}</th>)}
           </tr>
         </thead>
 
@@ -76,7 +76,7 @@ export default function {{model.nameCapitalised}}List() {
 
 const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
   return (
-    <tr>{tableHeaders.map(header => <td>{ {{model.name}}[header] }</td>)}
+    <tr key={ {{model.name}}.id }>{tableHeaders.map(header => <td key={header}>{ {{model.name}}[header] }</td>)}
       <td>
         <DeleteButton id={ {{model.name}}.id } entityName="{{model.nameCapitalised}}" handleDeleteShow={handleDeleteShow} />
       </td>
