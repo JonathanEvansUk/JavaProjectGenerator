@@ -1,0 +1,20 @@
+import Form from "@rjsf/bootstrap-4";
+import { useEffect } from "react";
+
+export default function {{model.nameCapitalised}}() {
+  useEffect(() => {
+    fetch("http://localhost:8080/{{model.name}}")
+    .then(response => response.json())
+    .then(data => console.log(data));
+  },[]);
+
+  const schema = {{{schema}}};
+
+  const uiSchema = {
+   "ui:submitButtonOptions": {
+      "norender": true,
+    }
+  };
+
+  return (<Form schema={schema} uiSchema="{uiSchema}" readonly />);
+};

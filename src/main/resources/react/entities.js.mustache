@@ -1,0 +1,27 @@
+import { Card, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+
+export default function Entities() {
+return (
+<div>
+  <Card>
+    <Table>
+      <thead>
+      <tr>
+        <th>Entities</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#models}}
+      <tr>
+        <td>
+          <Link to="/view{{nameCapitalised}}">{{nameCapitalised}}</Link>
+        </td>
+      </tr>
+      {{/models}}
+      </tbody>
+    </Table>
+  </Card>
+</div>
+);
+}

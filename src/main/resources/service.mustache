@@ -1,0 +1,36 @@
+package {{packageName}};
+
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
+{{#imports}}
+import {{.}};
+{{/imports}}
+
+@Service
+public class {{className}} {
+
+  private final {{repositoryType}} {{repositoryName}};
+
+  public {{className}}({{repositoryType}} {{repositoryName}}) {
+    this.{{repositoryName}} = {{repositoryName}};
+  }
+
+  public List<{{entityType}}> findAll() {
+    return {{repositoryName}}.findAll();
+  }
+
+  public {{entityType}} save({{entityType}} {{entityNameCamel}}) {
+    return {{repositoryName}}.save({{entityNameCamel}});
+  }
+
+  public Optional<{{entityType}}> delete({{entityIdType}} id) {
+    Optional<{{entityType}}> {{entityNameCamel}} = {{repositoryName}}.findById(id);
+
+    if ({{entityNameCamel}}.isPresent()) {
+      {{repositoryName}}.delete({{entityNameCamel}}.get());
+    }
+
+    return {{entityNameCamel}};
+  }
+}

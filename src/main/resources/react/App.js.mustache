@@ -1,0 +1,35 @@
+import { Container, Nav, Navbar } from "react-bootstrap";
+import { NavLink, Route, Routes } from "react-router-dom";
+import Entities from "./routes/entities";
+import Home from "./routes/home";
+{{#models}}import {{nameCapitalised}} from "./routes/{{name}}";
+import {{nameCapitalised}}List from "./routes/{{name}}/{{nameCapitalised}}List";
+{{/models}}
+
+export const App = () => {
+  return (
+    <div>
+      <Navbar bg="light">
+        <Nav>
+          <Nav.Link as={NavLink} to="/">
+            Home
+          </Nav.Link>
+          <Nav.Link as={NavLink} to="/entities">
+            Entities
+          </Nav.Link>
+        </Nav>
+      </Navbar>
+
+      <Container className="py-2">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="entities" element={<Entities />} />
+          {{#models}}
+          <Route path="{{name}}" element={<{{nameCapitalised}} />} />
+          <Route path="view{{nameCapitalised}}" element={<{{nameCapitalised}}List />} />
+          {{/models}}
+        </Routes>
+      </Container>
+    </div>
+  );
+};

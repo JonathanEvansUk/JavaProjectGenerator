@@ -1,0 +1,44 @@
+package {{packageName}};
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+{{#imports}}
+{{.}}
+{{/imports}}
+
+@Entity
+public class {{className}} {
+
+{{#fields}}
+  {{#isId}}
+  @Id
+  //@GeneratedValue(strategy = GenerationType.IDENTITY)
+  {{/isId}}
+  private {{simpleTypeName}} {{name}};
+
+{{/fields}}
+{{! begin feature: getter methods }}
+{{#fields}}
+  public {{simpleTypeName}} {{getterName}}() {
+    return {{name}};
+  }
+{{^-last}}
+
+{{/-last}}
+{{/fields}}
+{{! end feature: getter methods }}
+
+{{! begin feature: setter methods }}
+{{#fields}}
+  public void {{setterName}}({{simpleTypeName}} {{name}}) {
+    this.{{name}} = {{name}};
+  }
+{{/fields}}
+{{^-last}}
+
+{{/-last}}
+{{! end feature: setter methods }}
+}
