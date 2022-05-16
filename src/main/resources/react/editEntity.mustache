@@ -1,0 +1,27 @@
+import Form from "@rjsf/bootstrap-4";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+export default function Edit{{model.nameCapitalised}}() {
+  const [formData, setFormData] = useState(null);
+  const { id } = useParams();
+
+  useEffect(() => {
+    fetch(`http://localhost:8080/{{model.name}}/${id}`)
+    .then(response => response.json())
+    .then(data => setFormData(data));
+  },[]);
+
+  const submitForm = ({ formData }) => {
+    fetch("http://localhost:8080/{{model.name}}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    }).then(response => console.log(response));
+  };
+
+  const schema = {{{schema}}};
+  return (<Form schema={schema} formData={formData} onSubmit={submitForm} />);
+};

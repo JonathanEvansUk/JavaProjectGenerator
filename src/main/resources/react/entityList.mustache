@@ -79,7 +79,12 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
     <tr key={ {{model.name}}.id }>{tableHeaders.map(header => <td key={header}>{ {{model.name}}[header] }</td>)}
       <td>
         <div className="float-right">
-          <Button as={Link} to={"/{{model.name}}/" + {{model.name}}.id} variant="info" size="sm">View</Button>
+          <Button as={Link} to={"/{{model.name}}/" + {{model.name}}.id} variant="info" size="sm">
+            <i className="bi bi-eye-fill pr-1"></i>
+            View</Button>
+          <Button className="mx-1" as={Link} to={"/{{model.name}}/" + {{model.name}}.id + "/edit"} variant="primary" size="sm">
+            <i className="bi bi-pencil-fill pr-1"></i>
+            Edit</Button>
           <DeleteButton id={ {{model.name}}.id } handleDeleteShow={handleDeleteShow} />
         </div>
       </td>

@@ -2,9 +2,10 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, Route, Routes } from "react-router-dom";
 import Entities from "./routes/entities";
 import Home from "./routes/home";
-{{#models}}import {{nameCapitalised}} from "./routes/{{name}}";
+{{#models}}import Create{{nameCapitalised}} from "./routes/{{name}}/Create{{nameCapitalised}}";
 import {{nameCapitalised}}List from "./routes/{{name}}/{{nameCapitalised}}List";
 import View{{nameCapitalised}} from "./routes/{{name}}/View{{nameCapitalised}}";
+import Edit{{nameCapitalised}} from "./routes/{{name}}/Edit{{nameCapitalised}}";
 {{/models}}
 
 export const App = () => {
@@ -26,9 +27,10 @@ export const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="entities" element={<Entities />} />
           {{#models}}
-          <Route path="{{name}}" element={<{{nameCapitalised}} />} />
+          <Route path="{{name}}" element={<Create{{nameCapitalised}} />} />
           <Route path="view{{nameCapitalised}}" element={<{{nameCapitalised}}List />} />
           <Route path="{{name}}/:id" element={<View{{nameCapitalised}} />} />
+          <Route path="{{name}}/:id/edit" element={<Edit{{nameCapitalised}} />} />
 
           {{/models}}
         </Routes>

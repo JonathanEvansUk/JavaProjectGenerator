@@ -22,12 +22,13 @@ public class EntityFormGenerator implements FileGenerator<EntityForm> {
 
   @Override
   public String outputFileName(EntityForm templateData) {
-    return templateData.model().name().toLowerCase() + ".js";
+    return "Create" + templateData.model().nameCapitalised() + ".js";
   }
 
   @Override
   public String outputDirectory(EntityForm templateData) {
-    return FileGenerator.super.outputDirectory(templateData) + "web/src/routes";
+    return FileGenerator.super.outputDirectory(templateData) + "web/src/routes/"
+        + templateData.model().name();
   }
 
   public record EntityForm(WebModel model) {

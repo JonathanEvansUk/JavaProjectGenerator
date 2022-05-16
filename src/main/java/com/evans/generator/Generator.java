@@ -18,6 +18,7 @@ import com.evans.generator.file.maven.MavenGenerator.MavenProject.JavaVersion;
 import com.evans.generator.file.react.AppJsGenerator;
 import com.evans.generator.file.react.AppJsGenerator.AppJs;
 import com.evans.generator.file.react.AppJsGenerator.WebModel;
+import com.evans.generator.file.react.EditEntityGenerator;
 import com.evans.generator.file.react.EntityFormGenerator;
 import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
 import com.evans.generator.file.react.EntityListGenerator;
@@ -56,6 +57,7 @@ public class Generator {
   private final EntityListGenerator entityListGenerator;
   private final ViewEntitiesGenerator viewEntitiesGenerator;
   private final ViewSingleEntityGenerator viewSingleEntityGenerator;
+  private final EditEntityGenerator editEntityGenerator;
 
   public Generator(RepositoryGenerator repositoryGenerator, ServiceGenerator serviceGenerator,
       ControllerGenerator controllerGenerator, EntityGenerator entityGenerator,
@@ -68,7 +70,8 @@ public class Generator {
       EntityFormGenerator entityFormGenerator,
       EntityListGenerator entityListGenerator,
       ViewEntitiesGenerator viewEntitiesGenerator,
-      ViewSingleEntityGenerator viewSingleEntityGenerator) {
+      ViewSingleEntityGenerator viewSingleEntityGenerator,
+      EditEntityGenerator editEntityGenerator) {
     this.repositoryGenerator = repositoryGenerator;
     this.serviceGenerator = serviceGenerator;
     this.controllerGenerator = controllerGenerator;
@@ -83,6 +86,7 @@ public class Generator {
     this.entityListGenerator = entityListGenerator;
     this.viewEntitiesGenerator = viewEntitiesGenerator;
     this.viewSingleEntityGenerator = viewSingleEntityGenerator;
+    this.editEntityGenerator = editEntityGenerator;
   }
 
   //TODO find better name for this
@@ -222,6 +226,7 @@ public class Generator {
       EntityForm entityForm = new EntityForm(model);
       entityFormGenerator.generate(entityForm);
       viewSingleEntityGenerator.generate(entityForm);
+      editEntityGenerator.generate(entityForm);
 
       entityListGenerator.generate(new EntityList(model));
     }

@@ -10,6 +10,7 @@ import com.evans.generator.file.java.service.ServiceGenerator;
 import com.evans.generator.file.maven.ApplicationPropertiesGenerator;
 import com.evans.generator.file.maven.MavenGenerator;
 import com.evans.generator.file.react.AppJsGenerator;
+import com.evans.generator.file.react.EditEntityGenerator;
 import com.evans.generator.file.react.EntityFormGenerator;
 import com.evans.generator.file.react.EntityListGenerator;
 import com.evans.generator.file.react.IndexJsGenerator;
@@ -42,11 +43,12 @@ public class Main {
     EntityListGenerator entityListGenerator = new EntityListGenerator();
     ViewEntitiesGenerator viewEntitiesGenerator = new ViewEntitiesGenerator();
     ViewSingleEntityGenerator viewSingleEntityGenerator = new ViewSingleEntityGenerator();
+    EditEntityGenerator editEntityGenerator = new EditEntityGenerator();
 
     Generator generator = new Generator(repositoryGenerator, serviceGenerator, controllerGenerator,
         entityGenerator, mavenGenerator, applicationGenerator, applicationPropertiesGenerator,
         packageJsonGenerator, appJsGenerator, indexJsGenerator, entityFormGenerator,
-        entityListGenerator, viewEntitiesGenerator, viewSingleEntityGenerator);
+        entityListGenerator, viewEntitiesGenerator, viewSingleEntityGenerator, editEntityGenerator);
 
     generator.generate(List.of(
         Model.of("Bill", List.of(
