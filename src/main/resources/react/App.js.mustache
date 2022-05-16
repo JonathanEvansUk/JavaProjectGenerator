@@ -4,6 +4,7 @@ import Entities from "./routes/entities";
 import Home from "./routes/home";
 {{#models}}import {{nameCapitalised}} from "./routes/{{name}}";
 import {{nameCapitalised}}List from "./routes/{{name}}/{{nameCapitalised}}List";
+import View{{nameCapitalised}} from "./routes/{{name}}/View{{nameCapitalised}}";
 {{/models}}
 
 export const App = () => {
@@ -27,6 +28,8 @@ export const App = () => {
           {{#models}}
           <Route path="{{name}}" element={<{{nameCapitalised}} />} />
           <Route path="view{{nameCapitalised}}" element={<{{nameCapitalised}}List />} />
+          <Route path="{{name}}/:id" element={<View{{nameCapitalised}} />} />
+
           {{/models}}
         </Routes>
       </Container>

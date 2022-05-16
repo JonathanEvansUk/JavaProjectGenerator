@@ -1,11 +1,16 @@
 import Form from "@rjsf/bootstrap-4";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-export default function {{model.nameCapitalised}}() {
+export default function View{{model.nameCapitalised}}() {
+  const { id } = useParams();
+
+  const [formData, setFormData] = useState(null);
+
   useEffect(() => {
-    fetch("http://localhost:8080/{{model.name}}")
+    fetch(`http://localhost:8080/{{model.name}}/${id}`)
     .then(response => response.json())
-    .then(data => console.log(data));
+    .then(data => setFormData(data));
   },[]);
 
   const schema = {{{schema}}};
@@ -16,5 +21,5 @@ export default function {{model.nameCapitalised}}() {
     }
   };
 
-  return (<Form schema={schema} uiSchema="{uiSchema}" readonly />);
+  return (<Form schema={schema} formData={formData} uiSchema={uiSchema} readonly />);
 };

@@ -20,14 +20,15 @@ import com.evans.generator.file.react.AppJsGenerator.AppJs;
 import com.evans.generator.file.react.AppJsGenerator.WebModel;
 import com.evans.generator.file.react.EntityFormGenerator;
 import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
-import com.evans.generator.file.react.ViewEntitiesGenerator;
-import com.evans.generator.file.react.ViewEntitiesGenerator.EntitiesList;
+import com.evans.generator.file.react.EntityListGenerator;
+import com.evans.generator.file.react.EntityListGenerator.EntityList;
 import com.evans.generator.file.react.IndexJsGenerator;
 import com.evans.generator.file.react.IndexJsGenerator.IndexJs;
 import com.evans.generator.file.react.PackageJsonGenerator;
 import com.evans.generator.file.react.PackageJsonGenerator.PackageJson;
-import com.evans.generator.file.react.EntityListGenerator;
-import com.evans.generator.file.react.EntityListGenerator.EntityList;
+import com.evans.generator.file.react.ViewEntitiesGenerator;
+import com.evans.generator.file.react.ViewEntitiesGenerator.EntitiesList;
+import com.evans.generator.file.react.ViewSingleEntityGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,6 +55,7 @@ public class Generator {
   private final EntityFormGenerator entityFormGenerator;
   private final EntityListGenerator entityListGenerator;
   private final ViewEntitiesGenerator viewEntitiesGenerator;
+  private final ViewSingleEntityGenerator viewSingleEntityGenerator;
 
   public Generator(RepositoryGenerator repositoryGenerator, ServiceGenerator serviceGenerator,
       ControllerGenerator controllerGenerator, EntityGenerator entityGenerator,
@@ -65,7 +67,8 @@ public class Generator {
       IndexJsGenerator indexJsGenerator,
       EntityFormGenerator entityFormGenerator,
       EntityListGenerator entityListGenerator,
-      ViewEntitiesGenerator viewEntitiesGenerator) {
+      ViewEntitiesGenerator viewEntitiesGenerator,
+      ViewSingleEntityGenerator viewSingleEntityGenerator) {
     this.repositoryGenerator = repositoryGenerator;
     this.serviceGenerator = serviceGenerator;
     this.controllerGenerator = controllerGenerator;
@@ -79,6 +82,7 @@ public class Generator {
     this.entityFormGenerator = entityFormGenerator;
     this.entityListGenerator = entityListGenerator;
     this.viewEntitiesGenerator = viewEntitiesGenerator;
+    this.viewSingleEntityGenerator = viewSingleEntityGenerator;
   }
 
   //TODO find better name for this
@@ -215,7 +219,10 @@ public class Generator {
     viewEntitiesGenerator.generate(new EntitiesList(webModels));
 
     for (WebModel model : webModels) {
-      entityFormGenerator.generate(new EntityForm(model));
+      EntityForm entityForm = new EntityForm(model);
+      entityFormGenerator.generate(entityForm);
+      viewSingleEntityGenerator.generate(entityForm);
+
       entityListGenerator.generate(new EntityList(model));
     }
 

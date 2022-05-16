@@ -78,7 +78,10 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
   return (
     <tr key={ {{model.name}}.id }>{tableHeaders.map(header => <td key={header}>{ {{model.name}}[header] }</td>)}
       <td>
-        <DeleteButton id={ {{model.name}}.id } entityName="{{model.nameCapitalised}}" handleDeleteShow={handleDeleteShow} />
+        <div className="float-right">
+          <Button as={Link} to={"/{{model.name}}/" + {{model.name}}.id} variant="info" size="sm">View</Button>
+          <DeleteButton id={ {{model.name}}.id } handleDeleteShow={handleDeleteShow} />
+        </div>
       </td>
     </tr>
   );

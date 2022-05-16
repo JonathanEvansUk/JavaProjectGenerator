@@ -1,10 +1,9 @@
 package com.evans.generator.file.react;
 
 import com.evans.generator.file.FileGenerator;
-import com.evans.generator.file.react.AppJsGenerator.WebModel;
-import com.evans.generator.file.react.ViewSingleEntityGenerator.ViewSingleEntity;
+import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
 
-public class ViewSingleEntityGenerator implements FileGenerator<ViewSingleEntity> {
+public class ViewSingleEntityGenerator implements FileGenerator<EntityForm> {
 
   @Override
   public String templateName() {
@@ -12,15 +11,13 @@ public class ViewSingleEntityGenerator implements FileGenerator<ViewSingleEntity
   }
 
   @Override
-  public String outputFileName(ViewSingleEntity templateData) {
+  public String outputFileName(EntityForm templateData) {
     return "View" + templateData.model().nameCapitalised() + ".js";
   }
 
   @Override
-  public String outputDirectory(ViewSingleEntity templateData) {
-    return FileGenerator.super.outputDirectory(templateData) + "web/src/routes"
+  public String outputDirectory(EntityForm templateData) {
+    return FileGenerator.super.outputDirectory(templateData) + "web/src/routes/"
         + templateData.model().name();
   }
-
-  record ViewSingleEntity(WebModel model) {}
 }

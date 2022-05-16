@@ -1,6 +1,6 @@
 import { Button } from "react-bootstrap";
 
-const DeleteButton = ({ id, entityName, handleDeleteShow }) => {
+const DeleteButton = ({ id, handleDeleteShow }) => {
   const onClick = () => handleDeleteShow(id);
   return (
     <Button
@@ -9,7 +9,7 @@ const DeleteButton = ({ id, entityName, handleDeleteShow }) => {
       variant="danger"
       onClick={onClick}
     >
-      Delete {entityName}
+      Delete
     </Button>
   );
 };

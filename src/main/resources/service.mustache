@@ -20,6 +20,10 @@ public class {{className}} {
     return {{repositoryName}}.findAll();
   }
 
+  public Optional<{{entityType}}> findById({{entityIdType}} id) {
+    return {{repositoryName}}.findById(id);
+  }
+
   public {{entityType}} save({{entityType}} {{entityNameCamel}}) {
     return {{repositoryName}}.save({{entityNameCamel}});
   }

@@ -32,6 +32,11 @@ public class {{className}} {
     return {{serviceName}}.findAll();
   }
 
+  @GetMapping("/{id}")
+  public Optional<{{entityType}}> findById(@PathVariable {{entityIdType}} id) {
+    return {{serviceName}}.findById(id);
+  }
+
   @PostMapping
   public {{entityType}} create(@RequestBody {{entityType}} {{entityNameCamel}}) {
     return {{serviceName}}.save({{entityNameCamel}});
