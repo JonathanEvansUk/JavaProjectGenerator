@@ -82,7 +82,7 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
           <Button as={Link} to={"/{{model.name}}/" + {{model.name}}.id} variant="info" size="sm">
             <i className="bi bi-eye-fill pr-1"></i>
             View</Button>
-          <Button className="mx-1" as={Link} to={"/{{model.name}}/" + {{model.name}}.id + "/edit"} variant="primary" size="sm">
+          <Button className="mx-sm-1" as={Link} to={"/{{model.name}}/" + {{model.name}}.id + "/edit"} variant="primary" size="sm">
             <i className="bi bi-pencil-fill pr-1"></i>
             Edit</Button>
           <DeleteButton id={ {{model.name}}.id } handleDeleteShow={handleDeleteShow} />
