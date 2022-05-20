@@ -1,7 +1,7 @@
 package com.evans.generator.file.react;
 
 import com.evans.generator.file.FileGenerator;
-import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
+import com.evans.generator.file.react.CreateEntityGenerator.EntityForm;
 
 public class EditEntityGenerator implements FileGenerator<EntityForm> {
 

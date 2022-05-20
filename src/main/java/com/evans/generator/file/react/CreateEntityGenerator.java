@@ -3,8 +3,8 @@ package com.evans.generator.file.react;
 import com.evans.generator.Generator.Field;
 import com.evans.generator.file.FileGenerator;
 import com.evans.generator.file.react.AppJsGenerator.WebModel;
-import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
-import com.evans.generator.file.react.EntityFormGenerator.JsonFormSchema.Type;
+import com.evans.generator.file.react.CreateEntityGenerator.EntityForm;
+import com.evans.generator.file.react.CreateEntityGenerator.JsonFormSchema.Type;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class EntityFormGenerator implements FileGenerator<EntityForm> {
+public class CreateEntityGenerator implements FileGenerator<EntityForm> {
 
   @Override
   public String templateName() {
-    return "react/entityForm.mustache";
+    return "react/createEntity.mustache";
   }
 
   @Override
@@ -39,7 +39,7 @@ public class EntityFormGenerator implements FileGenerator<EntityForm> {
           .stream()
           .collect(Collectors.toMap(
               Field::name,
-              this::resolveType,
+              this::resolveTypes,
               (u, v) -> {
                 //TODO this should probably be validated earlier?
                 throw new IllegalStateException("There cannot be 2 fields with the same name");
@@ -63,25 +63,34 @@ public class EntityFormGenerator implements FileGenerator<EntityForm> {
       return new ObjectMapper().writeValueAsString(schema);
     }
 
-    private Type resolveType(Field field) {
+    private Type resolveTypes(Field field) {
+      String fieldType = resolveType(field);
+      if (field.required()) {
+        return new Type(fieldType);
+      }
+
+      return Type.nullableType(fieldType);
+    }
+
+    private String resolveType(Field field) {
       Class<?> type = field.type();
 
       Set<Class<?>> integerClasses = Set.of(Integer.class, Long.class);
 
       if (integerClasses.contains(type)) {
-        return new Type("integer");
+        return "integer";
       }
 
       if (type.equals(Double.class)) {
-        return new Type("number");
+        return "number";
       }
 
       if (type.equals(String.class)) {
-        return new Type("string");
+        return "string";
       }
 
       //unknown
-      return new Type("string");
+      return "string";
     }
 
   }
@@ -92,7 +101,15 @@ public class EntityFormGenerator implements FileGenerator<EntityForm> {
                                Map<String, Type> properties,
                                List<String> required) {
 
-    record Type(String type) {}
+    record Type(List<String> type) {
 
+      Type(String type) {
+        this(List.of(type));
+      }
+
+      static Type nullableType(String type) {
+        return new Type(List.of(type, "null"));
+      }
+    }
   }
 }

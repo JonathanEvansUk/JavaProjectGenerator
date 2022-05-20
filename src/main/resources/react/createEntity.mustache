@@ -1,9 +1,7 @@
 import Form from "@rjsf/bootstrap-4";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Create{{model.nameCapitalised}}() {
-  const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
 
   const submitForm = ({ formData }) => {
@@ -23,7 +21,7 @@ export default function Create{{model.nameCapitalised}}() {
         return response;
       })
       .then(response => console.log(response))
-      .then(response => navigate("/view{{model.nameCapitalised}}"))
+      .then(() => navigate("/view{{model.nameCapitalised}}"))
       .catch(error => console.log(error));
   };
 

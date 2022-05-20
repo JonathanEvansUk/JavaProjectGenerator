@@ -18,9 +18,9 @@ import com.evans.generator.file.maven.MavenGenerator.MavenProject.JavaVersion;
 import com.evans.generator.file.react.AppJsGenerator;
 import com.evans.generator.file.react.AppJsGenerator.AppJs;
 import com.evans.generator.file.react.AppJsGenerator.WebModel;
+import com.evans.generator.file.react.CreateEntityGenerator;
 import com.evans.generator.file.react.EditEntityGenerator;
-import com.evans.generator.file.react.EntityFormGenerator;
-import com.evans.generator.file.react.EntityFormGenerator.EntityForm;
+import com.evans.generator.file.react.CreateEntityGenerator.EntityForm;
 import com.evans.generator.file.react.EntityListGenerator;
 import com.evans.generator.file.react.EntityListGenerator.EntityList;
 import com.evans.generator.file.react.IndexJsGenerator;
@@ -53,7 +53,7 @@ public class Generator {
   private final PackageJsonGenerator packageJsonGenerator;
   private final AppJsGenerator appJsGenerator;
   private final IndexJsGenerator indexJsGenerator;
-  private final EntityFormGenerator entityFormGenerator;
+  private final CreateEntityGenerator createEntityGenerator;
   private final EntityListGenerator entityListGenerator;
   private final ViewEntitiesGenerator viewEntitiesGenerator;
   private final ViewSingleEntityGenerator viewSingleEntityGenerator;
@@ -67,7 +67,7 @@ public class Generator {
       PackageJsonGenerator packageJsonGenerator,
       AppJsGenerator appJsGenerator,
       IndexJsGenerator indexJsGenerator,
-      EntityFormGenerator entityFormGenerator,
+      CreateEntityGenerator createEntityGenerator,
       EntityListGenerator entityListGenerator,
       ViewEntitiesGenerator viewEntitiesGenerator,
       ViewSingleEntityGenerator viewSingleEntityGenerator,
@@ -82,7 +82,7 @@ public class Generator {
     this.packageJsonGenerator = packageJsonGenerator;
     this.appJsGenerator = appJsGenerator;
     this.indexJsGenerator = indexJsGenerator;
-    this.entityFormGenerator = entityFormGenerator;
+    this.createEntityGenerator = createEntityGenerator;
     this.entityListGenerator = entityListGenerator;
     this.viewEntitiesGenerator = viewEntitiesGenerator;
     this.viewSingleEntityGenerator = viewSingleEntityGenerator;
@@ -224,7 +224,7 @@ public class Generator {
 
     for (WebModel model : webModels) {
       EntityForm entityForm = new EntityForm(model);
-      entityFormGenerator.generate(entityForm);
+      createEntityGenerator.generate(entityForm);
       viewSingleEntityGenerator.generate(entityForm);
       editEntityGenerator.generate(entityForm);
 

@@ -10,8 +10,8 @@ import com.evans.generator.file.java.service.ServiceGenerator;
 import com.evans.generator.file.maven.ApplicationPropertiesGenerator;
 import com.evans.generator.file.maven.MavenGenerator;
 import com.evans.generator.file.react.AppJsGenerator;
+import com.evans.generator.file.react.CreateEntityGenerator;
 import com.evans.generator.file.react.EditEntityGenerator;
-import com.evans.generator.file.react.EntityFormGenerator;
 import com.evans.generator.file.react.EntityListGenerator;
 import com.evans.generator.file.react.IndexJsGenerator;
 import com.evans.generator.file.react.PackageJsonGenerator;
@@ -39,7 +39,7 @@ public class Main {
     PackageJsonGenerator packageJsonGenerator = new PackageJsonGenerator();
     AppJsGenerator appJsGenerator = new AppJsGenerator();
     IndexJsGenerator indexJsGenerator = new IndexJsGenerator();
-    EntityFormGenerator entityFormGenerator = new EntityFormGenerator();
+    CreateEntityGenerator createEntityGenerator = new CreateEntityGenerator();
     EntityListGenerator entityListGenerator = new EntityListGenerator();
     ViewEntitiesGenerator viewEntitiesGenerator = new ViewEntitiesGenerator();
     ViewSingleEntityGenerator viewSingleEntityGenerator = new ViewSingleEntityGenerator();
@@ -47,7 +47,7 @@ public class Main {
 
     Generator generator = new Generator(repositoryGenerator, serviceGenerator, controllerGenerator,
         entityGenerator, mavenGenerator, applicationGenerator, applicationPropertiesGenerator,
-        packageJsonGenerator, appJsGenerator, indexJsGenerator, entityFormGenerator,
+        packageJsonGenerator, appJsGenerator, indexJsGenerator, createEntityGenerator,
         entityListGenerator, viewEntitiesGenerator, viewSingleEntityGenerator, editEntityGenerator);
 
     generator.generate(List.of(
