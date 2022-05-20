@@ -31,7 +31,8 @@ public class CreateEntityGenerator implements FileGenerator<EntityForm> {
         + templateData.model().name();
   }
 
-  public record EntityForm(WebModel model) {
+  public record EntityForm(WebModel model,
+                           String formTitle) {
 
     public String schema() throws JsonProcessingException {
 
@@ -53,7 +54,7 @@ public class CreateEntityGenerator implements FileGenerator<EntityForm> {
           .toList();
 
       var schema = new JsonFormSchema(
-          "Create a " + model.nameCapitalised(),
+          formTitle,
           "Description",
           "object",
           properties,

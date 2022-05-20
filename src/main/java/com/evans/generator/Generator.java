@@ -19,8 +19,8 @@ import com.evans.generator.file.react.AppJsGenerator;
 import com.evans.generator.file.react.AppJsGenerator.AppJs;
 import com.evans.generator.file.react.AppJsGenerator.WebModel;
 import com.evans.generator.file.react.CreateEntityGenerator;
-import com.evans.generator.file.react.EditEntityGenerator;
 import com.evans.generator.file.react.CreateEntityGenerator.EntityForm;
+import com.evans.generator.file.react.EditEntityGenerator;
 import com.evans.generator.file.react.EntityListGenerator;
 import com.evans.generator.file.react.EntityListGenerator.EntityList;
 import com.evans.generator.file.react.IndexJsGenerator;
@@ -223,10 +223,15 @@ public class Generator {
     viewEntitiesGenerator.generate(new EntitiesList(webModels));
 
     for (WebModel model : webModels) {
-      EntityForm entityForm = new EntityForm(model);
-      createEntityGenerator.generate(entityForm);
-      viewSingleEntityGenerator.generate(entityForm);
-      editEntityGenerator.generate(entityForm);
+      //TODO avoid recreating the entityForm multiple times
+      EntityForm createEntityForm = new EntityForm(model, "Create a " + model.nameCapitalised());
+      createEntityGenerator.generate(createEntityForm);
+
+      EntityForm viewEntityForm = new EntityForm(model, "View " + model.nameCapitalised());
+      viewSingleEntityGenerator.generate(viewEntityForm);
+
+      EntityForm editEntityForm = new EntityForm(model, "Edit " + model.nameCapitalised());
+      editEntityGenerator.generate(editEntityForm);
 
       entityListGenerator.generate(new EntityList(model));
     }
