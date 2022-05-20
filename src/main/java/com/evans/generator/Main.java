@@ -17,6 +17,7 @@ import com.evans.generator.file.react.IndexJsGenerator;
 import com.evans.generator.file.react.PackageJsonGenerator;
 import com.evans.generator.file.react.ViewEntitiesGenerator;
 import com.evans.generator.file.react.ViewSingleEntityGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class Main {
 
   public static void main(String[] args) throws IOException {
     System.out.println("Running generator");
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     RepositoryGenerator repositoryGenerator = new RepositoryGenerator();
     ServiceGenerator serviceGenerator = new ServiceGenerator();
@@ -45,10 +48,12 @@ public class Main {
     ViewSingleEntityGenerator viewSingleEntityGenerator = new ViewSingleEntityGenerator();
     EditEntityGenerator editEntityGenerator = new EditEntityGenerator();
 
+    EntityFormMapper entityFormMapper = new EntityFormMapper(objectMapper);
     Generator generator = new Generator(repositoryGenerator, serviceGenerator, controllerGenerator,
         entityGenerator, mavenGenerator, applicationGenerator, applicationPropertiesGenerator,
         packageJsonGenerator, appJsGenerator, indexJsGenerator, createEntityGenerator,
-        entityListGenerator, viewEntitiesGenerator, viewSingleEntityGenerator, editEntityGenerator);
+        entityListGenerator, viewEntitiesGenerator, viewSingleEntityGenerator, editEntityGenerator,
+        entityFormMapper);
 
     generator.generate(List.of(
         Model.of("Bill", List.of(

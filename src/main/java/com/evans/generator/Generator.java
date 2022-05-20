@@ -59,6 +59,8 @@ public class Generator {
   private final ViewSingleEntityGenerator viewSingleEntityGenerator;
   private final EditEntityGenerator editEntityGenerator;
 
+  private final EntityFormMapper entityFormMapper;
+
   public Generator(RepositoryGenerator repositoryGenerator, ServiceGenerator serviceGenerator,
       ControllerGenerator controllerGenerator, EntityGenerator entityGenerator,
       MavenGenerator mavenGenerator,
@@ -71,7 +73,8 @@ public class Generator {
       EntityListGenerator entityListGenerator,
       ViewEntitiesGenerator viewEntitiesGenerator,
       ViewSingleEntityGenerator viewSingleEntityGenerator,
-      EditEntityGenerator editEntityGenerator) {
+      EditEntityGenerator editEntityGenerator,
+      EntityFormMapper entityFormMapper) {
     this.repositoryGenerator = repositoryGenerator;
     this.serviceGenerator = serviceGenerator;
     this.controllerGenerator = controllerGenerator;
@@ -87,6 +90,7 @@ public class Generator {
     this.viewEntitiesGenerator = viewEntitiesGenerator;
     this.viewSingleEntityGenerator = viewSingleEntityGenerator;
     this.editEntityGenerator = editEntityGenerator;
+    this.entityFormMapper = entityFormMapper;
   }
 
   //TODO find better name for this
@@ -224,13 +228,17 @@ public class Generator {
 
     for (WebModel model : webModels) {
       //TODO avoid recreating the entityForm multiple times
-      EntityForm createEntityForm = new EntityForm(model, "Create a " + model.nameCapitalised());
+
+      EntityForm createEntityForm = entityFormMapper.createEntityForm(model,
+          "Create a " + model.nameCapitalised());
       createEntityGenerator.generate(createEntityForm);
 
-      EntityForm viewEntityForm = new EntityForm(model, "View " + model.nameCapitalised());
+      EntityForm viewEntityForm = entityFormMapper.createEntityForm(model,
+          "View " + model.nameCapitalised());
       viewSingleEntityGenerator.generate(viewEntityForm);
 
-      EntityForm editEntityForm = new EntityForm(model, "Edit " + model.nameCapitalised());
+      EntityForm editEntityForm = entityFormMapper.createEntityForm(model,
+          "Edit " + model.nameCapitalised());
       editEntityGenerator.generate(editEntityForm);
 
       entityListGenerator.generate(new EntityList(model));

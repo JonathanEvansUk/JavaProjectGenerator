@@ -18,7 +18,7 @@ public interface FileGenerator<T> {
     Template template = Mustache.compiler().compile(templateText);
 
     String fileText = template.execute(templateData);
-    System.out.println(fileText);
+//    System.out.println(fileText);
 
     // write to file
     String outputDirectory = outputDirectory(templateData);
