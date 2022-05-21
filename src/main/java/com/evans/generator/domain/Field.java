@@ -1,5 +1,7 @@
 package com.evans.generator.domain;
 
+import java.time.Instant;
+
 public record Field(String name,
                     Class<?> type,
                     String simpleTypeName,
@@ -16,5 +18,9 @@ public record Field(String name,
 
   public String setterName() {
     return "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
+  }
+
+  public boolean isDate() {
+    return type.equals(Instant.class);
   }
 }

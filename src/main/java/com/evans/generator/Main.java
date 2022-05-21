@@ -19,6 +19,7 @@ import com.evans.generator.file.react.ViewEntitiesGenerator;
 import com.evans.generator.file.react.ViewSingleEntityGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,12 +76,18 @@ public class Main {
     Generator generator = new Generator(backendGenerator, frontendGenerator);
 
     generator.generate(List.of(
-        Model.of("Bill", List.of(
-            new Field("id", Long.class, true, true),
-            new Field("amount", Double.class, false, false))),
-        Model.of("User", List.of(
-            new Field("id", UUID.class, true, true)
-        ))
+        Model.of("Bill",
+            List.of(
+                new Field("id", Long.class, true, true),
+                new Field("amount", Double.class, false, false),
+                new Field("dateReceived", Instant.class, false, false)
+            )
+        ),
+        Model.of("User",
+            List.of(
+                new Field("id", UUID.class, true, true)
+            )
+        )
     ));
   }
 }

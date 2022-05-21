@@ -60,7 +60,7 @@ export default function {{model.nameCapitalised}}List() {
         </thead>
 
         <tbody>
-        {rows}
+          {rows}
         </tbody>
       </Table>
 
@@ -76,7 +76,17 @@ export default function {{model.nameCapitalised}}List() {
 
 const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
   return (
-    <tr key={ {{model.name}}.id }>{tableHeaders.map(header => <td key={header}>{ {{model.name}}[header] }</td>)}
+    <tr key={ {{model.name}}.id }>
+      {{#model.fields}}
+        <td key="{ {{name}} }">
+        {{#isDate}}
+          {new Date(bill["{{name}}"]).toLocaleString()}
+        {{/isDate}}
+        {{^isDate}}
+          { {{model.name}}["{{name}}"] }
+        {{/isDate}}
+        </td>
+      {{/model.fields}}
       <td>
         <div className="float-right">
           <Button as={Link} to={"/{{model.name}}/" + {{model.name}}.id} variant="info" size="sm">
