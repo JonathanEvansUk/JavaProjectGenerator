@@ -20,6 +20,7 @@ import com.evans.generator.file.react.ViewSingleEntityGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,7 +81,8 @@ public class Main {
             List.of(
                 new Field("id", Long.class, true, true),
                 new Field("amount", Double.class, false, false),
-                new Field("dateReceived", Instant.class, false, false)
+                new Field("dateReceived", LocalDate.class, false, false),
+                new Field("datePaid", Instant.class, false, false)
             )
         ),
         Model.of("User",

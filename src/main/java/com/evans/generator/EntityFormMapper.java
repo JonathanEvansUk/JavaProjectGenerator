@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,10 @@ public class EntityFormMapper {
 
     if (type.equals(Instant.class)) {
       return "date-time";
+    }
+
+    if (type.equals(LocalDate.class)) {
+      return "date";
     }
 
     // TODO not sure what this should be?

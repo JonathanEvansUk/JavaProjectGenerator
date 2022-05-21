@@ -80,7 +80,7 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
       {{#model.fields}}
         <td key="{ {{name}} }">
         {{#isDate}}
-          {new Date(bill["{{name}}"]).toLocaleString()}
+          { {{model.name}}["{{name}}"] && new Date({{model.name}}["{{name}}"]).toLocaleString()}
         {{/isDate}}
         {{^isDate}}
           { {{model.name}}["{{name}}"] }
