@@ -1,7 +1,7 @@
 package com.evans.generator;
 
 import com.evans.generator.EntityFormMapper.JsonFormSchema.Type;
-import com.evans.generator.Generator.Field;
+import com.evans.generator.domain.Field;
 import com.evans.generator.file.react.AppJsGenerator.WebModel;
 import com.evans.generator.file.react.CreateEntityGenerator.EntityForm;
 import com.fasterxml.jackson.core.JsonProcessingException;

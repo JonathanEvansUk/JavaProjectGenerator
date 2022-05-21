@@ -1,6 +1,6 @@
 package com.evans.generator.file.java.entity;
 
-import com.evans.generator.Generator.Field;
+import com.evans.generator.domain.Field;
 import com.evans.generator.file.java.JavaClassTemplateData;
 import java.util.List;
 

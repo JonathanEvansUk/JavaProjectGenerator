@@ -1,7 +1,7 @@
 package com.evans.generator;
 
-import com.evans.generator.Generator.Field;
-import com.evans.generator.Generator.Model;
+import com.evans.generator.domain.Field;
+import com.evans.generator.domain.Model;
 import com.evans.generator.file.java.application.ApplicationGenerator;
 import com.evans.generator.file.java.controller.ControllerGenerator;
 import com.evans.generator.file.java.entity.EntityGenerator;
@@ -39,6 +39,16 @@ public class Main {
     MavenGenerator mavenGenerator = new MavenGenerator();
     ApplicationPropertiesGenerator applicationPropertiesGenerator = new ApplicationPropertiesGenerator();
 
+    BackendGenerator backendGenerator = new BackendGenerator(
+        repositoryGenerator,
+        serviceGenerator,
+        controllerGenerator,
+        entityGenerator,
+        applicationGenerator,
+        mavenGenerator,
+        applicationPropertiesGenerator
+    );
+
     PackageJsonGenerator packageJsonGenerator = new PackageJsonGenerator();
     AppJsGenerator appJsGenerator = new AppJsGenerator();
     IndexJsGenerator indexJsGenerator = new IndexJsGenerator();
@@ -49,11 +59,20 @@ public class Main {
     EditEntityGenerator editEntityGenerator = new EditEntityGenerator();
 
     EntityFormMapper entityFormMapper = new EntityFormMapper(objectMapper);
-    Generator generator = new Generator(repositoryGenerator, serviceGenerator, controllerGenerator,
-        entityGenerator, mavenGenerator, applicationGenerator, applicationPropertiesGenerator,
-        packageJsonGenerator, appJsGenerator, indexJsGenerator, createEntityGenerator,
-        entityListGenerator, viewEntitiesGenerator, viewSingleEntityGenerator, editEntityGenerator,
-        entityFormMapper);
+
+    FrontendGenerator frontendGenerator = new FrontendGenerator(
+        packageJsonGenerator,
+        appJsGenerator,
+        indexJsGenerator,
+        createEntityGenerator,
+        entityListGenerator,
+        viewEntitiesGenerator,
+        viewSingleEntityGenerator,
+        editEntityGenerator,
+        entityFormMapper
+    );
+
+    Generator generator = new Generator(backendGenerator, frontendGenerator);
 
     generator.generate(List.of(
         Model.of("Bill", List.of(

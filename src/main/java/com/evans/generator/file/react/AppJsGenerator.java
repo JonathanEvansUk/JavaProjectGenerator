@@ -1,6 +1,6 @@
 package com.evans.generator.file.react;
 
-import com.evans.generator.Generator.Field;
+import com.evans.generator.domain.Field;
 import com.evans.generator.file.FileGenerator;
 import com.evans.generator.file.react.AppJsGenerator.AppJs;
 import java.util.List;
