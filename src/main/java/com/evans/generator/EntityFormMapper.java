@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
@@ -52,7 +53,8 @@ public class EntityFormMapper {
         required
     );
 
-    String schema = objectMapper.writeValueAsString(formSchema);
+    String schema = objectMapper.enable(SerializationFeature.INDENT_OUTPUT)
+        .writeValueAsString(formSchema);
 
     return new EntityForm(model, schema);
   }
@@ -88,6 +90,10 @@ public class EntityFormMapper {
 
     if (type.equals(String.class)) {
       return "string";
+    }
+
+    if (type.equals(Boolean.class)) {
+      return "boolean";
     }
 
     // unknown

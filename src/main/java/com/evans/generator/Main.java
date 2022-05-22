@@ -82,6 +82,7 @@ public class Main {
                 new Field("id", Long.class, true, true),
                 new Field("amount", Double.class, false, false),
                 new Field("dateReceived", LocalDate.class, false, false),
+                new Field("paid", Boolean.class, false, false),
                 new Field("datePaid", Instant.class, false, false)
             )
         ),

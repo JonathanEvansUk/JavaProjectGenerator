@@ -23,4 +23,8 @@ public record Field(String name,
   public boolean isDate() {
     return type.equals(Instant.class);
   }
+
+  public boolean isBoolean() {
+    return type.equals(Boolean.class);
+  }
 }
