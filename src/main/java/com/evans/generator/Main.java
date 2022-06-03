@@ -1,6 +1,11 @@
 package com.evans.generator;
 
-import com.evans.generator.domain.Field;
+import com.evans.generator.domain.FieldDefinition.BooleanField;
+import com.evans.generator.domain.FieldDefinition.DateField;
+import com.evans.generator.domain.FieldDefinition.DateTimeField;
+import com.evans.generator.domain.FieldDefinition.DoubleField;
+import com.evans.generator.domain.FieldDefinition.EnumField;
+import com.evans.generator.domain.FieldDefinition.IdField;
 import com.evans.generator.domain.Model;
 import com.evans.generator.file.java.application.ApplicationGenerator;
 import com.evans.generator.file.java.controller.ControllerGenerator;
@@ -19,10 +24,7 @@ import com.evans.generator.file.react.ViewEntitiesGenerator;
 import com.evans.generator.file.react.ViewSingleEntityGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 public class Main {
 
@@ -76,21 +78,19 @@ public class Main {
 
     Generator generator = new Generator(backendGenerator, frontendGenerator);
 
-    generator.generate(List.of(
-        Model.of("Bill",
-            List.of(
-                new Field("id", Long.class, true, true),
-                new Field("amount", Double.class, false, false),
-                new Field("dateReceived", LocalDate.class, false, false),
-                new Field("paid", Boolean.class, false, false),
-                new Field("datePaid", Instant.class, false, false)
-            )
-        ),
-        Model.of("User",
-            List.of(
-                new Field("id", UUID.class, true, true)
+    generator.generate(
+        List.of(
+            Model.of("Bill",
+                List.of(
+                    new IdField("id", true),
+                    new DoubleField("amount", false),
+                    new DateField("dateReceived", false),
+                    new BooleanField("paid", false),
+                    new DateTimeField("datePaid", false),
+                    new EnumField("paymentType", List.of("Credit", "Debit"), true)
+                )
             )
         )
-    ));
+    );
   }
 }

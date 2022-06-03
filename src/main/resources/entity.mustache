@@ -1,9 +1,14 @@
 package {{packageName}};
 
+import java.util.Arrays;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 {{#imports}}
 {{.}}
@@ -36,9 +41,32 @@ public class {{className}} {
   public void {{setterName}}({{simpleTypeName}} {{name}}) {
     this.{{name}} = {{name}};
   }
-{{/fields}}
 {{^-last}}
 
 {{/-last}}
+{{/fields}}
 {{! end feature: setter methods }}
+
+{{#enums}}
+  public enum {{name}} {
+    {{#options}}
+    {{name}}("{{value}}"){{^-last}},{{/-last}}{{#-last}};{{/-last}}
+    {{/options}}
+
+    private final String value;
+
+    @JsonValue
+    private {{name}}(String value) {
+      this.value = value;
+    }
+
+    @JsonCreator
+    public static {{name}} fromValue(String value) {
+      return Arrays.stream({{name}}.values())
+        .filter(entry -> entry.value)
+        .findFirst()
+        .get();
+    }
+  }
+{{/enums}}
 }

@@ -9,8 +9,7 @@ public record Service(String packageName,
                       String entityIdType,
                       String repositoryType,
                       String repositoryName,
-                      List<String> imports) implements
-    JavaClassTemplateData {
+                      List<String> imports) implements JavaClassTemplateData {
 
   @Override
   public String className() {

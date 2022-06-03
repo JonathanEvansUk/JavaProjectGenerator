@@ -1,6 +1,6 @@
 package com.evans.generator.file.react;
 
-import com.evans.generator.domain.Field;
+import com.evans.generator.domain.FieldDefinition;
 import com.evans.generator.file.FileGenerator;
 import com.evans.generator.file.react.AppJsGenerator.AppJs;
 import java.util.List;
@@ -24,7 +24,7 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
 
   public record AppJs(List<WebModel> models) {}
 
-  public record WebModel(String name, List<Field> fields) {
+  public record WebModel(String name, List<FieldDefinition> fields) {
 
     public WebModel {
       name = name.toLowerCase();
