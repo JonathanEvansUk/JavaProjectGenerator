@@ -79,13 +79,17 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
   return (
     <tr key={ {{model.name}}.id }>
       {{#model.fields}}
-        <td key="{ {{name}} }" className="align-middle" style={ {"lineHeight": "1em"} }>
+        <td key="{{name}}" className="align-middle" style={ {"lineHeight": "1em"} }>
         {{#isDate}}
           { {{model.name}}["{{name}}"] && new Date({{model.name}}["{{name}}"]).toLocaleString()}
         {{/isDate}}
         {{^isDate}}
-          {{#isBoolean}}<i className={ {{model.name}}["{{name}}"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>{{/isBoolean}}
-          {{^isBoolean}}{ {{model.name}}["{{name}}"] }{{/isBoolean}}
+          {{#isBoolean}}
+            <i className={ {{model.name}}["{{name}}"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>
+          {{/isBoolean}}
+          {{^isBoolean}}
+            { {{model.name}}["{{name}}"] }
+          {{/isBoolean}}
         {{/isDate}}
         </td>
       {{/model.fields}}
