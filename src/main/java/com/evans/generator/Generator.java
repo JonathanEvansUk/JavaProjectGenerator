@@ -7,12 +7,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import javax.inject.Inject;
 
 public class Generator {
 
   private final BackendGenerator backendGenerator;
   private final FrontendGenerator frontendGenerator;
 
+  @Inject
   public Generator(BackendGenerator backendGenerator, FrontendGenerator frontendGenerator) {
     this.backendGenerator = backendGenerator;
     this.frontendGenerator = frontendGenerator;

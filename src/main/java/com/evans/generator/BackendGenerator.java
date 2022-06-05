@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Inject;
 
 public class BackendGenerator {
 
@@ -41,6 +42,7 @@ public class BackendGenerator {
   private final MavenGenerator mavenGenerator;
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
 
+  @Inject
   public BackendGenerator(
       RepositoryGenerator repositoryGenerator,
       ServiceGenerator serviceGenerator,

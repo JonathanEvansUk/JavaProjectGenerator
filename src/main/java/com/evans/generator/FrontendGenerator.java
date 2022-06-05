@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import javax.inject.Inject;
 
 public class FrontendGenerator {
 
@@ -35,6 +36,7 @@ public class FrontendGenerator {
 
   private final EntityFormMapper entityFormMapper;
 
+  @Inject
   public FrontendGenerator(PackageJsonGenerator packageJsonGenerator,
       AppJsGenerator appJsGenerator,
       IndexJsGenerator indexJsGenerator,

@@ -1,5 +1,6 @@
 package com.evans.generator;
 
+import com.evans.generator.config.DaggerGeneratorFactory;
 import com.evans.generator.domain.FieldDefinition.BooleanField;
 import com.evans.generator.domain.FieldDefinition.DateField;
 import com.evans.generator.domain.FieldDefinition.DateTimeField;
@@ -7,22 +8,6 @@ import com.evans.generator.domain.FieldDefinition.DoubleField;
 import com.evans.generator.domain.FieldDefinition.EnumField;
 import com.evans.generator.domain.FieldDefinition.IdField;
 import com.evans.generator.domain.Model;
-import com.evans.generator.file.java.application.ApplicationGenerator;
-import com.evans.generator.file.java.controller.ControllerGenerator;
-import com.evans.generator.file.java.entity.EntityGenerator;
-import com.evans.generator.file.java.repository.RepositoryGenerator;
-import com.evans.generator.file.java.service.ServiceGenerator;
-import com.evans.generator.file.maven.ApplicationPropertiesGenerator;
-import com.evans.generator.file.maven.MavenGenerator;
-import com.evans.generator.file.react.AppJsGenerator;
-import com.evans.generator.file.react.CreateEntityGenerator;
-import com.evans.generator.file.react.EditEntityGenerator;
-import com.evans.generator.file.react.EntityListGenerator;
-import com.evans.generator.file.react.IndexJsGenerator;
-import com.evans.generator.file.react.PackageJsonGenerator;
-import com.evans.generator.file.react.ViewEntitiesGenerator;
-import com.evans.generator.file.react.ViewSingleEntityGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,52 +16,7 @@ public class Main {
   public static void main(String[] args) throws IOException {
     System.out.println("Running generator");
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    RepositoryGenerator repositoryGenerator = new RepositoryGenerator();
-    ServiceGenerator serviceGenerator = new ServiceGenerator();
-    ControllerGenerator controllerGenerator = new ControllerGenerator();
-    EntityGenerator entityGenerator = new EntityGenerator();
-
-    ApplicationGenerator applicationGenerator = new ApplicationGenerator();
-
-    MavenGenerator mavenGenerator = new MavenGenerator();
-    ApplicationPropertiesGenerator applicationPropertiesGenerator = new ApplicationPropertiesGenerator();
-
-    BackendGenerator backendGenerator = new BackendGenerator(
-        repositoryGenerator,
-        serviceGenerator,
-        controllerGenerator,
-        entityGenerator,
-        applicationGenerator,
-        mavenGenerator,
-        applicationPropertiesGenerator
-    );
-
-    PackageJsonGenerator packageJsonGenerator = new PackageJsonGenerator();
-    AppJsGenerator appJsGenerator = new AppJsGenerator();
-    IndexJsGenerator indexJsGenerator = new IndexJsGenerator();
-    CreateEntityGenerator createEntityGenerator = new CreateEntityGenerator();
-    EntityListGenerator entityListGenerator = new EntityListGenerator();
-    ViewEntitiesGenerator viewEntitiesGenerator = new ViewEntitiesGenerator();
-    ViewSingleEntityGenerator viewSingleEntityGenerator = new ViewSingleEntityGenerator();
-    EditEntityGenerator editEntityGenerator = new EditEntityGenerator();
-
-    EntityFormMapper entityFormMapper = new EntityFormMapper(objectMapper);
-
-    FrontendGenerator frontendGenerator = new FrontendGenerator(
-        packageJsonGenerator,
-        appJsGenerator,
-        indexJsGenerator,
-        createEntityGenerator,
-        entityListGenerator,
-        viewEntitiesGenerator,
-        viewSingleEntityGenerator,
-        editEntityGenerator,
-        entityFormMapper
-    );
-
-    Generator generator = new Generator(backendGenerator, frontendGenerator);
+    Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
     generator.generate(
         List.of(
@@ -92,5 +32,7 @@ public class Main {
             )
         )
     );
+
+    System.out.println("Finished generating");
   }
 }
