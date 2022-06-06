@@ -53,9 +53,9 @@ public class {{className}} {
     {{name}}("{{value}}"){{^-last}},{{/-last}}{{#-last}};{{/-last}}
     {{/options}}
 
+    @JsonValue
     private final String value;
 
-    @JsonValue
     private {{name}}(String value) {
       this.value = value;
     }
@@ -63,7 +63,7 @@ public class {{className}} {
     @JsonCreator
     public static {{name}} fromValue(String value) {
       return Arrays.stream({{name}}.values())
-        .filter(entry -> entry.value)
+        .filter(entry -> entry.value.equals(value))
         .findFirst()
         .get();
     }
