@@ -1,8 +1,11 @@
 package com.evans.codegen.generator;
 
+import com.evans.codegen.domain.FieldDefinition;
+import com.evans.codegen.domain.FieldDefinition.OneToManyField;
 import com.evans.codegen.domain.Model;
 import com.evans.codegen.file.react.AppJsGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.AppJs;
+import com.evans.codegen.file.react.AppJsGenerator.WebField;
 import com.evans.codegen.file.react.AppJsGenerator.WebModel;
 import com.evans.codegen.file.react.CreateEntityGenerator;
 import com.evans.codegen.file.react.CreateEntityGenerator.EntityForm;
@@ -57,9 +60,22 @@ public class FrontendGenerator {
     this.entityFormMapper = entityFormMapper;
   }
 
+  private List<WebField> convert(List<FieldDefinition> fields) {
+    return fields.stream()
+        .map(field -> {
+          if (field.isOneToMany()) {
+
+            return new WebField(field.name(), field.required(), field.type(),
+                ((OneToManyField) field).associationModel().name().toLowerCase());
+          }
+          return new WebField(field.name(), field.required(), field.type());
+        })
+        .toList();
+  }
+
   public void generate(List<Model> models) throws IOException {
     var webModels = models.stream()
-        .map(model -> new WebModel(model.name(), model.fields()))
+        .map(model -> new WebModel(model.name(), convert(model.fields())))
         .toList();
 
     packageJsonGenerator.generate(new PackageJson("MyApp"));

@@ -25,4 +25,8 @@ public record Model(String name,
 
     return new Model(name, idType, idField, fields);
   }
+
+  public String nameCamel() {
+    return name().substring(0, 1).toLowerCase() + name().substring(1);
+  }
 }

@@ -1,0 +1,63 @@
+package {{packageName}};
+
+import org.springframework.stereotype.Service;
+
+{{#imports}}
+import {{.}};
+{{/imports}}
+
+@Service
+public class {{className}} {
+
+  {{#subconverters}}
+  private final {{type}} {{name}};
+  {{/subconverters}}
+  {{#hasSubconverters}}
+
+  public {{className}}({{#subconverters}}{{type}} {{name}}{{^-last}},{{/-last}}{{/subconverters}}) {
+    {{#subconverters}}
+    this.{{name}} = {{name}};
+    {{/subconverters}}
+  }
+
+  {{/hasSubconverters}}
+  public {{entityType}} convert({{dtoType}} {{dtoNameCamel}}) {
+    {{entityType}} {{entityNameCamel}} = new {{entityType}}();
+
+    {{#fields}}
+    {{#isOneToMany}}
+    {{entityNameCamel}}.set{{nameCapitalised}}({{dtoNameCamel}}.get{{nameCapitalised}}().stream().map(this::convert{{associationModelType}}).toList());
+    {{/isOneToMany}}
+    {{^isOneToMany}}
+    {{entityNameCamel}}.set{{nameCapitalised}}({{dtoNameCamel}}.get{{nameCapitalised}}());
+    {{/isOneToMany}}
+    {{/fields}}
+
+    return {{entityNameCamel}};
+  }
+
+  public {{dtoType}} convert({{entityType}} {{entityNameCamel}}) {
+    {{dtoType}} {{dtoNameCamel}} = new {{dtoType}}();
+
+    {{#fields}}
+    {{#isOneToMany}}
+    {{dtoNameCamel}}.set{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}().stream().map(this::convert{{associationModelType}}).toList());
+    {{/isOneToMany}}
+    {{^isOneToMany}}
+    {{dtoNameCamel}}.set{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}());
+    {{/isOneToMany}}
+    {{/fields}}
+
+    return {{dtoNameCamel}};
+  }
+  {{#subconverters}}
+
+  public {{dtoType}} convert{{entityType}}({{entityType}} {{entityTypeCamel}}) {
+    return {{name}}.convert({{entityTypeCamel}});
+  }
+
+  public {{entityType}} convert{{entityType}}({{dtoType}} {{dtoTypeCamel}}) {
+    return {{name}}.convert({{dtoTypeCamel}});
+  }
+  {{/subconverters}}
+}

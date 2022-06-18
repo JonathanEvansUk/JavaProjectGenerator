@@ -2,6 +2,8 @@ package com.evans.codegen.config;
 
 import com.evans.codegen.file.java.application.ApplicationGenerator;
 import com.evans.codegen.file.java.controller.ControllerGenerator;
+import com.evans.codegen.file.java.dto.DTOConverterGenerator;
+import com.evans.codegen.file.java.dto.DTOGenerator;
 import com.evans.codegen.file.java.entity.EntityGenerator;
 import com.evans.codegen.file.java.repository.RepositoryGenerator;
 import com.evans.codegen.file.java.service.ServiceGenerator;
@@ -24,7 +26,7 @@ public class BackendFileGeneratorModule {
   }
 
   @Provides
-      public ControllerGenerator controllerGenerator() {
+  public ControllerGenerator controllerGenerator() {
     return new ControllerGenerator();
   }
 
@@ -34,8 +36,18 @@ public class BackendFileGeneratorModule {
   }
 
   @Provides
-      public ApplicationGenerator applicationGenerator() {
+  public ApplicationGenerator applicationGenerator() {
     return new ApplicationGenerator();
+  }
+
+  @Provides
+  public DTOGenerator dtoGenerator() {
+    return new DTOGenerator();
+  }
+
+  @Provides
+  public DTOConverterGenerator dtoConverterGenerator() {
+    return new DTOConverterGenerator();
   }
 
   @Provides
@@ -44,7 +56,7 @@ public class BackendFileGeneratorModule {
   }
 
   @Provides
-      public ApplicationPropertiesGenerator applicationPropertiesGenerator() {
+  public ApplicationPropertiesGenerator applicationPropertiesGenerator() {
     return new ApplicationPropertiesGenerator();
   }
 }

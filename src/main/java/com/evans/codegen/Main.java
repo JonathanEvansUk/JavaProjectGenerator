@@ -1,12 +1,9 @@
 package com.evans.codegen;
 
 import com.evans.codegen.config.DaggerGeneratorFactory;
-import com.evans.codegen.domain.FieldDefinition.BooleanField;
-import com.evans.codegen.domain.FieldDefinition.DateField;
-import com.evans.codegen.domain.FieldDefinition.DateTimeField;
-import com.evans.codegen.domain.FieldDefinition.DoubleField;
-import com.evans.codegen.domain.FieldDefinition.EnumField;
 import com.evans.codegen.domain.FieldDefinition.IdField;
+import com.evans.codegen.domain.FieldDefinition.OneToManyField;
+import com.evans.codegen.domain.FieldDefinition.StringField;
 import com.evans.codegen.domain.Model;
 import com.evans.codegen.generator.Generator;
 import java.io.IOException;
@@ -19,20 +16,20 @@ public class Main {
 
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
-    generator.generate(
+    Model comment = Model.of("Comment",
         List.of(
-            Model.of("Bill",
-                List.of(
-                    new IdField("id", true),
-                    new DoubleField("amount", false),
-                    new DateField("dateReceived", false),
-                    new BooleanField("paid", false),
-                    new DateTimeField("datePaid", false),
-                    new EnumField("paymentType", List.of("Credit", "Debit"), true)
-                )
-            )
-        )
-    );
+            new IdField("id", true),
+            new StringField("review", true)
+        ));
+
+    Model post = Model.of("Post",
+        List.of(
+            new IdField("id", true),
+            new StringField("title", true),
+            new OneToManyField("comments", false, comment)
+        ));
+
+    generator.generate(List.of(post, comment));
 
     System.out.println("Finished generating");
   }

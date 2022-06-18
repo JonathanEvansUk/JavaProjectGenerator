@@ -3,9 +3,16 @@ package {{packageName}};
 import java.util.Arrays;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.CascadeType;
+{{#hasOneToMany}}
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+{{/hasOneToMany}}
+{{#hasManyToOne}}
+import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+{{/hasManyToOne}}
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -20,14 +27,21 @@ public class {{className}} {
 {{#fields}}
   {{#isId}}
   @Id
-  //@GeneratedValue(strategy = GenerationType.IDENTITY)
   {{/isId}}
-  private {{simpleTypeName}} {{name}};
+  {{#isOneToMany}}
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "{{entityNameCamel}}", orphanRemoval = true)
+  {{/isOneToMany}}
+  private {{{simpleTypeName}}} {{name}}{{#isOneToMany}}= new ArrayList<>(){{/isOneToMany}};
 
 {{/fields}}
+{{#manyToOneSideModels}}
+  @ManyToOne(fetch = FetchType.LAZY)
+  private {{name}} {{nameCamel}};
+
+{{/manyToOneSideModels}}
 {{! begin feature: getter methods }}
 {{#fields}}
-  public {{simpleTypeName}} {{getterName}}() {
+  public {{{simpleTypeName}}} {{getterName}}() {
     return {{name}};
   }
 {{^-last}}
@@ -38,15 +52,23 @@ public class {{className}} {
 
 {{! begin feature: setter methods }}
 {{#fields}}
-  public void {{setterName}}({{simpleTypeName}} {{name}}) {
+  public void {{setterName}}({{{simpleTypeName}}} {{name}}) {
     this.{{name}} = {{name}};
+    {{#isOneToMany}}
+    {{name}}.forEach({{associationModelName}} -> {{associationModelName}}.set{{className}}(this));
+    {{/isOneToMany}}
   }
 {{^-last}}
 
 {{/-last}}
 {{/fields}}
-{{! end feature: setter methods }}
 
+{{#manyToOneSideModels}}
+  public void set{{name}}({{name}} {{nameCamel}}) {
+    this.{{nameCamel}} = {{nameCamel}};
+  }
+{{/manyToOneSideModels}}
+{{! end feature: setter methods }}
 {{#enums}}
   public enum {{name}} {
     {{#options}}

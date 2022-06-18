@@ -11,30 +11,55 @@ import {{.}};
 public class {{className}} {
 
   private final {{repositoryType}} {{repositoryName}};
+  private final {{dtoConverterType}} {{dtoConverterName}};
 
-  public {{className}}({{repositoryType}} {{repositoryName}}) {
+  public {{className}}({{repositoryType}} {{repositoryName}}, {{dtoConverterType}} {{dtoConverterName}}) {
     this.{{repositoryName}} = {{repositoryName}};
+    this.{{dtoConverterName}} = {{dtoConverterName}};
   }
 
-  public List<{{entityType}}> findAll() {
-    return {{repositoryName}}.findAll();
+  public List<{{dtoType}}> findAll() {
+    return {{repositoryName}}.findAll()
+        .stream()
+        .map(this::convert)
+        .toList();
   }
 
-  public Optional<{{entityType}}> findById({{entityIdType}} id) {
-    return {{repositoryName}}.findById(id);
+  public Optional<{{dtoType}}> findById({{entityIdType}} id) {
+    return {{repositoryName}}.findById(id)
+        .map(this::convert);
   }
 
-  public {{entityType}} save({{entityType}} {{entityNameCamel}}) {
-    return {{repositoryName}}.save({{entityNameCamel}});
+  public {{dtoType}} save({{dtoType}} {{dtoNameCamel}}) {
+
+    {{entityType}} {{entityNameCamel}} = convert({{dtoNameCamel}});
+
+    {{#fields}}
+      {{#isOneToMany}}
+        {{name}}
+      {{/isOneToMany}}
+    {{/fields}}
+
+    {{entityType}} saved{{entityType}} = {{repositoryName}}.save({{entityNameCamel}});
+
+    return convert(saved{{entityType}});
   }
 
-  public Optional<{{entityType}}> delete({{entityIdType}} id) {
+  public Optional<{{dtoType}}> delete({{entityIdType}} id) {
     Optional<{{entityType}}> {{entityNameCamel}} = {{repositoryName}}.findById(id);
 
     if ({{entityNameCamel}}.isPresent()) {
       {{repositoryName}}.delete({{entityNameCamel}}.get());
     }
 
-    return {{entityNameCamel}};
+    return {{entityNameCamel}}.map(this::convert);
+  }
+
+  private {{entityType}} convert({{dtoType}} {{dtoNameCamel}}) {
+    return {{dtoConverterName}}.convert({{dtoNameCamel}});
+  }
+
+  private {{dtoType}} convert({{entityType}} {{entityNameCamel}}) {
+    return {{dtoConverterName}}.convert({{entityNameCamel}});
   }
 }

@@ -1,11 +1,42 @@
 import Form from "@rjsf/bootstrap-4";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Create{{model.nameCapitalised}}() {
   const navigate = useNavigate();
 
+  {{#model.fields}}
+  {{#isOneToMany}}
+  const [{{name}}, set{{nameCapitalised}}] = useState([]);
+  {{/isOneToMany}}
+  {{/model.fields}}
+
+  {{#model.fields}}
+  {{#isOneToMany}}
+  useEffect(() => {
+    fetch(`http://localhost:8080/{{associationModelType}}`)
+    .then(response => response.json())
+    .then({{name}} => set{{nameCapitalised}}({{name}}))
+  },[]);
+  {{/isOneToMany}}
+  {{/model.fields}}
+
+  {{#model.fields}}
+  {{#isOneToMany}}
+  console.log({{name}});
+  {{/isOneToMany}}
+  {{/model.fields}}
+
   const submitForm = ({ formData }) => {
     console.log(JSON.stringify(formData));
+
+    {{#model.fields}}
+      {{#isOneToMany}}
+    formData.{{name}} = formData.{{name}}.map(
+      id => {{name}}.find({{associationModelType}} => {{associationModelType}}.id === id)
+    );
+      {{/isOneToMany}}
+    {{/model.fields}}
 
     fetch("http://localhost:8080/{{model.name}}", {
       method: "POST",
@@ -26,5 +57,13 @@ export default function Create{{model.nameCapitalised}}() {
   };
 
   const schema = {{{schema}}};
+
+  {{#model.fields}}
+    {{#isOneToMany}}
+      schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
+      schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
+    {{/isOneToMany}}
+  {{/model.fields}}
+
   return (<Form schema={schema} onSubmit={submitForm} />);
 };

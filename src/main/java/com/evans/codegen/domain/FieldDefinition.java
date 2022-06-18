@@ -1,5 +1,7 @@
 package com.evans.codegen.domain;
 
+import static com.evans.codegen.StringUtils.capitalise;
+
 import java.util.List;
 
 public sealed interface FieldDefinition {
@@ -15,7 +17,8 @@ public sealed interface FieldDefinition {
     DATE_TIME,
     BOOLEAN,
     STRING,
-    ENUM
+    ENUM,
+    ONE_TO_MANY
   }
 
   default boolean isId() {
@@ -28,6 +31,14 @@ public sealed interface FieldDefinition {
 
   default boolean isDate() {
     return type() == FieldType.DATE_TIME;
+  }
+
+  default boolean isOneToMany() {
+    return type() == FieldType.ONE_TO_MANY;
+  }
+
+  default String nameCapitalised() {
+    return capitalise(name());
   }
 
   boolean required();
@@ -66,9 +77,8 @@ public sealed interface FieldDefinition {
     }
   }
 
-  record StringFieldDefinition(String name,
-                               String simpleTypeName,
-                               boolean required) implements FieldDefinition {
+  record StringField(String name,
+                     boolean required) implements FieldDefinition {
 
     @Override
     public FieldType type() {
@@ -100,6 +110,16 @@ public sealed interface FieldDefinition {
     @Override
     public FieldType type() {
       return FieldType.BOOLEAN;
+    }
+  }
+
+  record OneToManyField(String name,
+                        boolean required,
+                        Model associationModel) implements FieldDefinition {
+
+    @Override
+    public FieldType type() {
+      return FieldType.ONE_TO_MANY;
     }
   }
 }

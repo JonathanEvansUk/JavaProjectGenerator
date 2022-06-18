@@ -1,0 +1,40 @@
+package {{packageName}};
+
+import java.lang.Long;
+
+{{#imports}}
+{{.}}
+{{/imports}}
+
+public class {{className}} {
+
+  {{#fields}}
+    {{#isOneToMany}}
+    private {{{simpleTypeName}}} {{name}};
+    {{/isOneToMany}}
+    {{^isOneToMany}}
+    private {{simpleTypeName}} {{name}};
+    {{/isOneToMany}}
+  {{/fields}}
+
+  {{! begin feature: getter methods }}
+  {{#fields}}
+    public {{{simpleTypeName}}} {{getterName}}() {
+      return {{name}};
+    }
+  {{^-last}}
+
+  {{/-last}}
+  {{/fields}}
+  {{! end feature: getter methods }}
+
+  {{! begin feature: setter methods }}
+  {{#fields}}
+    public void {{setterName}}({{{simpleTypeName}}} {{name}}) {
+      this.{{name}} = {{name}};
+    }
+  {{^-last}}
+
+  {{/-last}}
+  {{/fields}}
+}

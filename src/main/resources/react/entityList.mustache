@@ -88,7 +88,12 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
             <i className={ {{model.name}}["{{name}}"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>
           {{/isBoolean}}
           {{^isBoolean}}
+            {{#isOneToMany}}
+            { {{model.name}}["{{name}}"].map({{associationModelType}} => <div>{create{{associationModelTypeCapitalised}}({{associationModelType}})}</div>) }
+            {{/isOneToMany}}
+            {{^isOneToMany}}
             { {{model.name}}["{{name}}"] }
+            {{/isOneToMany}}
           {{/isBoolean}}
         {{/isDate}}
         </td>
@@ -107,3 +112,14 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
     </tr>
   );
 };
+
+{{#model.fields}}
+  {{#isOneToMany}}
+const create{{associationModelTypeCapitalised}} = ({{associationModelType}}) => {
+  const {id} = {{associationModelType}};
+  return (
+    <Link to={"/entities/comment/" + id}>{JSON.stringify({{associationModelType}})}</Link>
+  );
+};
+  {{/isOneToMany}}
+{{/model.fields}}

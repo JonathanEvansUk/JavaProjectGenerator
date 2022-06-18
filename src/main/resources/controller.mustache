@@ -28,23 +28,23 @@ public class {{className}} {
   }
 
   @GetMapping
-  public List<{{entityType}}> findAll() {
+  public List<{{dtoType}}> findAll() {
     return {{serviceName}}.findAll();
   }
 
   @GetMapping("/{id}")
-  public Optional<{{entityType}}> findById(@PathVariable {{entityIdType}} id) {
+  public Optional<{{dtoType}}> findById(@PathVariable {{entityIdType}} id) {
     return {{serviceName}}.findById(id);
   }
 
   @PostMapping
-  public {{entityType}} create(@RequestBody {{entityType}} {{entityNameCamel}}) {
+  public {{dtoType}} create(@RequestBody {{dtoType}} {{entityNameCamel}}) {
     return {{serviceName}}.save({{entityNameCamel}});
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<{{entityType}}> delete(@PathVariable {{entityIdType}} id) {
-    Optional<{{entityType}}> {{entityNameCamel}} = {{serviceName}}.delete(id);
+  public ResponseEntity<{{dtoType}}> delete(@PathVariable {{entityIdType}} id) {
+    Optional<{{dtoType}}> {{entityNameCamel}} = {{serviceName}}.delete(id);
 
     if ({{entityNameCamel}}.isPresent()) {
       return ResponseEntity.noContent().build();
