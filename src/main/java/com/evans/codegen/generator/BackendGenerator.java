@@ -170,6 +170,37 @@ public class BackendGenerator {
 
     String modelNameCamel = model.name().substring(0, 1).toLowerCase() + model.name().substring(1);
 
+    List<Field> fields = model.fields().stream()
+        .map(fieldDefinition -> createField(importsByModelName, fieldDefinition))
+        .toList();
+
+    List<String> oneToManyImports = model.fields()
+        .stream()
+        .filter(FieldDefinition::isOneToMany)
+        .map(field -> (OneToManyField) field)
+        .map(OneToManyField::associationModel)
+        .map(Model::name)
+        .map(name -> repositoryPackage + "." + name)
+        .toList();
+
+    List<String> oneToManyDTOimports = model.fields().stream()
+        .filter(FieldDefinition::isOneToMany)
+        .map(OneToManyField.class::cast)
+        .map(OneToManyField::associationModel)
+        .map(Model::name)
+        .map(name -> name + "DTO")
+        .map(importsByModelName::get)
+        .toList();
+
+    List<String> oneToManyRepositoryImports = model.fields().stream()
+        .filter(FieldDefinition::isOneToMany)
+        .map(OneToManyField.class::cast)
+        .map(OneToManyField::associationModel)
+        .map(Model::name)
+        .map(name -> name + "Repository")
+        .map(name -> repositoryPackage + "." + name)
+        .toList();
+
     TypeInformation entityIdTypeInformation = resolveEntityFieldImport(model.idField(),
         importsByModelName);
 
@@ -200,6 +231,12 @@ public class BackendGenerator {
     String dtoConverterName =
         dtoConverterType.substring(0, 1).toLowerCase() + dtoConverterType.substring(1);
 
+    List<String> serviceImports = Stream.of(
+            List.of(entityImport, dtoImport, dtoConverterImport, repositoryImport, entityIdTypeImport),
+            oneToManyDTOimports, oneToManyRepositoryImports)
+        .flatMap(Collection::stream)
+        .toList();
+
     Service service = new Service(servicePackage,
         model.name(),
         modelNameCamel,
@@ -210,7 +247,9 @@ public class BackendGenerator {
         dtoConverterName,
         repositoryType,
         repositoryName,
-        List.of(entityImport, dtoImport, dtoConverterImport, repositoryImport, entityIdTypeImport));
+        fields,
+        serviceImports
+    );
     serviceGenerator.generate(service);
 
     String serviceType = model.name() + "Service";
@@ -249,10 +288,6 @@ public class BackendGenerator {
                     .toList()))
         .toList();
 
-    List<Field> fields = model.fields().stream()
-        .map(fieldDefinition -> createField(importsByModelName, fieldDefinition))
-        .toList();
-
     Entity entity = new Entity(basePackage + ".repository", model.name(), entityImports,
         fields, enums, manyToOneSideModels);
     entityGenerator.generate(entity);
@@ -272,24 +307,6 @@ public class BackendGenerator {
 
     DTO dto = new DTO(dtoPackage, dtoType, dtoFields, dtoImports);
     dtoGenerator.generate(dto);
-
-    List<String> oneToManyImports = model.fields()
-        .stream()
-        .filter(FieldDefinition::isOneToMany)
-        .map(field -> (OneToManyField) field)
-        .map(OneToManyField::associationModel)
-        .map(Model::name)
-        .map(name -> repositoryPackage + "." + name)
-        .toList();
-
-    List<String> oneToManyDTOimports = model.fields().stream()
-        .filter(FieldDefinition::isOneToMany)
-        .map(OneToManyField.class::cast)
-        .map(OneToManyField::associationModel)
-        .map(Model::name)
-        .map(name -> name + "DTO")
-        .map(importsByModelName::get)
-        .toList();
 
     List<String> dtoConverterImports = Stream.of(oneToManyImports, List.of(entityImport, dtoImport),
             oneToManyDTOimports)

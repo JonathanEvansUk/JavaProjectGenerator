@@ -12,10 +12,21 @@ public class {{className}} {
 
   private final {{repositoryType}} {{repositoryName}};
   private final {{dtoConverterType}} {{dtoConverterName}};
+  {{#fields}}
+    {{#isOneToMany}}
+  private final {{associationModelType}}Repository {{associationModelName}}Repository;
+    {{/isOneToMany}}
+  {{/fields}}
 
-  public {{className}}({{repositoryType}} {{repositoryName}}, {{dtoConverterType}} {{dtoConverterName}}) {
+  public {{className}}({{repositoryType}} {{repositoryName}}, {{dtoConverterType}} {{dtoConverterName}}{{#hasOneToManyFields}},{{/hasOneToManyFields}}
+    {{#oneToManyFields}}
+      {{associationModelType}}Repository {{associationModelName}}Repository{{^-last}},{{/-last}}
+    {{/oneToManyFields}}) {
     this.{{repositoryName}} = {{repositoryName}};
     this.{{dtoConverterName}} = {{dtoConverterName}};
+    {{#oneToManyFields}}
+    this.{{associationModelName}}Repository = {{associationModelName}}Repository;
+    {{/oneToManyFields}}
   }
 
   public List<{{dtoType}}> findAll() {
@@ -36,7 +47,17 @@ public class {{className}} {
 
     {{#fields}}
       {{#isOneToMany}}
-        {{name}}
+    var {{associationModelName}}Ids = {{dtoNameCamel}}.{{getterName}}().stream()
+        .map({{associationModelType}}DTO::getId)
+        .toList();
+
+    var {{name}} = {{associationModelName}}Repository.findAllById({{associationModelName}}Ids);
+      {{/isOneToMany}}
+    {{/fields}}
+
+    {{#fields}}
+      {{#isOneToMany}}
+    {{entityNameCamel}}.{{setterName}}({{name}});
       {{/isOneToMany}}
     {{/fields}}
 
