@@ -89,7 +89,7 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
           {{/isBoolean}}
           {{^isBoolean}}
             {{#isOneToMany}}
-            { {{model.name}}["{{name}}"].map({{associationModelType}} => <div>{create{{associationModelTypeCapitalised}}({{associationModelType}})}</div>) }
+            { {{model.name}}["{{name}}"].map({{associationModelType}} => <div key={ {{associationModelType}}.id }>{create{{associationModelTypeCapitalised}}({{associationModelType}})}</div>) }
             {{/isOneToMany}}
             {{^isOneToMany}}
             { {{model.name}}["{{name}}"] }
