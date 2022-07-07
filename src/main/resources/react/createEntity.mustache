@@ -1,6 +1,7 @@
 import Form from "@rjsf/bootstrap-4";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 
 export default function Create{{model.nameCapitalised}}() {
   const navigate = useNavigate();
@@ -57,13 +58,30 @@ export default function Create{{model.nameCapitalised}}() {
   };
 
   const schema = {{{schema}}};
+  const uiSchema = {};
 
   {{#model.fields}}
     {{#isOneToMany}}
-      schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
-      schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
+  if ({{name}}.length > 0) {
+    schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
+    schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
+  } else {
+    uiSchema.comments = {
+      "ui:disabled": true,
+      "ui:addable": false,
+      "ui:description": (
+        <div>
+          There are currently no {{name}}.{" "}
+          <Button as={Link} to={"/entities/{{associationModelType}}"}>
+            Add
+          </Button>
+        </div>
+      ),
+      "ui:label": false
+    };
+  }
     {{/isOneToMany}}
   {{/model.fields}}
 
-  return (<Form schema={schema} onSubmit={submitForm} />);
+  return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema} />);
 };
