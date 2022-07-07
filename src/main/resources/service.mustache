@@ -70,6 +70,14 @@ public class {{className}} {
     Optional<{{entityType}}> {{entityNameCamel}} = {{repositoryName}}.findById(id);
 
     if ({{entityNameCamel}}.isPresent()) {
+      {{#fields}}
+        {{#isOneToMany}}
+      {{entityNameCamel}}.get().{{getterName}}()
+        .forEach({{associationModelName}} -> {{associationModelName}}.set{{entityType}}(null));
+        {{/isOneToMany}}
+      {{/fields}}
+
+
       {{repositoryName}}.delete({{entityNameCamel}}.get());
     }
 
