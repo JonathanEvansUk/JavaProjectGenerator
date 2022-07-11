@@ -22,14 +22,21 @@ public class Main {
             new StringField("review", true)
         ));
 
+    Model author = Model.of("Author",
+        List.of(
+            new IdField("id", true),
+            new StringField("firstname", true)
+        ));
+
     Model post = Model.of("Post",
         List.of(
             new IdField("id", true),
             new StringField("title", true),
-            new OneToManyField("comments", false, comment)
+            new OneToManyField("comments", false, comment),
+            new OneToManyField("authors", false, author)
         ));
 
-    generator.generate(List.of(post, comment));
+    generator.generate(List.of(post, comment, author));
 
     System.out.println("Finished generating");
   }

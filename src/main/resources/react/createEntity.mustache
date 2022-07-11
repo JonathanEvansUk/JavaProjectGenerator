@@ -12,15 +12,23 @@ export default function Create{{model.nameCapitalised}}() {
   {{/isOneToMany}}
   {{/model.fields}}
 
-  {{#model.fields}}
-  {{#isOneToMany}}
+  {{#model.hasOneToManyFields}}
   useEffect(() => {
-    fetch(`http://localhost:8080/{{associationModelType}}`)
-    .then(response => response.json())
-    .then({{name}} => set{{nameCapitalised}}({{name}}))
-  },[]);
-  {{/isOneToMany}}
-  {{/model.fields}}
+    const fetchData = async () => {
+      const [{{#model.oneToManyFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.oneToManyFields}}] = await Promise.all([
+      {{#model.oneToManyFields}}
+        fetch(`http://localhost:8080/{{associationModelType}}/unusedBy{{model.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
+      {{/model.oneToManyFields}}
+      ]);
+
+      {{#model.oneToManyFields}}
+      set{{nameCapitalised}}({{name}}Response);
+      {{/model.oneToManyFields}}
+    };
+
+    fetchData();
+  }, []);
+  {{/model.hasOneToManyFields}}
 
   {{#model.fields}}
   {{#isOneToMany}}
@@ -66,13 +74,13 @@ export default function Create{{model.nameCapitalised}}() {
     schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
     schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
   } else {
-    uiSchema.comments = {
+    uiSchema.{{name}} = {
       "ui:disabled": true,
       "ui:addable": false,
       "ui:description": (
         <div>
-          There are currently no {{name}}.{" "}
-          <Button as={Link} to={"/entities/{{associationModelType}}"}>
+          There are currently no unused {{name}}.{" "}
+          <Button variant="info" size="sm" as={Link} to={"/entities/{{associationModelType}}"}>
             Add
           </Button>
         </div>

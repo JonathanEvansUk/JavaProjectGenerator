@@ -10,8 +10,16 @@ export default function View{{model.nameCapitalised}}() {
 
   useEffect(() => {
     fetch(`http://localhost:8080/{{model.name}}/${id}`)
-    .then(response => response.json())
-    .then(data => replaceNullsWithUndefined(data))
+      .then(response => response.json())
+      .then(data => replaceNullsWithUndefined(data))
+      {{#model.hasOneToManyFields}}
+      .then(data => ({
+        ...data,
+        {{#model.oneToManyFields}}
+        {{name}}: data.{{name}}.map({{associationModelType}} => JSON.stringify({{associationModelType}})){{^-last}},{{/-last}}
+        {{/model.oneToManyFields}}
+        }))
+      {{/model.hasOneToManyFields}}
     .then(data => setFormData(data));
   },[]);
 

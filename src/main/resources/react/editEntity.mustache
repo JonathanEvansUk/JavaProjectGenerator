@@ -1,22 +1,55 @@
 import Form from "@rjsf/bootstrap-4";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import { replaceNullsWithUndefined } from "../../utils/Utils.js";
 
 export default function Edit{{model.nameCapitalised}}() {
   const [formData, setFormData] = useState(null);
   const { id } = useParams();
 
+{{#model.fields}}
+  {{#isOneToMany}}
+  const [{{name}}, set{{nameCapitalised}}] = useState([]);
+  {{/isOneToMany}}
+{{/model.fields}}
+
   useEffect(() => {
     fetch(`http://localhost:8080/{{model.name}}/${id}`)
-    .then(response => response.json())
-    .then(data => replaceNullsWithUndefined(data))
-    .then(data => setFormData(data));
+      .then(response => response.json())
+      .then(data => replaceNullsWithUndefined(data))
+      {{#model.hasOneToManyFields}}
+      .then(data => ({
+        ...data,
+        {{#model.oneToManyFields}}
+        {{name}}: data.{{name}}.map({{associationModelType}} => {{associationModelType}}.id){{^-last}},{{/-last}}
+        {{/model.oneToManyFields}}
+        }))
+      {{/model.hasOneToManyFields}}
+      .then(data => setFormData(data));
   },[]);
 
+{{#model.fields}}
+  {{#isOneToMany}}
+  useEffect(() => {
+    fetch(`http://localhost:8080/{{associationModelType}}`)
+      .then(response => response.json())
+      .then({{name}} => set{{nameCapitalised}}({{name}}))
+  },[]);
+  {{/isOneToMany}}
+{{/model.fields}}
+
   const submitForm = ({ formData }) => {
-    fetch("http://localhost:8080/{{model.name}}", {
-      method: "POST",
+    {{#model.fields}}
+      {{#isOneToMany}}
+    formData.{{name}} = formData.{{name}}.map(
+      id => {{name}}.find({{associationModelType}} => {{associationModelType}}.id === id)
+    );
+
+      {{/isOneToMany}}
+    {{/model.fields}}
+    fetch("http://localhost:8080/{{model.name}}/" + id, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
@@ -25,5 +58,29 @@ export default function Edit{{model.nameCapitalised}}() {
   };
 
   const schema = {{{schema}}};
-  return (<Form schema={schema} formData={formData} onSubmit={submitForm} />);
+  const uiSchema = {};
+
+  {{#model.fields}}
+    {{#isOneToMany}}
+  if ({{name}}.length > 0) {
+    schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
+    schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
+  } else {
+    uiSchema.comments = {
+      "ui:disabled": true,
+      "ui:addable": false,
+      "ui:description": (
+        <div>
+          There are currently no {{name}}.{" "}
+          <Button as={Link} to={"/entities/{{associationModelType}}"}>
+            Add
+          </Button>
+        </div>
+      ),
+      "ui:label": false
+    };
+  }
+    {{/isOneToMany}}
+  {{/model.fields}}
+  return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} />);
 };

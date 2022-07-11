@@ -210,7 +210,8 @@ public class BackendGenerator {
     Repository repository = new Repository(repositoryPackage, model.name(),
         List.of(entityImport, entityIdTypeImport),
         model.name(),
-        entityIdTypeSimpleName);
+        entityIdTypeSimpleName,
+        manyToOneSideModels);
     repositoryGenerator.generate(repository);
 
     String repositoryType = model.name() + "Repository";
@@ -248,7 +249,8 @@ public class BackendGenerator {
         repositoryType,
         repositoryName,
         fields,
-        serviceImports
+        serviceImports,
+        manyToOneSideModels
     );
     serviceGenerator.generate(service);
 
@@ -263,7 +265,8 @@ public class BackendGenerator {
         serviceType,
         serviceName,
         dtoType,
-        List.of(dtoImport, serviceImport, entityIdTypeImport));
+        List.of(dtoImport, serviceImport, entityIdTypeImport),
+        manyToOneSideModels);
     controllerGenerator.generate(controller);
 
     List<String> entityImports = model.fields().stream()

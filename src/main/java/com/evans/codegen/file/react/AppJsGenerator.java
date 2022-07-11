@@ -36,6 +36,14 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
     public String nameCapitalised() {
       return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
+
+    boolean hasOneToManyFields() {
+      return fields.stream().anyMatch(WebField::isOneToMany);
+    }
+
+    List<WebField> oneToManyFields() {
+      return fields.stream().filter(WebField::isOneToMany).toList();
+    }
   }
 
   public record WebField(String name,

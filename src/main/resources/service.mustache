@@ -35,6 +35,15 @@ public class {{className}} {
         .map(this::convert)
         .toList();
   }
+  {{#manyToOneSideModels}}
+
+  public List<{{dtoType}}> findUnusedBy{{name}}() {
+    return {{repositoryName}}.findBy{{name}}IsNull()
+      .stream()
+      .map(this::convert)
+      .toList();
+  }
+  {{/manyToOneSideModels}}
 
   public Optional<{{dtoType}}> findById({{entityIdType}} id) {
     return {{repositoryName}}.findById(id)
@@ -65,6 +74,35 @@ public class {{className}} {
 
     return convert(saved{{entityType}});
   }
+
+  public {{dtoType}} update(Long id, {{dtoType}} {{dtoNameCamel}}) {
+    Optional<{{entityType}}> current{{entityType}} = {{repositoryName}}.findById(id);
+
+    // reset any oneToMany relationships
+    {{#oneToManyFields}}
+    if (current{{entityType}}.isPresent()) {
+      current{{entityType}}.get().{{getterName}}()
+          .forEach({{associationModelType}} -> {{associationModelType}}.set{{entityType}}(null));
+    }
+
+    {{/oneToManyFields}}
+    {{#oneToManyFields}}
+    var {{associationModelName}}Ids = {{dtoNameCamel}}.{{getterName}}().stream()
+        .map({{associationModelType}}DTO::getId)
+        .toList();
+
+    var {{name}} = {{associationModelName}}Repository.findAllById({{associationModelName}}Ids);
+    {{/oneToManyFields}}
+
+    {{entityType}} {{entityNameCamel}} = convert({{dtoNameCamel}});
+    {{#oneToManyFields}}
+    {{entityNameCamel}}.{{setterName}}({{name}});
+    {{/oneToManyFields}}
+
+    {{entityType}} saved{{entityType}} = {{repositoryName}}.save({{entityNameCamel}});
+
+    return convert(saved{{entityType}});
+}
 
   public Optional<{{dtoType}}> delete({{entityIdType}} id) {
     Optional<{{entityType}}> {{entityNameCamel}} = {{repositoryName}}.findById(id);

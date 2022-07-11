@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,13 @@ public class {{className}} {
   public List<{{dtoType}}> findAll() {
     return {{serviceName}}.findAll();
   }
+  {{#manyToOneSideModels}}
+
+  @GetMapping("/unusedBy{{name}}")
+  public List<{{dtoType}}> findUnusedBy{{name}}() {
+    return {{serviceName}}.findUnusedBy{{name}}();
+  }
+  {{/manyToOneSideModels}}
 
   @GetMapping("/{id}")
   public Optional<{{dtoType}}> findById(@PathVariable {{entityIdType}} id) {
@@ -40,6 +48,11 @@ public class {{className}} {
   @PostMapping
   public {{dtoType}} create(@RequestBody {{dtoType}} {{entityNameCamel}}) {
     return {{serviceName}}.save({{entityNameCamel}});
+  }
+
+  @PutMapping("/{id}")
+  public {{dtoType}} update(@PathVariable Long id, @RequestBody {{dtoType}} {{entityNameCamel}}) {
+    return {{serviceName}}.update(id, {{entityNameCamel}});
   }
 
   @DeleteMapping("/{id}")

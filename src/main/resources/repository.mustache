@@ -17,4 +17,8 @@ public interface {{className}} extends CrudRepository<{{entityType}}, {{entityId
   List<{{entityType}}> findAll();
 
   List<{{entityType}}> findAllById(Iterable<{{entityIdType}}> ids);
+  {{#manyToOneSideModels}}
+
+  List<{{entityType}}> findBy{{name}}IsNull();
+  {{/manyToOneSideModels}}
 }
