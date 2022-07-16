@@ -118,7 +118,7 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
 const create{{associationModelTypeCapitalised}} = ({{associationModelType}}) => {
   const {id} = {{associationModelType}};
   return (
-    <Link to={"/entities/comment/" + id}>{JSON.stringify({{associationModelType}})}</Link>
+    <Link to={"/entities/{{associationModelType}}/" + id}>{JSON.stringify({{associationModelType}})}</Link>
   );
 };
   {{/isOneToMany}}
