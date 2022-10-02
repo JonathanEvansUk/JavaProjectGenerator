@@ -15,29 +15,22 @@ export default function Edit{{model.nameCapitalised}}() {
 {{/model.fields}}
 
   useEffect(() => {
-    fetch(`http://localhost:8080/{{model.name}}/${id}`)
-      .then(response => response.json())
-      .then(data => replaceNullsWithUndefined(data))
-      {{#model.hasOneToManyFields}}
-      .then(data => ({
-        ...data,
-        {{#model.oneToManyFields}}
-        {{name}}: data.{{name}}.map({{associationModelType}} => {{associationModelType}}.id){{^-last}},{{/-last}}
-        {{/model.oneToManyFields}}
-        }))
-      {{/model.hasOneToManyFields}}
-      .then(data => setFormData(data));
-  },[]);
+    const fetchData = async () => {
+      const [current{{model.nameCapitalised}}{{#model.hasOneToManyFields}}, {{/model.hasOneToManyFields}}{{#model.oneToManyFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.oneToManyFields}}] = await Promise.all([
+          fetchExisting(id){{#model.hasOneToManyFields}}, {{/model.hasOneToManyFields}}
+          {{#model.oneToManyFields}}
+          fetch(`http://localhost:8080/{{associationModelType}}/unusedBy{{model.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
+          {{/model.oneToManyFields}}
+      ]);
 
-{{#model.fields}}
-  {{#isOneToMany}}
-  useEffect(() => {
-    fetch(`http://localhost:8080/{{associationModelType}}`)
-      .then(response => response.json())
-      .then({{name}} => set{{nameCapitalised}}({{name}}))
-  },[]);
-  {{/isOneToMany}}
-{{/model.fields}}
+      setFormData(current{{model.nameCapitalised}});
+      {{#model.oneToManyFields}}
+      set{{nameCapitalised}}({{name}}Response);
+      {{/model.oneToManyFields}}
+    };
+
+    fetchData();
+  }, []);
 
   const submitForm = ({ formData }) => {
     {{#model.fields}}
@@ -83,4 +76,17 @@ export default function Edit{{model.nameCapitalised}}() {
     {{/isOneToMany}}
   {{/model.fields}}
   return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} />);
+};
+
+const fetchExisting = (id) => {
+  return fetch(`http://localhost:8080/{{model.name}}/${id}`)
+      .then(response => response.json())
+      .then(data => replaceNullsWithUndefined(data))
+      {{#model.hasOneToManyFields}}
+      .then(data => ({
+        ...data,
+        {{#model.oneToManyFields}}
+        {{name}}: data.{{name}}.map({{associationModelType}} => {{associationModelType}}.id){{^-last}},{{/-last}}
+        {{/model.oneToManyFields}}
+      })){{/model.hasOneToManyFields}};
 };
