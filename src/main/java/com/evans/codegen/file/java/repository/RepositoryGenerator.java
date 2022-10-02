@@ -6,6 +6,6 @@ public class RepositoryGenerator implements JavaFileGenerator<Repository> {
 
   @Override
   public String templateName() {
-    return "repository.mustache";
+    return "java/main/repository.mustache";
   }
 }

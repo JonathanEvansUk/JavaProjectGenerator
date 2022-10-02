@@ -6,6 +6,6 @@ public class ControllerGenerator implements JavaFileGenerator<Controller> {
 
   @Override
   public String templateName() {
-    return "controller.mustache";
+    return "java/main/controller.mustache";
   }
 }

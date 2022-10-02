@@ -12,7 +12,7 @@ public class DTOConverterGenerator implements JavaFileGenerator<DTOConverter> {
 
   @Override
   public String templateName() {
-    return "dtoConverter.mustache";
+    return "java/main/dtoConverter.mustache";
   }
 
   public record DTOConverter(String packageName,

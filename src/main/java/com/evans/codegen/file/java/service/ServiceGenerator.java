@@ -6,6 +6,6 @@ public class ServiceGenerator implements JavaFileGenerator<Service> {
 
   @Override
   public String templateName() {
-    return "service.mustache";
+    return "java/main/service.mustache";
   }
 }

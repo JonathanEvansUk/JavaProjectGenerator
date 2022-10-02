@@ -6,6 +6,6 @@ public class ApplicationGenerator implements JavaFileGenerator<Application> {
 
   @Override
   public String templateName() {
-    return "application.mustache";
+    return "java/main/application.mustache";
   }
 }

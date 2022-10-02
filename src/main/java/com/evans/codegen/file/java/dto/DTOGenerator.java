@@ -10,7 +10,7 @@ public record DTOGenerator() implements JavaFileGenerator<DTO> {
 
   @Override
   public String templateName() {
-    return "dto.mustache";
+    return "java/main/dto.mustache";
   }
 
   public record DTO(String packageName,

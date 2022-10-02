@@ -6,6 +6,6 @@ public class EntityGenerator implements JavaFileGenerator<Entity> {
 
   @Override
   public String templateName() {
-    return "entity.mustache";
+    return "java/main/entity.mustache";
   }
 }
