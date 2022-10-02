@@ -7,7 +7,8 @@ public interface JavaFileGenerator<T extends JavaClassTemplateData> extends File
   @Override
   default String outputDirectory(T templateData) {
     String packageAsPath = templateData.packageName().replace(".", "/");
-    String outputDirectory = "output/" + "src/main/java/" + packageAsPath;
+    String outputDirectory =
+        "output/" + "src/" + (generatesTestClass() ? "test" : "main") + "/java/" + packageAsPath;
 
     return outputDirectory;
   }
@@ -19,5 +20,9 @@ public interface JavaFileGenerator<T extends JavaClassTemplateData> extends File
 
   default String outputFileName(String className) {
     return className + ".java";
+  }
+
+  default boolean generatesTestClass() {
+    return false;
   }
 }

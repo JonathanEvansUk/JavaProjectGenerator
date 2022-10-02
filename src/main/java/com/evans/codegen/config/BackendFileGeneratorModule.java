@@ -7,6 +7,7 @@ import com.evans.codegen.file.java.dto.DTOGenerator;
 import com.evans.codegen.file.java.entity.EntityGenerator;
 import com.evans.codegen.file.java.repository.RepositoryGenerator;
 import com.evans.codegen.file.java.service.ServiceGenerator;
+import com.evans.codegen.file.java.test.ControllerTestGenerator;
 import com.evans.codegen.file.maven.ApplicationPropertiesGenerator;
 import com.evans.codegen.file.maven.MavenGenerator;
 import dagger.Module;
@@ -58,5 +59,10 @@ public class BackendFileGeneratorModule {
   @Provides
   public ApplicationPropertiesGenerator applicationPropertiesGenerator() {
     return new ApplicationPropertiesGenerator();
+  }
+
+  @Provides
+  public ControllerTestGenerator controllerTestGenerator() {
+    return new ControllerTestGenerator();
   }
 }

@@ -1,0 +1,101 @@
+package {{packageName}};
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.List;
+import java.util.Optional;
+
+{{#imports}}
+import {{.}};
+{{/imports}}
+
+@ExtendWith(MockitoExtension.class)
+public class {{className}} {
+
+  private {{controllerType}} {{controllerName}};
+
+  @Mock
+  private {{serviceType}} {{serviceName}};
+
+  @BeforeEach
+  public void setUp() {
+    this.{{controllerName}} = new {{controllerType}}({{serviceName}});
+  }
+
+  @Test
+  public void findAll() {
+    when({{serviceName}}.findAll()).thenReturn(List.of());
+
+    List<{{dtoType}}> all = {{controllerName}}.findAll();
+
+    assertTrue(all.isEmpty());
+  }
+
+  @Test
+  public void findById() {
+    long id = 1L;
+    when({{serviceName}}.findById(id)).thenReturn(Optional.empty());
+
+    Optional<{{dtoType}}> byId = {{controllerName}}.findById(id);
+
+    assertTrue(byId.isEmpty());
+  }
+
+  @Test
+  public void create() {
+    {{dtoType}} {{dtoName}} = new {{dtoType}}();
+
+    when({{serviceName}}.save({{dtoName}})).thenReturn({{dtoName}});
+
+    {{dtoType}} created = {{controllerName}}.create({{dtoName}});
+
+    assertEquals({{dtoName}}, created);
+  }
+
+  @Test
+  public void update() {
+    long id = 1L;
+    {{dtoType}} {{dtoName}} = new {{dtoType}}();
+
+    when({{serviceName}}.update(id, {{dtoName}})).thenReturn({{dtoName}});
+
+    {{dtoType}} updated = {{controllerName}}.update(id, {{dtoName}});
+
+    assertEquals({{dtoName}}, updated);
+  }
+
+  @Test
+  public void delete_notFound() {
+    long id = 1L;
+
+    when({{serviceName}}.delete(id)).thenReturn(Optional.empty());
+
+    ResponseEntity<{{dtoType}}> response = {{controllerName}}.delete(id);
+
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  public void delete() {
+    long id = 1L;
+
+    {{dtoType}} {{dtoName}} = new {{dtoType}}();
+
+    when({{serviceName}}.delete(id)).thenReturn(Optional.of({{dtoName}}));
+
+    ResponseEntity<{{dtoType}}> response = {{controllerName}}.delete(id);
+
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    assertFalse(response.hasBody());
+  }
+}

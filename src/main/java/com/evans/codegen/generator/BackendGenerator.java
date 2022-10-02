@@ -26,6 +26,8 @@ import com.evans.codegen.file.java.repository.Repository;
 import com.evans.codegen.file.java.repository.RepositoryGenerator;
 import com.evans.codegen.file.java.service.Service;
 import com.evans.codegen.file.java.service.ServiceGenerator;
+import com.evans.codegen.file.java.test.ControllerTestGenerator;
+import com.evans.codegen.file.java.test.ControllerTestGenerator.ControllerTest;
 import com.evans.codegen.file.maven.ApplicationPropertiesGenerator;
 import com.evans.codegen.file.maven.ApplicationPropertiesGenerator.ApplicationProperties;
 import com.evans.codegen.file.maven.MavenGenerator;
@@ -51,6 +53,7 @@ public class BackendGenerator {
   private final ApplicationGenerator applicationGenerator;
   private final DTOGenerator dtoGenerator;
   private final DTOConverterGenerator dtoConverterGenerator;
+  private final ControllerTestGenerator controllerTestGenerator;
 
   private final MavenGenerator mavenGenerator;
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
@@ -64,6 +67,7 @@ public class BackendGenerator {
       ApplicationGenerator applicationGenerator,
       DTOGenerator dtoGenerator,
       DTOConverterGenerator dtoConverterGenerator,
+      ControllerTestGenerator controllerTestGenerator,
       MavenGenerator mavenGenerator,
       ApplicationPropertiesGenerator applicationPropertiesGenerator) {
     this.repositoryGenerator = repositoryGenerator;
@@ -73,6 +77,7 @@ public class BackendGenerator {
     this.applicationGenerator = applicationGenerator;
     this.dtoGenerator = dtoGenerator;
     this.dtoConverterGenerator = dtoConverterGenerator;
+    this.controllerTestGenerator = controllerTestGenerator;
     this.mavenGenerator = mavenGenerator;
     this.applicationPropertiesGenerator = applicationPropertiesGenerator;
   }
@@ -339,6 +344,20 @@ public class BackendGenerator {
         fields,
         dtoConverterImports);
     dtoConverterGenerator.generate(dtoConverter);
+
+    String controllerNameCamel = controller.className().substring(0, 1).toLowerCase() + controller.className().substring(1);
+
+    ControllerTest controllerTest = new ControllerTest(
+        controller.packageName(),
+        controller.className() + "Test",
+        controller.className(),
+        controllerNameCamel,
+        serviceType,
+        serviceName,
+        dtoNameCamel,
+        dtoType,
+        List.of(serviceImport, dtoImport));
+    controllerTestGenerator.generate(controllerTest);
   }
 
   private Field createField(Map<String, String> importsByModelName,
