@@ -1,0 +1,96 @@
+package {{packageName}};
+
+{{#imports}}
+import {{.}};
+{{/imports}}
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Collections;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("mysql")
+public class {{className}} {
+
+  @Autowired
+  private WebTestClient webTestClient;
+
+  @Test
+  public void findAll() {
+    webTestClient.get().uri("/{{entityNameCamel}}")
+        .exchange()
+        .expectStatus().isOk();
+  }
+  {{#manyToOneSideModels}}
+
+  @Test public void findUnusedBy{{name}}() {
+    webTestClient.get().uri("/{{entityNameCamel}}/unusedBy{{name}}")
+      .exchange()
+      .expectStatus().isOk();
+  }
+  {{/manyToOneSideModels}}
+
+  @Test
+  public void findById() {
+    webTestClient.get().uri("/{{entityNameCamel}}/{id}", 1L)
+        .exchange()
+        .expectStatus().isOk();
+  }
+
+  @Test
+  public void create() {
+    {{dtoType}} {{dtoName}} = {{>pojoInstance}}
+    webTestClient
+        .post().uri("/{{entityNameCamel}}")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue({{dtoName}})
+        .exchange()
+        .expectStatus().isOk();
+  }
+
+  @Test
+  public void update() {
+    //add first post
+    {{dtoType}} {{dtoName}} = {{>pojoInstance}}
+    webTestClient
+        .post().uri("/{{entityNameCamel}}")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue({{dtoName}})
+        .exchange()
+        .expectStatus().isOk();
+
+    {{dtoType}} updated{{dtoType}} = {{>updatedPojoInstance}}
+    webTestClient.put().uri("/{{entityNameCamel}}/{id}", 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(updated{{dtoType}})
+        .exchange()
+        .expectStatus().isOk();
+  }
+
+  @Test
+  public void delete() {
+    //add first post
+    {{dtoType}} {{dtoName}} = {{>pojoInstance}}
+    webTestClient
+        .post().uri("/{{entityNameCamel}}")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue({{dtoName}})
+        .exchange()
+        .expectStatus().isOk();
+
+    webTestClient.delete().uri("/{{entityNameCamel}}/{id}", 1L)
+        .exchange()
+        .expectStatus().isNoContent();
+
+    webTestClient.get().uri("/{{entityNameCamel}}/{id}", 1L)
+        .exchange()
+        .expectStatus().isNotFound();
+  }
+}

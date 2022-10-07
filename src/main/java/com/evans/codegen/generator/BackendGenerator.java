@@ -26,6 +26,8 @@ import com.evans.codegen.file.java.repository.Repository;
 import com.evans.codegen.file.java.repository.RepositoryGenerator;
 import com.evans.codegen.file.java.service.Service;
 import com.evans.codegen.file.java.service.ServiceGenerator;
+import com.evans.codegen.file.java.test.ControllerITGenerator;
+import com.evans.codegen.file.java.test.ControllerITGenerator.ControllerIT;
 import com.evans.codegen.file.java.test.ControllerTestGenerator;
 import com.evans.codegen.file.java.test.ControllerTestGenerator.ControllerTest;
 import com.evans.codegen.file.maven.ApplicationPropertiesGenerator;
@@ -33,6 +35,8 @@ import com.evans.codegen.file.maven.ApplicationPropertiesGenerator.ApplicationPr
 import com.evans.codegen.file.maven.MavenGenerator;
 import com.evans.codegen.file.maven.MavenGenerator.MavenProject;
 import com.evans.codegen.file.maven.MavenGenerator.MavenProject.JavaVersion;
+import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator;
+import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator.TestApplicationMysqlProperties;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -54,9 +58,11 @@ public class BackendGenerator {
   private final DTOGenerator dtoGenerator;
   private final DTOConverterGenerator dtoConverterGenerator;
   private final ControllerTestGenerator controllerTestGenerator;
+  private final ControllerITGenerator controllerITGenerator;
 
   private final MavenGenerator mavenGenerator;
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
+  private final TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator;
 
   @Inject
   public BackendGenerator(
@@ -68,8 +74,10 @@ public class BackendGenerator {
       DTOGenerator dtoGenerator,
       DTOConverterGenerator dtoConverterGenerator,
       ControllerTestGenerator controllerTestGenerator,
+      ControllerITGenerator controllerITGenerator,
       MavenGenerator mavenGenerator,
-      ApplicationPropertiesGenerator applicationPropertiesGenerator) {
+      ApplicationPropertiesGenerator applicationPropertiesGenerator,
+      TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator) {
     this.repositoryGenerator = repositoryGenerator;
     this.serviceGenerator = serviceGenerator;
     this.controllerGenerator = controllerGenerator;
@@ -78,8 +86,10 @@ public class BackendGenerator {
     this.dtoGenerator = dtoGenerator;
     this.dtoConverterGenerator = dtoConverterGenerator;
     this.controllerTestGenerator = controllerTestGenerator;
+    this.controllerITGenerator = controllerITGenerator;
     this.mavenGenerator = mavenGenerator;
     this.applicationPropertiesGenerator = applicationPropertiesGenerator;
+    this.testApplicationMysqlPropertiesGenerator = testApplicationMysqlPropertiesGenerator;
   }
 
   public void generate(List<Model> models) throws IOException {
@@ -158,8 +168,12 @@ public class BackendGenerator {
     MavenProject mavenProject = new MavenProject("com.evans", "testproject", JavaVersion.JDK_18);
     mavenGenerator.generate(mavenProject);
 
-    ApplicationProperties applicationProperties = new ApplicationProperties("MyApp");
+    String appName = "MyApp";
+    ApplicationProperties applicationProperties = new ApplicationProperties(appName);
     applicationPropertiesGenerator.generate(applicationProperties);
+
+    TestApplicationMysqlProperties testApplicationMysqlProperties = new TestApplicationMysqlProperties(appName);
+    testApplicationMysqlPropertiesGenerator.generate(testApplicationMysqlProperties);
   }
 
   private void generateApplication() throws IOException {
@@ -179,29 +193,23 @@ public class BackendGenerator {
         .map(fieldDefinition -> createField(importsByModelName, fieldDefinition))
         .toList();
 
-    List<String> oneToManyImports = model.fields()
-        .stream()
-        .filter(FieldDefinition::isOneToMany)
-        .map(field -> (OneToManyField) field)
-        .map(OneToManyField::associationModel)
-        .map(Model::name)
-        .map(name -> repositoryPackage + "." + name)
-        .toList();
-
-    List<String> oneToManyDTOimports = model.fields().stream()
+    List<String> oneToManyModelNames = model.fields().stream()
         .filter(FieldDefinition::isOneToMany)
         .map(OneToManyField.class::cast)
         .map(OneToManyField::associationModel)
         .map(Model::name)
+        .toList();
+
+    List<String> oneToManyImports = oneToManyModelNames.stream()
+        .map(name -> repositoryPackage + "." + name)
+        .toList();
+
+    List<String> oneToManyDTOimports = oneToManyModelNames.stream()
         .map(name -> name + "DTO")
         .map(importsByModelName::get)
         .toList();
 
-    List<String> oneToManyRepositoryImports = model.fields().stream()
-        .filter(FieldDefinition::isOneToMany)
-        .map(OneToManyField.class::cast)
-        .map(OneToManyField::associationModel)
-        .map(Model::name)
+    List<String> oneToManyRepositoryImports = oneToManyModelNames.stream()
         .map(name -> name + "Repository")
         .map(name -> repositoryPackage + "." + name)
         .toList();
@@ -358,6 +366,17 @@ public class BackendGenerator {
         dtoType,
         List.of(serviceImport, dtoImport));
     controllerTestGenerator.generate(controllerTest);
+
+    ControllerIT controllerIT = new ControllerIT(
+        controller.packageName(),
+        controller.className() + "IT",
+        dtoNameCamel,
+        dtoType,
+        modelNameCamel,
+        fields,
+        manyToOneSideModels,
+        List.of(dtoImport));
+    controllerITGenerator.generate(controllerIT);
   }
 
   private Field createField(Map<String, String> importsByModelName,
@@ -383,11 +402,10 @@ public class BackendGenerator {
     return new Field(
         fieldDefinition.name(),
         typeInformation.simpleName(),
-        fieldDefinition.isId(),
-        fieldDefinition.type() == FieldType.DATE_TIME,
-        fieldDefinition.type() == FieldType.BOOLEAN,
+        fieldDefinition.type(),
         relationship,
-        associationModelName
+        associationModelName,
+        fieldDefinition.example()
     );
   }
 

@@ -46,9 +46,10 @@ public class {{className}} {
     long id = 1L;
     when({{serviceName}}.findById(id)).thenReturn(Optional.empty());
 
-    Optional<{{dtoType}}> byId = {{controllerName}}.findById(id);
+    ResponseEntity<{{dtoType}}> byId = {{controllerName}}.findById(id);
 
-    assertTrue(byId.isEmpty());
+    assertEquals(HttpStatus.NOT_FOUND, byId.getStatusCode());
+    assertFalse(byId.hasBody());
   }
 
   @Test

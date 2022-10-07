@@ -2,6 +2,7 @@ package com.evans.codegen.file.java.entity;
 
 import static com.evans.codegen.StringUtils.capitalise;
 
+import com.evans.codegen.domain.FieldDefinition.FieldType;
 import com.evans.codegen.domain.Model;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.generator.BackendGenerator.Relationship;
@@ -32,16 +33,10 @@ public record Entity(String packageName,
 
   public record Field(String name,
                       String simpleTypeName,
-                      boolean isId,
-                      boolean isDate,
-                      boolean isBoolean,
+                      FieldType fieldType,
                       Relationship relationship,
-                      String associationModelType) {
-
-    public Field(String name, String simpleTypeName, boolean isId, boolean isDate,
-        boolean isBoolean, Relationship relationship) {
-      this(name, simpleTypeName, isId, isDate, isBoolean, relationship, null);
-    }
+                      String associationModelType,
+                      String example) {
 
     String getterName() {
       return "get" + name().substring(0, 1).toUpperCase() + name().substring(1);
@@ -53,6 +48,38 @@ public record Entity(String packageName,
 
     boolean isOneToMany() {
       return relationship == Relationship.ONE_TO_MANY;
+    }
+
+    boolean isId() {
+      return fieldType == FieldType.ID;
+    }
+
+    boolean isDouble() {
+      return fieldType == FieldType.DOUBLE;
+    }
+
+    boolean isDate() {
+      return fieldType == FieldType.DATE;
+    }
+
+    boolean isDateTime() {
+      return fieldType == FieldType.DATE_TIME;
+    }
+
+    boolean isBoolean() {
+      return fieldType == FieldType.BOOLEAN;
+    }
+
+    boolean isString() {
+      return fieldType == FieldType.STRING;
+    }
+
+    boolean isEnum() {
+      return fieldType == FieldType.ENUM;
+    }
+
+    boolean hasExample() {
+      return example != null;
     }
 
     String associationModelName() {

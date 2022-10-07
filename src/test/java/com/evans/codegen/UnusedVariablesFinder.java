@@ -98,7 +98,7 @@ public class UnusedVariablesFinder {
   private Set<String> findVariablesInTemplate(String fileName) throws IOException {
     String templateText = Files.readString(Path.of("src/main/resources", fileName));
 
-    Template template = Mustache.compiler().compile(templateText);
+    Template template = Mustache.compiler().withLoader(FileGenerator.LOADER).compile(templateText);
 
     Set<String> variables = new HashSet<>();
 

@@ -41,8 +41,10 @@ public class {{className}} {
   {{/manyToOneSideModels}}
 
   @GetMapping("/{id}")
-  public Optional<{{dtoType}}> findById(@PathVariable {{entityIdType}} id) {
-    return {{serviceName}}.findById(id);
+  public ResponseEntity<{{dtoType}}> findById(@PathVariable {{entityIdType}} id) {
+    Optional<{{dtoType}}> {{entityNameCamel}} = {{serviceName}}.findById(id);
+
+    return ResponseEntity.of({{entityNameCamel}});
   }
 
   @PostMapping

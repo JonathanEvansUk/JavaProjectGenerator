@@ -43,6 +43,7 @@ public sealed interface FieldDefinition {
 
   boolean required();
 
+  String example();
 
   record IdField(String name,
                  boolean required) implements FieldDefinition {
@@ -56,10 +57,16 @@ public sealed interface FieldDefinition {
     public boolean isId() {
       return true;
     }
+
+    @Override
+    public String example() {
+      return "1";
+    }
   }
 
   record DoubleField(String name,
-                     boolean required) implements FieldDefinition {
+                     boolean required,
+                     String example) implements FieldDefinition {
 
     @Override
     public FieldType type() {
@@ -75,10 +82,17 @@ public sealed interface FieldDefinition {
     public FieldType type() {
       return FieldType.ENUM;
     }
+
+    @Override
+    public String example() {
+      // TODO handle case where options is empty
+      return options.get(0);
+    }
   }
 
   record StringField(String name,
-                     boolean required) implements FieldDefinition {
+                     boolean required,
+                     String example) implements FieldDefinition {
 
     @Override
     public FieldType type() {
@@ -87,7 +101,8 @@ public sealed interface FieldDefinition {
   }
 
   record DateField(String name,
-                   boolean required) implements FieldDefinition {
+                   boolean required,
+                   String example) implements FieldDefinition {
 
     @Override
     public FieldType type() {
@@ -96,7 +111,8 @@ public sealed interface FieldDefinition {
   }
 
   record DateTimeField(String name,
-                       boolean required) implements FieldDefinition {
+                       boolean required,
+                       String example) implements FieldDefinition {
 
     @Override
     public FieldType type() {
@@ -111,6 +127,11 @@ public sealed interface FieldDefinition {
     public FieldType type() {
       return FieldType.BOOLEAN;
     }
+
+    @Override
+    public String example() {
+      return Boolean.TRUE.toString();
+    }
   }
 
   record OneToManyField(String name,
@@ -120,6 +141,12 @@ public sealed interface FieldDefinition {
     @Override
     public FieldType type() {
       return FieldType.ONE_TO_MANY;
+    }
+
+    //TODO better way to do this?
+    @Override
+    public String example() {
+      return null;
     }
   }
 }

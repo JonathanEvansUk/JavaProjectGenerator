@@ -31,10 +31,10 @@ public class GeneratorIT {
         Model.of("Bill",
             List.of(
                 new IdField("id", true),
-                new DoubleField("amount", false),
-                new DateField("dateReceived", false),
+                new DoubleField("amount", false, "12.34"),
+                new DateField("dateReceived", false, "25/12/2022"),
                 new BooleanField("paid", false),
-                new DateTimeField("datePaid", false),
+                new DateTimeField("datePaid", false, "25/12/2022T00:00:00"),
                 new EnumField("paymentType", List.of("Credit", "Debit"), true)
             )
         )
