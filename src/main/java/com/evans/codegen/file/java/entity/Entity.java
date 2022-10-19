@@ -29,7 +29,19 @@ public record Entity(String packageName,
     return fieldRelationships().contains(Relationship.ONE_TO_MANY);
   }
 
-  boolean hasManyToOne() { return !manyToOneSideModels().isEmpty(); }
+  boolean hasManyToOne() {
+    return fieldRelationships().contains(Relationship.MANY_TO_ONE);
+  }
+
+  boolean hasManyToOneSide() { return !manyToOneSideModels().isEmpty(); }
+
+  boolean hasManyToOneAnnotation() {
+    return hasManyToOne() || hasManyToOneSide();
+  }
+
+  boolean hasEnumFields() {
+    return !enums.isEmpty();
+  }
 
   public record Field(String name,
                       String simpleTypeName,
@@ -48,6 +60,15 @@ public record Entity(String packageName,
 
     boolean isOneToMany() {
       return relationship == Relationship.ONE_TO_MANY;
+    }
+
+    boolean isManyToOne() {
+      return relationship == Relationship.MANY_TO_ONE;
+    }
+
+    public boolean isRelationalField() {
+      // TODO find better way
+      return relationship != null;
     }
 
     boolean isId() {

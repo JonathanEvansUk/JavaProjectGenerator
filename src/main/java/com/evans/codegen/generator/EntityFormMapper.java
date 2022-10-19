@@ -31,12 +31,17 @@ public class EntityFormMapper {
   public EntityForm createEntityForm(WebModel model, String formTitle)
       throws JsonProcessingException {
     LinkedHashMap<String, Property> properties = model.fields().stream()
+        // remove ID fields as we want this to be auto-generated and hidden from the user
+        .filter(field -> field.type() != FieldType.ID)
         .collect(Collectors.toMap(WebField::name, this::createProperty, (u, v) -> {
           //TODO this should probably be validated earlier?
           throw new IllegalStateException("There cannot be 2 fields with the same name");
         }, LinkedHashMap::new));
 
-    var required = model.fields().stream().filter(WebField::required)
+    var required = model.fields().stream()
+        // remove ID fields as we want this to be auto-generated and hidden from the user
+        .filter(field -> field.type() != FieldType.ID)
+        .filter(WebField::required)
         .map(WebField::name).toList();
 
     var formSchema = new JsonFormSchema(formTitle, "Description", "object", properties, required);
@@ -74,13 +79,10 @@ public class EntityFormMapper {
 
   private String lookupDataType(WebField field) {
     return switch (field.type()) {
-
-      case ID -> "integer";
+      case ID, MANY_TO_ONE -> "integer";
       case DATE, DATE_TIME, STRING, ENUM -> "string";
       case DOUBLE -> "number";
       case BOOLEAN -> "boolean";
-
-      //TODO implement
       case ONE_TO_MANY -> "array";
     };
   }

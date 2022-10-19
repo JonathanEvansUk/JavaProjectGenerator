@@ -6,7 +6,9 @@ import static java.util.stream.Collectors.toList;
 import com.evans.codegen.domain.FieldDefinition;
 import com.evans.codegen.domain.FieldDefinition.EnumField;
 import com.evans.codegen.domain.FieldDefinition.FieldType;
-import com.evans.codegen.domain.FieldDefinition.OneToManyField;
+import com.evans.codegen.domain.FieldDefinition.RelationalField;
+import com.evans.codegen.domain.FieldDefinition.RelationalField.ManyToOneField;
+import com.evans.codegen.domain.FieldDefinition.RelationalField.OneToManyField;
 import com.evans.codegen.domain.Model;
 import com.evans.codegen.file.java.application.Application;
 import com.evans.codegen.file.java.application.ApplicationGenerator;
@@ -204,12 +206,33 @@ public class BackendGenerator {
         .map(name -> repositoryPackage + "." + name)
         .toList();
 
-    List<String> oneToManyDTOimports = oneToManyModelNames.stream()
+    List<String> oneToManyDTOImports = oneToManyModelNames.stream()
         .map(name -> name + "DTO")
         .map(importsByModelName::get)
         .toList();
 
     List<String> oneToManyRepositoryImports = oneToManyModelNames.stream()
+        .map(name -> name + "Repository")
+        .map(name -> repositoryPackage + "." + name)
+        .toList();
+
+    List<String> manyToOneModelNames = model.fields().stream()
+        .filter(field -> field instanceof ManyToOneField)
+        .map(ManyToOneField.class::cast)
+        .map(ManyToOneField::associationModel)
+        .map(Model::name)
+        .toList();
+
+    List<String> manyToOneImports = manyToOneModelNames.stream()
+        .map(name -> repositoryPackage + "." + name)
+        .toList();
+
+    List<String> manyToOneDTOImports = manyToOneModelNames.stream()
+        .map(name -> name + "DTO")
+        .map(importsByModelName::get)
+        .toList();
+
+    List<String> manyToOneRepositoryImports = manyToOneModelNames.stream()
         .map(name -> name + "Repository")
         .map(name -> repositoryPackage + "." + name)
         .toList();
@@ -247,7 +270,7 @@ public class BackendGenerator {
 
     List<String> serviceImports = Stream.of(
             List.of(entityImport, dtoImport, dtoConverterImport, repositoryImport, entityIdTypeImport),
-            oneToManyDTOimports, oneToManyRepositoryImports)
+            oneToManyDTOImports, oneToManyRepositoryImports, manyToOneRepositoryImports)
         .flatMap(Collection::stream)
         .toList();
 
@@ -288,6 +311,8 @@ public class BackendGenerator {
         .map(TypeInformation::imports)
         .flatMap(Collection::stream)
         .map("import %s;"::formatted)
+        // TODO could this distinct be a set instead?
+        .distinct()
         .toList();
 
     List<EnumField> enumFields = model.fields().stream()
@@ -315,6 +340,8 @@ public class BackendGenerator {
         .map(TypeInformation::imports)
         .flatMap(Collection::stream)
         .map("import %s;"::formatted)
+        // TODO could this distinct be a set instead?
+        .distinct()
         .toList();
 
     List<Field> dtoFields = model.fields().stream()
@@ -324,21 +351,23 @@ public class BackendGenerator {
     DTO dto = new DTO(dtoPackage, dtoType, dtoFields, dtoImports);
     dtoGenerator.generate(dto);
 
-    List<String> dtoConverterImports = Stream.of(oneToManyImports, List.of(entityImport, dtoImport),
-            oneToManyDTOimports)
+    List<String> dtoConverterImports = Stream.of(oneToManyImports, manyToOneImports,
+            List.of(entityImport, dtoImport), oneToManyDTOImports, manyToOneDTOImports)
         .flatMap(Collection::stream)
         .toList();
 
     List<Subconverter> dtoSubconverters = model.fields().stream()
-        .filter(FieldDefinition::isOneToMany)
+        .filter(field -> field instanceof RelationalField)
+        .map(RelationalField.class::cast)
         .map(field -> {
-          Model associationModel = ((OneToManyField) field).associationModel();
+          String associationModelName = field.associationModel().name();
+          String associationModelNameCamel = field.associationModel().nameCamel();
           return new Subconverter(
-              associationModel.name(),
-              associationModel.nameCamel() + "DTOConverter",
-              associationModel.name() + "DTO",
-              associationModel.name(),
-              field.nameCapitalised());
+              associationModelName,
+              associationModelNameCamel + "DTOConverter",
+              associationModelName + "DTO",
+              associationModelName,
+              field.name());
         })
         .toList();
 
@@ -395,8 +424,8 @@ public class BackendGenerator {
         forDto);
     Relationship relationship = resolveRelationship(fieldDefinition.type());
     String associationModelName = null;
-    if (fieldDefinition.type() == FieldType.ONE_TO_MANY) {
-      associationModelName = ((OneToManyField) fieldDefinition).associationModel().name();
+    if (fieldDefinition instanceof RelationalField relationalField) {
+      associationModelName = relationalField.associationModel().name();
     }
 
     return new Field(
@@ -412,6 +441,7 @@ public class BackendGenerator {
   private Relationship resolveRelationship(FieldType fieldType) {
     return switch (fieldType) {
       case ONE_TO_MANY -> Relationship.ONE_TO_MANY;
+      case MANY_TO_ONE -> Relationship.MANY_TO_ONE;
       default -> null;
     };
   }
@@ -445,6 +475,8 @@ public class BackendGenerator {
       case ENUM -> new TypeInformation(null, fieldDefinition.name(), List.of());
       case ONE_TO_MANY -> resolveOneToManyTypeInformation((OneToManyField) fieldDefinition,
           importsByModelName, forDto);
+      case MANY_TO_ONE -> resolveManyToOneTypeInformation((ManyToOneField) fieldDefinition,
+          importsByModelName, forDto);
     };
   }
 
@@ -462,7 +494,19 @@ public class BackendGenerator {
 
     return new TypeInformation(associationTypePackage, type,
         List.of(associationTypePackage, List.class.getName()));
+  }
 
+  private TypeInformation resolveManyToOneTypeInformation(ManyToOneField field,
+      Map<String, String> importsByModelName, boolean forDto) {
+
+    String modelName = field.associationModel().name();
+    if (forDto) {
+      modelName += "DTO";
+    }
+
+    String associationTypePackage = importsByModelName.get(modelName);
+
+    return new TypeInformation(associationTypePackage, modelName, List.of(associationTypePackage));
   }
 
   record TypeInformation(String name,

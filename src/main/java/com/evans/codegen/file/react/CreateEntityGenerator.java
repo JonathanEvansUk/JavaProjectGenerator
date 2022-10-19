@@ -22,7 +22,6 @@ public class CreateEntityGenerator implements FileGenerator<EntityForm> {
         + templateData.model().name();
   }
 
-  //TODO the model needs to have a new Field class instead of the FieldDefinition
   public record EntityForm(WebModel model,
                            String schema) {}
 }

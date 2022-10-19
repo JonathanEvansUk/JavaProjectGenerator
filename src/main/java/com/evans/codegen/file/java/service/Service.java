@@ -30,9 +30,23 @@ public record Service(String packageName,
         .anyMatch(relationship -> relationship == Relationship.ONE_TO_MANY);
   }
 
+  boolean hasRelationalFields() {
+    return fields.stream().anyMatch(Field::isRelationalField);
+  }
+
   List<Field> oneToManyFields() {
     return fields.stream()
         .filter(field -> field.relationship() == Relationship.ONE_TO_MANY)
         .toList();
+  }
+
+  List<Field> manyToOneFields() {
+    return fields.stream()
+        .filter(field -> field.relationship() == Relationship.MANY_TO_ONE)
+        .toList();
+  }
+
+  List<Field> relationalFields() {
+    return fields.stream().filter(Field::isRelationalField).toList();
   }
 }

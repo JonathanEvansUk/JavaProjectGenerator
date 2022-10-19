@@ -18,7 +18,8 @@ public sealed interface FieldDefinition {
     BOOLEAN,
     STRING,
     ENUM,
-    ONE_TO_MANY
+    ONE_TO_MANY,
+    MANY_TO_ONE
   }
 
   default boolean isId() {
@@ -35,6 +36,10 @@ public sealed interface FieldDefinition {
 
   default boolean isOneToMany() {
     return type() == FieldType.ONE_TO_MANY;
+  }
+
+  default boolean isManyToOne() {
+    return type() == FieldType.MANY_TO_ONE;
   }
 
   default String nameCapitalised() {
@@ -134,19 +139,39 @@ public sealed interface FieldDefinition {
     }
   }
 
-  record OneToManyField(String name,
-                        boolean required,
-                        Model associationModel) implements FieldDefinition {
+  sealed interface RelationalField extends FieldDefinition {
 
-    @Override
-    public FieldType type() {
-      return FieldType.ONE_TO_MANY;
+    Model associationModel();
+
+    record OneToManyField(String name,
+                          boolean required,
+                          Model associationModel) implements RelationalField {
+
+      @Override
+      public FieldType type() {
+        return FieldType.ONE_TO_MANY;
+      }
+
+      //TODO better way to do this?
+      @Override
+      public String example() {
+        return null;
+      }
     }
 
-    //TODO better way to do this?
-    @Override
-    public String example() {
-      return null;
+    record ManyToOneField(String name, boolean required, Model associationModel) implements RelationalField {
+
+      @Override
+      public FieldType type() {
+        return FieldType.MANY_TO_ONE;
+      }
+
+      @Override
+      public String example() {
+        return null;
+      }
     }
   }
+
+
 }

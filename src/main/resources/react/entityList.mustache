@@ -88,12 +88,17 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
             <i className={ {{model.name}}["{{name}}"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>
           {{/isBoolean}}
           {{^isBoolean}}
-            {{#isOneToMany}}
+            {{#isRelational}}
+              {{#isOneToMany}}
             { {{model.name}}["{{name}}"].map({{associationModelType}} => <div key={ {{associationModelType}}.id }>{create{{associationModelTypeCapitalised}}({{associationModelType}})}</div>) }
-            {{/isOneToMany}}
-            {{^isOneToMany}}
+              {{/isOneToMany}}
+              {{#isManyToOne}}
+            { create{{associationModelTypeCapitalised}}({{model.name}}["{{name}}"]) }
+              {{/isManyToOne}}
+            {{/isRelational}}
+            {{^isRelational}}
             { {{model.name}}["{{name}}"] }
-            {{/isOneToMany}}
+            {{/isRelational}}
           {{/isBoolean}}
         {{/isDate}}
         </td>
@@ -114,12 +119,15 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
 };
 
 {{#model.fields}}
-  {{#isOneToMany}}
+  {{#isRelational}}
 const create{{associationModelTypeCapitalised}} = ({{associationModelType}}) => {
+  if ({{associationModelType}} === undefined) {
+    return ("-");
+  }
   const {id} = {{associationModelType}};
   return (
     <Link to={"/entities/{{associationModelType}}/" + id}>{JSON.stringify({{associationModelType}})}</Link>
   );
 };
-  {{/isOneToMany}}
+  {{/isRelational}}
 {{/model.fields}}

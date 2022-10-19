@@ -8,39 +8,54 @@ export default function Edit{{model.nameCapitalised}}() {
   const [formData, setFormData] = useState(null);
   const { id } = useParams();
 
-{{#model.fields}}
+{{#model.relationalFields}}
   {{#isOneToMany}}
   const [{{name}}, set{{nameCapitalised}}] = useState([]);
   {{/isOneToMany}}
-{{/model.fields}}
+  {{#isManyToOne}}
+  const [{{name}}List, set{{nameCapitalised}}List] = useState([]);
+  {{/isManyToOne}}
+{{/model.relationalFields}}
 
   useEffect(() => {
     const fetchData = async () => {
-      const [current{{model.nameCapitalised}}{{#model.hasOneToManyFields}}, {{/model.hasOneToManyFields}}{{#model.oneToManyFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.oneToManyFields}}] = await Promise.all([
-          fetchExisting(id){{#model.hasOneToManyFields}}, {{/model.hasOneToManyFields}}
-          {{#model.oneToManyFields}}
+      const [current{{model.nameCapitalised}}{{#model.hasRelationalFields}}, {{/model.hasRelationalFields}}{{#model.relationalFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.relationalFields}}] = await Promise.all([
+          fetchExisting(id){{#model.hasRelationalFields}}, {{/model.hasRelationalFields}}
+          {{#model.relationalFields}}
+            {{#isOneToMany}}
           fetch(`http://localhost:8080/{{associationModelType}}/unusedBy{{model.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
-          {{/model.oneToManyFields}}
+            {{/isOneToMany}}
+            {{#isManyToOne}}
+          fetch(`http://localhost:8080/{{associationModelType}}`).then(response => response.json()){{^-last}},{{/-last}}
+            {{/isManyToOne}}
+          {{/model.relationalFields}}
       ]);
 
       setFormData(current{{model.nameCapitalised}});
-      {{#model.oneToManyFields}}
+      {{#model.relationalFields}}
+        {{#isOneToMany}}
       set{{nameCapitalised}}({{name}}Response);
-      {{/model.oneToManyFields}}
+        {{/isOneToMany}}
+        {{#isManyToOne}}
+      set{{nameCapitalised}}List({{name}}Response);
+        {{/isManyToOne}}
+      {{/model.relationalFields}}
     };
 
     fetchData();
   }, []);
 
   const submitForm = ({ formData }) => {
-    {{#model.fields}}
+    {{#model.relationalFields}}
       {{#isOneToMany}}
     formData.{{name}} = formData.{{name}}.map(
       id => {{name}}.find({{associationModelType}} => {{associationModelType}}.id === id)
     );
-
       {{/isOneToMany}}
-    {{/model.fields}}
+      {{#isManyToOne}}
+    formData.{{name}} = {{name}}List.find({{associationModelType}} => {{associationModelType}}.id === formData.{{name}});
+      {{/isManyToOne}}
+    {{/model.relationalFields}}
     fetch("http://localhost:8080/{{model.name}}/" + id, {
       method: "PUT",
       headers: {
@@ -53,11 +68,15 @@ export default function Edit{{model.nameCapitalised}}() {
   const schema = {{{schema}}};
   const uiSchema = {};
 
-  {{#model.fields}}
+  {{#model.relationalFields}}
+  if ({{name}}{{#isManyToOne}}List{{/isManyToOne}}.length > 0) {
     {{#isOneToMany}}
-  if ({{name}}.length > 0) {
     schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
     schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
+    {{/isOneToMany}}
+    {{#isManyToOne}}
+    schema.properties.{{name}}.oneOf = {{name}}List.map(item => ({ "title": JSON.stringify(item), "enum": [ item.id ]}));
+    {{/isManyToOne}}
   } else {
     uiSchema.comments = {
       "ui:disabled": true,
@@ -73,8 +92,7 @@ export default function Edit{{model.nameCapitalised}}() {
       "ui:label": false
     };
   }
-    {{/isOneToMany}}
-  {{/model.fields}}
+  {{/model.relationalFields}}
   return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} />);
 };
 
@@ -82,11 +100,16 @@ const fetchExisting = (id) => {
   return fetch(`http://localhost:8080/{{model.name}}/${id}`)
       .then(response => response.json())
       .then(data => replaceNullsWithUndefined(data))
-      {{#model.hasOneToManyFields}}
+      {{#model.hasRelationalFields}}
       .then(data => ({
         ...data,
-        {{#model.oneToManyFields}}
+        {{#model.relationalFields}}
+          {{#isOneToMany}}
         {{name}}: data.{{name}}.map({{associationModelType}} => {{associationModelType}}.id){{^-last}},{{/-last}}
-        {{/model.oneToManyFields}}
-      })){{/model.hasOneToManyFields}};
+          {{/isOneToMany}}
+          {{#isManyToOne}}
+        {{name}}: data.{{name}}.id{{^-last}},{{/-last}}
+          {{/isManyToOne}}
+        {{/model.relationalFields}}
+      })){{/model.hasRelationalFields}};
 };

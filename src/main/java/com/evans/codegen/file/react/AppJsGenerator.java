@@ -30,7 +30,7 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
                          List<WebField> fields) {
 
     public WebModel {
-      name = name.toLowerCase();
+      name = name.substring(0, 1).toLowerCase() + name.substring(1);
     }
 
     public String nameCapitalised() {
@@ -41,8 +41,24 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
       return fields.stream().anyMatch(WebField::isOneToMany);
     }
 
+    boolean hasManyToOneFields() {
+      return fields.stream().anyMatch(WebField::isManyToOne);
+    }
+
+    boolean hasRelationalFields() {
+      return fields.stream().anyMatch(WebField::isRelational);
+    }
+
     List<WebField> oneToManyFields() {
       return fields.stream().filter(WebField::isOneToMany).toList();
+    }
+
+    List<WebField> manyToOneFields() {
+      return fields.stream().filter(WebField::isManyToOne).toList();
+    }
+
+    List<WebField> relationalFields() {
+      return fields.stream().filter(WebField::isRelational).toList();
     }
   }
 
@@ -78,6 +94,14 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
 
     String associationModelTypeCapitalised() {
       return capitalise(associationModelType());
+    }
+
+    boolean isManyToOne() {
+      return type() == FieldType.MANY_TO_ONE;
+    }
+
+    boolean isRelational() {
+      return isOneToMany() || isManyToOne();
     }
   }
 }

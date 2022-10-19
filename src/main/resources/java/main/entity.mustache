@@ -1,22 +1,27 @@
 package {{packageName}};
 
+{{#hasEnumFields}}
 import java.util.Arrays;
-
+{{/hasEnumFields}}
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.CascadeType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 {{#hasOneToMany}}
+import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 {{/hasOneToMany}}
-{{#hasManyToOne}}
-import javax.persistence.ManyToOne;
+{{#hasManyToOneSide}}
 import javax.persistence.FetchType;
-{{/hasManyToOne}}
-
+{{/hasManyToOneSide}}
+{{#hasManyToOneAnnotation}}
+import javax.persistence.ManyToOne;
+{{/hasManyToOneAnnotation}}
+{{#hasEnumFields}}
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
+{{/hasEnumFields}}
 {{#imports}}
 {{.}}
 {{/imports}}
@@ -27,10 +32,14 @@ public class {{className}} {
 {{#fields}}
   {{#isId}}
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   {{/isId}}
   {{#isOneToMany}}
   @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "{{entityNameCamel}}")
   {{/isOneToMany}}
+  {{#isManyToOne}}
+  @ManyToOne
+  {{/isManyToOne}}
   private {{{simpleTypeName}}} {{name}}{{#isOneToMany}}= new ArrayList<>(){{/isOneToMany}};
 
 {{/fields}}

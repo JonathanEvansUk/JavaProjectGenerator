@@ -25,9 +25,9 @@ public class {{className}} {
     {{entityType}} {{entityNameCamel}} = new {{entityType}}();
 
     {{#fields}}
-    {{^isOneToMany}}
+    {{^isRelationalField}}
     {{entityNameCamel}}.set{{nameCapitalised}}({{dtoNameCamel}}.get{{nameCapitalised}}());
-    {{/isOneToMany}}
+    {{/isRelationalField}}
     {{/fields}}
 
     return {{entityNameCamel}};
@@ -40,9 +40,14 @@ public class {{className}} {
     {{#isOneToMany}}
     {{dtoNameCamel}}.set{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}().stream().map(this::convert{{associationModelType}}).toList());
     {{/isOneToMany}}
-    {{^isOneToMany}}
+    {{#isManyToOne}}
+    if ({{entityNameCamel}}.get{{nameCapitalised}}() != null) {
+      {{dtoNameCamel}}.set{{nameCapitalised}}(convert{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}()));
+    }
+    {{/isManyToOne}}
+    {{^isRelationalField}}
     {{dtoNameCamel}}.set{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}());
-    {{/isOneToMany}}
+    {{/isRelationalField}}
     {{/fields}}
 
     return {{dtoNameCamel}};

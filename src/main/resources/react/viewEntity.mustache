@@ -12,14 +12,19 @@ export default function View{{model.nameCapitalised}}() {
     fetch(`http://localhost:8080/{{model.name}}/${id}`)
       .then(response => response.json())
       .then(data => replaceNullsWithUndefined(data))
-      {{#model.hasOneToManyFields}}
+      {{#model.hasRelationalFields}}
       .then(data => ({
         ...data,
-        {{#model.oneToManyFields}}
+        {{#model.relationalFields}}
+          {{#isOneToMany}}
         {{name}}: data.{{name}}.map({{associationModelType}} => JSON.stringify({{associationModelType}})){{^-last}},{{/-last}}
-        {{/model.oneToManyFields}}
+          {{/isOneToMany}}
+          {{#isManyToOne}}
+        {{name}}: JSON.stringify(data.{{name}})
+          {{/isManyToOne}}
+        {{/model.relationalFields}}
         }))
-      {{/model.hasOneToManyFields}}
+      {{/model.hasRelationalFields}}
     .then(data => setFormData(data));
   },[]);
 

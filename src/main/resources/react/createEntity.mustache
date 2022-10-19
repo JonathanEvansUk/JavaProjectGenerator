@@ -6,29 +6,43 @@ import { Button } from "react-bootstrap";
 export default function Create{{model.nameCapitalised}}() {
   const navigate = useNavigate();
 
-  {{#model.fields}}
+  {{#model.relationalFields}}
   {{#isOneToMany}}
   const [{{name}}, set{{nameCapitalised}}] = useState([]);
   {{/isOneToMany}}
-  {{/model.fields}}
+  {{#isManyToOne}}
+  const [{{name}}List, set{{nameCapitalised}}List] = useState([]);
+  {{/isManyToOne}}
+  {{/model.relationalFields}}
 
-  {{#model.hasOneToManyFields}}
+  {{#model.hasRelationalFields}}
   useEffect(() => {
     const fetchData = async () => {
-      const [{{#model.oneToManyFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.oneToManyFields}}] = await Promise.all([
-      {{#model.oneToManyFields}}
+      const [{{#model.relationalFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.relationalFields}}] = await Promise.all([
+      {{#model.relationalFields}}
+      {{#isOneToMany}}
         fetch(`http://localhost:8080/{{associationModelType}}/unusedBy{{model.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
-      {{/model.oneToManyFields}}
+      {{/isOneToMany}}
+      {{#isManyToOne}}
+        fetch(`http://localhost:8080/{{associationModelType}}`).then(response => response.json()){{^-last}},{{/-last}}
+      {{/isManyToOne}}
+      {{/model.relationalFields}}
       ]);
 
-      {{#model.oneToManyFields}}
+      {{#model.relationalFields}}
+      console.log({{name}}Response);
+      {{#isOneToMany}}
       set{{nameCapitalised}}({{name}}Response);
-      {{/model.oneToManyFields}}
+      {{/isOneToMany}}
+      {{#isManyToOne}}
+      set{{nameCapitalised}}List({{name}}Response);
+      {{/isManyToOne}}
+      {{/model.relationalFields}}
     };
 
     fetchData();
   }, []);
-  {{/model.hasOneToManyFields}}
+  {{/model.hasRelationalFields}}
 
   {{#model.fields}}
   {{#isOneToMany}}
@@ -39,13 +53,16 @@ export default function Create{{model.nameCapitalised}}() {
   const submitForm = ({ formData }) => {
     console.log(JSON.stringify(formData));
 
-    {{#model.fields}}
+    {{#model.relationalFields}}
       {{#isOneToMany}}
     formData.{{name}} = formData.{{name}}.map(
       id => {{name}}.find({{associationModelType}} => {{associationModelType}}.id === id)
     );
       {{/isOneToMany}}
-    {{/model.fields}}
+      {{#isManyToOne}}
+    formData.{{name}} = {{name}}List.find({{associationModelType}} => {{associationModelType}}.id === formData.{{name}});
+      {{/isManyToOne}}
+    {{/model.relationalFields}}
 
     fetch("http://localhost:8080/{{model.name}}", {
       method: "POST",
@@ -69,10 +86,15 @@ export default function Create{{model.nameCapitalised}}() {
   const uiSchema = {};
 
   {{#model.fields}}
-    {{#isOneToMany}}
-  if ({{name}}.length > 0) {
+    {{#isRelational}}
+  if ({{name}}{{#isManyToOne}}List{{/isManyToOne}}.length > 0) {
+      {{#isOneToMany}}
     schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
     schema.properties.{{name}}.items.enumNames = {{name}}.map(item => JSON.stringify(item));
+      {{/isOneToMany}}
+      {{#isManyToOne}}
+    schema.properties.{{name}}.oneOf = {{name}}List.map(item => ({ "title": JSON.stringify(item), "enum": [ item.id ]}));
+      {{/isManyToOne}}
   } else {
     uiSchema.{{name}} = {
       "ui:disabled": true,
@@ -88,7 +110,7 @@ export default function Create{{model.nameCapitalised}}() {
       "ui:label": false
     };
   }
-    {{/isOneToMany}}
+    {{/isRelational}}
   {{/model.fields}}
 
   return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema} />);
