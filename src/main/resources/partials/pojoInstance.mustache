@@ -1,9 +1,6 @@
 new {{dtoType}}();
     {{#fields}}
       {{#hasExample}}
-        {{#isId}}
-    {{dtoName}}.set{{nameCapitalised}}({{example}}L);
-        {{/isId}}
         {{#isDouble}}
     {{dtoName}}.set{{nameCapitalised}}({{example}});
         {{/isDouble}}

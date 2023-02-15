@@ -2,10 +2,12 @@ import Form from "@rjsf/bootstrap-4";
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
+{{#model.hasJsonFields}}
+import JsonFileUploadWidget from "../../utils/JsonFileUploadWidget";
+{{/model.hasJsonFields}}
 
 export default function Create{{model.nameCapitalised}}() {
   const navigate = useNavigate();
-
   {{#model.relationalFields}}
   {{#isOneToMany}}
   const [{{name}}, set{{nameCapitalised}}] = useState([]);
@@ -14,7 +16,6 @@ export default function Create{{model.nameCapitalised}}() {
   const [{{name}}List, set{{nameCapitalised}}List] = useState([]);
   {{/isManyToOne}}
   {{/model.relationalFields}}
-
   {{#model.hasRelationalFields}}
   useEffect(() => {
     const fetchData = async () => {
@@ -43,13 +44,11 @@ export default function Create{{model.nameCapitalised}}() {
     fetchData();
   }, []);
   {{/model.hasRelationalFields}}
-
   {{#model.fields}}
   {{#isOneToMany}}
   console.log({{name}});
   {{/isOneToMany}}
   {{/model.fields}}
-
   const submitForm = ({ formData }) => {
     console.log(JSON.stringify(formData));
 
@@ -83,8 +82,17 @@ export default function Create{{model.nameCapitalised}}() {
   };
 
   const schema = {{{schema}}};
-  const uiSchema = {};
+  const uiSchema = {
+    {{#model.jsonFields}}
+    "{{name}}" : { "ui:widget": "jsonFileUploadWidget" }{{^-last}},{{/-last}}
+    {{/model.jsonFields}}
+  };
+  {{#model.hasJsonFields}}
 
+  const widgets = {
+    "jsonFileUploadWidget": JsonFileUploadWidget
+  };
+  {{/model.hasJsonFields}}
   {{#model.fields}}
     {{#isRelational}}
   if ({{name}}{{#isManyToOne}}List{{/isManyToOne}}.length > 0) {
@@ -113,5 +121,5 @@ export default function Create{{model.nameCapitalised}}() {
     {{/isRelational}}
   {{/model.fields}}
 
-  return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema} />);
+  return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema} {{#model.hasJsonFields}}widgets={widgets}{{/model.hasJsonFields}} />);
 };

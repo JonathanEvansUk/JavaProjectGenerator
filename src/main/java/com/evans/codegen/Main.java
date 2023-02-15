@@ -6,6 +6,7 @@ import com.evans.codegen.domain.FieldDefinition.DateField;
 import com.evans.codegen.domain.FieldDefinition.DateTimeField;
 import com.evans.codegen.domain.FieldDefinition.EnumField;
 import com.evans.codegen.domain.FieldDefinition.IdField;
+import com.evans.codegen.domain.FieldDefinition.JsonField;
 import com.evans.codegen.domain.FieldDefinition.RelationalField.ManyToOneField;
 import com.evans.codegen.domain.FieldDefinition.StringField;
 import com.evans.codegen.domain.Model;
@@ -49,7 +50,7 @@ public class Main {
         List.of(
             new IdField("id", true),
             new StringField("name", true, "dev"),
-            new StringField("url", true, "dev.freesat.tv")
+            new JsonField("file", true)
         )
     );
 

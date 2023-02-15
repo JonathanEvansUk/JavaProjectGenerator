@@ -39,9 +39,9 @@ public class {{className}} {
 
   @Test
   public void findById() {
-    webTestClient.get().uri("/{{entityNameCamel}}/{id}", 1L)
+    webTestClient.get().uri("/{{entityNameCamel}}/{id}", 99L)
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isNotFound();
   }
 
   @Test
@@ -78,18 +78,21 @@ public class {{className}} {
   public void delete() {
     //add first post
     {{dtoType}} {{dtoName}} = {{>pojoInstance}}
-    webTestClient
+    {{dtoType}} saved{{dtoType}} = webTestClient
         .post().uri("/{{entityNameCamel}}")
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue({{dtoName}})
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isOk()
+        .expectBody({{dtoType}}.class)
+        .returnResult()
+        .getResponseBody();
 
-    webTestClient.delete().uri("/{{entityNameCamel}}/{id}", 1L)
+    webTestClient.delete().uri("/{{entityNameCamel}}/{id}", saved{{dtoType}}.getId())
         .exchange()
         .expectStatus().isNoContent();
 
-    webTestClient.get().uri("/{{entityNameCamel}}/{id}", 1L)
+    webTestClient.get().uri("/{{entityNameCamel}}/{id}", saved{{dtoType}}.getId())
         .exchange()
         .expectStatus().isNotFound();
   }

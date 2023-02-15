@@ -43,6 +43,10 @@ public record Entity(String packageName,
     return !enums.isEmpty();
   }
 
+  boolean hasJsonFields() {
+    return fields.stream().anyMatch(Field::isJson);
+  }
+
   public record Field(String name,
                       String simpleTypeName,
                       FieldType fieldType,
@@ -98,6 +102,8 @@ public record Entity(String packageName,
     boolean isEnum() {
       return fieldType == FieldType.ENUM;
     }
+
+    boolean isJson() { return fieldType == FieldType.JSON; }
 
     boolean hasExample() {
       return example != null;

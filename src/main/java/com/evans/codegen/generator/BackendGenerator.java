@@ -469,7 +469,7 @@ public class BackendGenerator {
       case DATE_TIME -> TypeInformation.of(Instant.class);
       case DATE -> TypeInformation.of(LocalDate.class);
       case BOOLEAN -> TypeInformation.of(Boolean.class);
-      case STRING -> TypeInformation.of(String.class);
+      case STRING, JSON -> TypeInformation.of(String.class);
       case DOUBLE -> TypeInformation.of(Double.class);
       case ID -> TypeInformation.of(Long.class);
       case ENUM -> new TypeInformation(null, fieldDefinition.name(), List.of());

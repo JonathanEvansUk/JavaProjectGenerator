@@ -80,7 +80,7 @@ public class EntityFormMapper {
   private String lookupDataType(WebField field) {
     return switch (field.type()) {
       case ID, MANY_TO_ONE -> "integer";
-      case DATE, DATE_TIME, STRING, ENUM -> "string";
+      case DATE, DATE_TIME, STRING, ENUM, JSON -> "string";
       case DOUBLE -> "number";
       case BOOLEAN -> "boolean";
       case ONE_TO_MANY -> "array";

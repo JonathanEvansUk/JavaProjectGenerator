@@ -2,6 +2,9 @@ import Form from "@rjsf/bootstrap-4";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { replaceNullsWithUndefined } from "../../utils/Utils.js";
+{{#model.hasJsonFields}}
+import JsonFileUploadWidget from "../../utils/JsonFileUploadWidget";
+{{/model.hasJsonFields}}
 
 export default function View{{model.nameCapitalised}}() {
   const { id } = useParams();
@@ -29,12 +32,21 @@ export default function View{{model.nameCapitalised}}() {
   },[]);
 
   const schema = {{{schema}}};
+  {{#model.hasJsonFields}}
 
+  const widgets = {
+    "jsonFileUploadWidget": JsonFileUploadWidget
+  };
+
+  {{/model.hasJsonFields}}
   const uiSchema = {
+  {{#model.jsonFields}}
+    "{{name}}" : { "ui:widget": "jsonFileUploadWidget" },
+  {{/model.jsonFields}}
    "ui:submitButtonOptions": {
       "norender": true,
     }
   };
 
-  return (<Form schema={schema} formData={formData} uiSchema={uiSchema} readonly  disabled/>);
+  return (<Form schema={schema} formData={formData} uiSchema={uiSchema} {{#model.hasJsonFields}}widgets={widgets}{{/model.hasJsonFields}} readonly  disabled/>);
 };

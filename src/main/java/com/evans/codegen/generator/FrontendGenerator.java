@@ -118,7 +118,8 @@ public class FrontendGenerator {
         .from(staticReactResourcesPath)
         .to("output/web/src/routes");
 
-    Copy.files("DeleteButton.js", "DeleteModal.js", "Utils.js")
+    Copy.files("DeleteButton.js", "DeleteModal.js", "JsonFileUploadWidget.js", "JsonViewerTheme.js",
+            "Utils.js")
         .from(staticReactResourcesPath)
         .to("output/web/src/utils");
   }

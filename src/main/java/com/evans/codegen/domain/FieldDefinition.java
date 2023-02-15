@@ -19,7 +19,8 @@ public sealed interface FieldDefinition {
     STRING,
     ENUM,
     ONE_TO_MANY,
-    MANY_TO_ONE
+    MANY_TO_ONE,
+    JSON
   }
 
   default boolean isId() {
@@ -139,6 +140,24 @@ public sealed interface FieldDefinition {
     }
   }
 
+  record JsonField(String name,
+                   boolean required) implements FieldDefinition {
+
+    @Override
+    public FieldType type() {
+      return FieldType.JSON;
+    }
+
+    @Override
+    public String example() {
+      return """
+          {
+            "test": "json"
+          }
+          """;
+    }
+  }
+
   sealed interface RelationalField extends FieldDefinition {
 
     Model associationModel();
@@ -159,7 +178,9 @@ public sealed interface FieldDefinition {
       }
     }
 
-    record ManyToOneField(String name, boolean required, Model associationModel) implements RelationalField {
+    record ManyToOneField(String name,
+                          boolean required,
+                          Model associationModel) implements RelationalField {
 
       @Override
       public FieldType type() {

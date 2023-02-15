@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { replaceNullsWithUndefined } from "../../utils/Utils.js";
+{{#model.hasJsonFields}}
+import JsonFileUploadWidget from "../../utils/JsonFileUploadWidget";
+{{/model.hasJsonFields}}
 
 export default function Edit{{model.nameCapitalised}}() {
   const [formData, setFormData] = useState(null);
@@ -66,8 +69,17 @@ export default function Edit{{model.nameCapitalised}}() {
   };
 
   const schema = {{{schema}}};
-  const uiSchema = {};
+  const uiSchema = {
+    {{#model.jsonFields}}
+    "{{name}}" : { "ui:widget": "jsonFileUploadWidget" }{{^-last}},{{/-last}}
+    {{/model.jsonFields}}
+  };
+  {{#model.hasJsonFields}}
 
+  const widgets = {
+    "jsonFileUploadWidget": JsonFileUploadWidget
+  };
+  {{/model.hasJsonFields}}
   {{#model.relationalFields}}
   if ({{name}}{{#isManyToOne}}List{{/isManyToOne}}.length > 0) {
     {{#isOneToMany}}
@@ -93,7 +105,7 @@ export default function Edit{{model.nameCapitalised}}() {
     };
   }
   {{/model.relationalFields}}
-  return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} />);
+  return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} {{#model.hasJsonFields}}widgets={widgets}{{/model.hasJsonFields}} />);
 };
 
 const fetchExisting = (id) => {

@@ -6,6 +6,7 @@ import com.evans.codegen.domain.FieldDefinition.FieldType;
 import com.evans.codegen.file.FileGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.AppJs;
 import java.util.List;
+import java.util.Set;
 
 public class AppJsGenerator implements FileGenerator<AppJs> {
 
@@ -24,7 +25,9 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
     return FileGenerator.super.outputDirectory(templateData) + "web/src";
   }
 
-  public record AppJs(List<WebModel> models) {}
+  public record AppJs(List<WebModel> models) {
+
+  }
 
   public record WebModel(String name,
                          List<WebField> fields) {
@@ -49,6 +52,10 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
       return fields.stream().anyMatch(WebField::isRelational);
     }
 
+    boolean hasJsonFields() {
+      return fields.stream().anyMatch(WebField::isJson);
+    }
+
     List<WebField> oneToManyFields() {
       return fields.stream().filter(WebField::isOneToMany).toList();
     }
@@ -60,6 +67,10 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
     List<WebField> relationalFields() {
       return fields.stream().filter(WebField::isRelational).toList();
     }
+
+    List<WebField> jsonFields() {
+      return fields.stream().filter(WebField::isJson).toList();
+    }
   }
 
   public record WebField(String name,
@@ -67,6 +78,13 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
                          FieldType type,
                          String associationModelType,
                          List<String> enumOptions) {
+
+    private static final Set<FieldType> FIELDS_TO_DISPLAY_AS_TEXT = Set.of(
+        FieldType.ID,
+        FieldType.DOUBLE,
+        FieldType.STRING,
+        FieldType.ENUM
+    );
 
     public WebField(String name, boolean required, FieldType type) {
       this(name, required, type, null, List.of());
@@ -88,6 +106,10 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
       return type() == FieldType.ONE_TO_MANY;
     }
 
+    boolean isJson() {
+      return type() == FieldType.JSON;
+    }
+
     String nameCapitalised() {
       return capitalise(name());
     }
@@ -102,6 +124,10 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
 
     boolean isRelational() {
       return isOneToMany() || isManyToOne();
+    }
+
+    boolean displayAsText() {
+      return FIELDS_TO_DISPLAY_AS_TEXT.contains(type());
     }
   }
 }

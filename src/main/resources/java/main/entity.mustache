@@ -3,6 +3,9 @@ package {{packageName}};
 {{#hasEnumFields}}
 import java.util.Arrays;
 {{/hasEnumFields}}
+{{#hasJsonFields}}
+import javax.persistence.Column;
+{{/hasJsonFields}}
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
@@ -22,13 +25,28 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 {{/hasEnumFields}}
+{{#hasJsonFields}}
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+{{/hasJsonFields}}
 {{#imports}}
 {{.}}
 {{/imports}}
 
 @Entity
+{{#hasJsonFields}}
+@TypeDefs({
+    @TypeDef(name = AuthFile.JSON, typeClass = JsonType.class)
+})
+{{/hasJsonFields}}
 public class {{className}} {
 
+{{#hasJsonFields}}
+  public static final String JSON = "json";
+
+{{/hasJsonFields}}
 {{#fields}}
   {{#isId}}
   @Id
@@ -40,6 +58,10 @@ public class {{className}} {
   {{#isManyToOne}}
   @ManyToOne
   {{/isManyToOne}}
+  {{#isJson}}
+  @Type(type = JSON)
+  @Column(columnDefinition = JSON)
+  {{/isJson}}
   private {{{simpleTypeName}}} {{name}}{{#isOneToMany}}= new ArrayList<>(){{/isOneToMany}};
 
 {{/fields}}
