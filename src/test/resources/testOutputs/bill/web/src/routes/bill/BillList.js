@@ -6,7 +6,6 @@ import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import DeleteModal from "../../utils/DeleteModal";
 import DeleteButton from "../../utils/DeleteButton";
-
 export default function BillList() {
   let [billList, setBillList] = useState([]);
 
@@ -60,6 +59,7 @@ export default function BillList() {
         <thead>
           <tr>
             {tableHeaders.map(header => <th key={header}>{header}</th>)}
+            <th></th>
           </tr>
         </thead>
 
@@ -82,22 +82,21 @@ const createRow = (bill, tableHeaders, handleDeleteShow) => {
   return (
     <tr key={ bill.id }>
         <td key="id" className="align-middle" style={ {"lineHeight": "1em"} }>
-            { bill["id"] }
+          { bill["id"] }
         </td>
         <td key="amount" className="align-middle" style={ {"lineHeight": "1em"} }>
-            { bill["amount"] }
+          { bill["amount"] }
         </td>
         <td key="dateReceived" className="align-middle" style={ {"lineHeight": "1em"} }>
-            { bill["dateReceived"] }
         </td>
         <td key="paid" className="align-middle" style={ {"lineHeight": "1em"} }>
             <i className={ bill["paid"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>
         </td>
         <td key="datePaid" className="align-middle" style={ {"lineHeight": "1em"} }>
-          { bill["datePaid"] && new Date(bill["datePaid"]).toLocaleString()}
+            { bill["datePaid"] && new Date(bill["datePaid"]).toLocaleString()}
         </td>
         <td key="paymentType" className="align-middle" style={ {"lineHeight": "1em"} }>
-            { bill["paymentType"] }
+          { bill["paymentType"] }
         </td>
       <td>
         <div className="float-right">
@@ -113,3 +112,4 @@ const createRow = (bill, tableHeaders, handleDeleteShow) => {
     </tr>
   );
 };
+

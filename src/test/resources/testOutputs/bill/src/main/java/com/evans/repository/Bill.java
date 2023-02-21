@@ -1,15 +1,12 @@
 package com.evans.repository;
 
 import java.util.Arrays;
-
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.lang.Long;
 import java.lang.Double;
 import java.time.LocalDate;
@@ -20,7 +17,7 @@ import java.time.Instant;
 public class Bill {
 
   @Id
-  //@GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Double amount;
@@ -85,9 +82,9 @@ public class Bill {
     CREDIT("Credit"),
     DEBIT("Debit");
 
+    @JsonValue
     private final String value;
 
-    @JsonValue
     private PaymentType(String value) {
       this.value = value;
     }
@@ -95,7 +92,7 @@ public class Bill {
     @JsonCreator
     public static PaymentType fromValue(String value) {
       return Arrays.stream(PaymentType.values())
-        .filter(entry -> entry.value)
+        .filter(entry -> entry.value.equals(value))
         .findFirst()
         .get();
     }

@@ -1,11 +1,13 @@
 import Form from "@rjsf/bootstrap-4";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 
 export default function CreateBill() {
   const navigate = useNavigate();
-
   const submitForm = ({ formData }) => {
     console.log(JSON.stringify(formData));
+
 
     fetch("http://localhost:8080/bill", {
       method: "POST",
@@ -30,9 +32,6 @@ export default function CreateBill() {
   "description" : "Description",
   "type" : "object",
   "properties" : {
-    "id" : {
-      "type" : [ "integer" ]
-    },
     "amount" : {
       "type" : [ "number", "null" ]
     },
@@ -48,11 +47,14 @@ export default function CreateBill() {
       "format" : "date-time"
     },
     "paymentType" : {
-      "enum" : [ "Credit", "Debit" ],
+      "enum" : [ ],
       "type" : [ "string" ]
     }
   },
-  "required" : [ "id", "paymentType" ]
+  "required" : [ "paymentType" ]
 };
-  return (<Form schema={schema} onSubmit={submitForm} />);
+  const uiSchema = {
+  };
+
+  return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema}  />);
 };

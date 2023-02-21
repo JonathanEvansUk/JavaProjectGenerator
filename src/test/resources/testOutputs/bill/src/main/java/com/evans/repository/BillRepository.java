@@ -3,6 +3,7 @@ package com.evans.repository;
 import org.springframework.stereotype.Repository;
 //import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
+import java.lang.Iterable;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +14,6 @@ import java.lang.Long;
 public interface BillRepository extends CrudRepository<Bill, Long> {
 
   List<Bill> findAll();
+
+  List<Bill> findAllById(Iterable<Long> ids);
 }

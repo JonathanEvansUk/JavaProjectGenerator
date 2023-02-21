@@ -1,20 +1,29 @@
 import Form from "@rjsf/bootstrap-4";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { replaceNullsWithUndefined } from "../../utils/Utils.js";
 
 export default function EditBill() {
   const [formData, setFormData] = useState(null);
   const { id } = useParams();
 
+
   useEffect(() => {
-    fetch(`http://localhost:8080/bill/${id}`)
-    .then(response => response.json())
-    .then(data => setFormData(data));
-  },[]);
+    const fetchData = async () => {
+      const [currentBill] = await Promise.all([
+          fetchExisting(id)
+      ]);
+
+      setFormData(currentBill);
+    };
+
+    fetchData();
+  }, []);
 
   const submitForm = ({ formData }) => {
-    fetch("http://localhost:8080/bill", {
-      method: "POST",
+    fetch("http://localhost:8080/bill/" + id, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
@@ -27,9 +36,6 @@ export default function EditBill() {
   "description" : "Description",
   "type" : "object",
   "properties" : {
-    "id" : {
-      "type" : [ "integer" ]
-    },
     "amount" : {
       "type" : [ "number", "null" ]
     },
@@ -45,11 +51,20 @@ export default function EditBill() {
       "format" : "date-time"
     },
     "paymentType" : {
-      "enum" : [ "Credit", "Debit" ],
+      "enum" : [ ],
       "type" : [ "string" ]
     }
   },
-  "required" : [ "id", "paymentType" ]
+  "required" : [ "paymentType" ]
 };
-  return (<Form schema={schema} formData={formData} onSubmit={submitForm} />);
+  const uiSchema = {
+  };
+  return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema}  />);
+};
+
+const fetchExisting = (id) => {
+  return fetch(`http://localhost:8080/bill/${id}`)
+      .then(response => response.json())
+      .then(data => replaceNullsWithUndefined(data))
+;
 };

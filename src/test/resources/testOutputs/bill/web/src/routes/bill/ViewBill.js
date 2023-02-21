@@ -1,6 +1,7 @@
 import Form from "@rjsf/bootstrap-4";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { replaceNullsWithUndefined } from "../../utils/Utils.js";
 
 export default function ViewBill() {
   const { id } = useParams();
@@ -9,7 +10,8 @@ export default function ViewBill() {
 
   useEffect(() => {
     fetch(`http://localhost:8080/bill/${id}`)
-    .then(response => response.json())
+      .then(response => response.json())
+      .then(data => replaceNullsWithUndefined(data))
     .then(data => setFormData(data));
   },[]);
 
@@ -18,9 +20,6 @@ export default function ViewBill() {
   "description" : "Description",
   "type" : "object",
   "properties" : {
-    "id" : {
-      "type" : [ "integer" ]
-    },
     "amount" : {
       "type" : [ "number", "null" ]
     },
@@ -36,18 +35,17 @@ export default function ViewBill() {
       "format" : "date-time"
     },
     "paymentType" : {
-      "enum" : [ "Credit", "Debit" ],
+      "enum" : [ ],
       "type" : [ "string" ]
     }
   },
-  "required" : [ "id", "paymentType" ]
+  "required" : [ "paymentType" ]
 };
-
   const uiSchema = {
    "ui:submitButtonOptions": {
       "norender": true,
     }
   };
 
-  return (<Form schema={schema} formData={formData} uiSchema={uiSchema} readonly  disabled/>);
+  return (<Form schema={schema} formData={formData} uiSchema={uiSchema}  readonly  disabled/>);
 };

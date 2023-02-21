@@ -68,7 +68,7 @@ public class GeneratorIT {
       var expected = Files.readAllBytes(expectedPath);
       var actual = Files.readAllBytes(actualPath);
 
-      assertArrayEquals(expected, actual);
+      assertArrayEquals(expected, actual, "Expected: " + expectedPath + ", to match: " + actualPath);
     } catch (IOException e) {
       e.printStackTrace();
       fail("Failed to compare files: " + expectedPath + ", " + actualPath);
