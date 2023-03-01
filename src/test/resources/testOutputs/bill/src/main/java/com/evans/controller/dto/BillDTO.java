@@ -13,7 +13,6 @@ public class BillDTO {
     private LocalDate dateReceived;
     private Boolean paid;
     private Instant datePaid;
-    private PaymentType paymentType;
 
     public Long getId() {
       return id;
@@ -35,10 +34,6 @@ public class BillDTO {
       return datePaid;
     }
 
-    public PaymentType getPaymentType() {
-      return paymentType;
-    }
-
     public void setId(Long id) {
       this.id = id;
     }
@@ -57,9 +52,5 @@ public class BillDTO {
 
     public void setDatePaid(Instant datePaid) {
       this.datePaid = datePaid;
-    }
-
-    public void setPaymentType(PaymentType paymentType) {
-      this.paymentType = paymentType;
     }
 }

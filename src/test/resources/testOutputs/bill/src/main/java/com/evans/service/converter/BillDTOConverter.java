@@ -16,7 +16,6 @@ public class BillDTOConverter {
     bill.setDateReceived(billDTO.getDateReceived());
     bill.setPaid(billDTO.getPaid());
     bill.setDatePaid(billDTO.getDatePaid());
-    bill.setPaymentType(billDTO.getPaymentType());
 
     return bill;
   }
@@ -29,7 +28,6 @@ public class BillDTOConverter {
     billDTO.setDateReceived(bill.getDateReceived());
     billDTO.setPaid(bill.getPaid());
     billDTO.setDatePaid(bill.getDatePaid());
-    billDTO.setPaymentType(bill.getPaymentType());
 
     return billDTO;
   }

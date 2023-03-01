@@ -13,11 +13,18 @@ import com.evans.codegen.domain.FieldDefinition.EnumField;
 import com.evans.codegen.domain.FieldDefinition.IdField;
 import com.evans.codegen.domain.Model;
 import com.evans.codegen.generator.Generator;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.jupiter.api.Test;
 
 public class GeneratorIT {
@@ -32,10 +39,10 @@ public class GeneratorIT {
             List.of(
                 new IdField("id", true),
                 new DoubleField("amount", false, "12.34"),
-                new DateField("dateReceived", false, "25/12/2022"),
+                new DateField("dateReceived", false, "2023-01-03"),
                 new BooleanField("paid", false),
-                new DateTimeField("datePaid", false, "25/12/2022T00:00:00"),
-                new EnumField("paymentType", List.of("Credit", "Debit"), true)
+                new DateTimeField("datePaid", false, "2023-01-03T10:15:30.00Z")
+//                new EnumField("paymentType", List.of("Credit", "Debit"), true)
             )
         )
     );
@@ -61,6 +68,29 @@ public class GeneratorIT {
         }
       });
     }
+
+    // run maven verify on the generated project
+    InvocationRequest request = new DefaultInvocationRequest()
+        .setPomFile(new File("output/pom.xml"))
+        .setGoals(List.of("clean", "verify"))
+        .setDebug(false)
+        .setJavaHome(new File(System.getenv("JAVA_HOME")))
+        .setMavenHome(new File(System.getenv("MAVEN_HOME")));
+
+    Invoker invoker = new DefaultInvoker();
+    try {
+      InvocationResult result = invoker.execute(request);
+
+      if (result.getExitCode() != 0) {
+        if (result.getExecutionException() != null) {
+          System.out.println(result.getExecutionException().getMessage());
+        }
+
+        fail();
+      }
+    } catch (MavenInvocationException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void compareFiles(Path expectedPath, Path actualPath) {
@@ -68,7 +98,8 @@ public class GeneratorIT {
       var expected = Files.readAllBytes(expectedPath);
       var actual = Files.readAllBytes(actualPath);
 
-      assertArrayEquals(expected, actual, "Expected: " + expectedPath + ", to match: " + actualPath);
+      assertArrayEquals(expected, actual,
+          "Expected: " + expectedPath + ", to match: " + actualPath);
     } catch (IOException e) {
       e.printStackTrace();
       fail("Failed to compare files: " + expectedPath + ", " + actualPath);

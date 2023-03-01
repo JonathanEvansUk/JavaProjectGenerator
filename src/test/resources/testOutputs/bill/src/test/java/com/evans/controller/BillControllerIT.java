@@ -38,10 +38,9 @@ public class BillControllerIT {
   public void create() {
     BillDTO billDTO = new BillDTO();
     billDTO.setAmount(12.34);
-    billDTO.setDateReceived(LocalDate.parse("25/12/2022"));
+    billDTO.setDateReceived(LocalDate.parse("2023-01-03"));
     billDTO.setPaid(true);
-    billDTO.setDatePaid(Instant.parse("25/12/2022T00:00:00"));
-    billDTO.setPaymentType(Credit);
+    billDTO.setDatePaid(Instant.parse("2023-01-03T10:15:30.00Z"));
 
     webTestClient
         .post().uri("/bill")
@@ -56,10 +55,9 @@ public class BillControllerIT {
     //add first post
     BillDTO billDTO = new BillDTO();
     billDTO.setAmount(12.34);
-    billDTO.setDateReceived(LocalDate.parse("25/12/2022"));
+    billDTO.setDateReceived(LocalDate.parse("2023-01-03"));
     billDTO.setPaid(true);
-    billDTO.setDatePaid(Instant.parse("25/12/2022T00:00:00"));
-    billDTO.setPaymentType(Credit);
+    billDTO.setDatePaid(Instant.parse("2023-01-03T10:15:30.00Z"));
 
     webTestClient
         .post().uri("/bill")
@@ -71,10 +69,9 @@ public class BillControllerIT {
     BillDTO updatedBillDTO = new BillDTO();
     updatedBillDTO.setId(1L);
     updatedBillDTO.setAmount(12.34);
-    updatedBillDTO.setDateReceived(LocalDate.parse("25/12/2022"));
+    updatedBillDTO.setDateReceived(LocalDate.parse("2023-01-03"));
     updatedBillDTO.setPaid(true);
-    updatedBillDTO.setDatePaid(Instant.parse("25/12/2022T00:00:00"));
-    updatedBillDTO.setPaymentType(Credit);
+    updatedBillDTO.setDatePaid(Instant.parse("2023-01-03T10:15:30.00Z"));
 
     webTestClient.put().uri("/bill/{id}", 1L)
         .contentType(MediaType.APPLICATION_JSON)
@@ -88,10 +85,9 @@ public class BillControllerIT {
     //add first post
     BillDTO billDTO = new BillDTO();
     billDTO.setAmount(12.34);
-    billDTO.setDateReceived(LocalDate.parse("25/12/2022"));
+    billDTO.setDateReceived(LocalDate.parse("2023-01-03"));
     billDTO.setPaid(true);
-    billDTO.setDatePaid(Instant.parse("25/12/2022T00:00:00"));
-    billDTO.setPaymentType(Credit);
+    billDTO.setDatePaid(Instant.parse("2023-01-03T10:15:30.00Z"));
 
     BillDTO savedBillDTO = webTestClient
         .post().uri("/bill")

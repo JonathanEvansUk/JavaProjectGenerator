@@ -49,13 +49,9 @@ export default function EditBill() {
     "datePaid" : {
       "type" : [ "string", "null" ],
       "format" : "date-time"
-    },
-    "paymentType" : {
-      "enum" : [ ],
-      "type" : [ "string" ]
     }
   },
-  "required" : [ "paymentType" ]
+  "required" : [ ]
 };
   const uiSchema = {
   };

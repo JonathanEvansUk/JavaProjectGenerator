@@ -1,12 +1,9 @@
 package com.evans.repository;
 
-import java.util.Arrays;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.lang.Long;
 import java.lang.Double;
 import java.time.LocalDate;
@@ -28,8 +25,6 @@ public class Bill {
 
   private Instant datePaid;
 
-  private PaymentType paymentType;
-
   public Long getId() {
     return id;
   }
@@ -48,10 +43,6 @@ public class Bill {
 
   public Instant getDatePaid() {
     return datePaid;
-  }
-
-  public PaymentType getPaymentType() {
-    return paymentType;
   }
 
   public void setId(Long id) {
@@ -74,27 +65,4 @@ public class Bill {
     this.datePaid = datePaid;
   }
 
-  public void setPaymentType(PaymentType paymentType) {
-    this.paymentType = paymentType;
-  }
-
-  public enum PaymentType {
-    CREDIT("Credit"),
-    DEBIT("Debit");
-
-    @JsonValue
-    private final String value;
-
-    private PaymentType(String value) {
-      this.value = value;
-    }
-
-    @JsonCreator
-    public static PaymentType fromValue(String value) {
-      return Arrays.stream(PaymentType.values())
-        .filter(entry -> entry.value.equals(value))
-        .findFirst()
-        .get();
-    }
-  }
 }

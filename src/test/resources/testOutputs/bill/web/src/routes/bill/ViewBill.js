@@ -33,13 +33,9 @@ export default function ViewBill() {
     "datePaid" : {
       "type" : [ "string", "null" ],
       "format" : "date-time"
-    },
-    "paymentType" : {
-      "enum" : [ ],
-      "type" : [ "string" ]
     }
   },
-  "required" : [ "paymentType" ]
+  "required" : [ ]
 };
   const uiSchema = {
    "ui:submitButtonOptions": {

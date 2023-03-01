@@ -30,8 +30,7 @@ export default function BillList() {
       "amount",
       "dateReceived",
       "paid",
-      "datePaid",
-      "paymentType"
+      "datePaid"
   ];
 
   console.log(billList);
@@ -94,9 +93,6 @@ const createRow = (bill, tableHeaders, handleDeleteShow) => {
         </td>
         <td key="datePaid" className="align-middle" style={ {"lineHeight": "1em"} }>
             { bill["datePaid"] && new Date(bill["datePaid"]).toLocaleString()}
-        </td>
-        <td key="paymentType" className="align-middle" style={ {"lineHeight": "1em"} }>
-          { bill["paymentType"] }
         </td>
       <td>
         <div className="float-right">

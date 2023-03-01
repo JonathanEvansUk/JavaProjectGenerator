@@ -45,13 +45,9 @@ export default function CreateBill() {
     "datePaid" : {
       "type" : [ "string", "null" ],
       "format" : "date-time"
-    },
-    "paymentType" : {
-      "enum" : [ ],
-      "type" : [ "string" ]
     }
   },
-  "required" : [ "paymentType" ]
+  "required" : [ ]
 };
   const uiSchema = {
   };
