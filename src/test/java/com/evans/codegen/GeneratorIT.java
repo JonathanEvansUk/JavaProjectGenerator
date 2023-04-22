@@ -9,7 +9,6 @@ import com.evans.codegen.domain.FieldDefinition.BooleanField;
 import com.evans.codegen.domain.FieldDefinition.DateField;
 import com.evans.codegen.domain.FieldDefinition.DateTimeField;
 import com.evans.codegen.domain.FieldDefinition.DoubleField;
-import com.evans.codegen.domain.FieldDefinition.EnumField;
 import com.evans.codegen.domain.FieldDefinition.IdField;
 import com.evans.codegen.domain.Model;
 import com.evans.codegen.generator.Generator;
@@ -75,7 +74,7 @@ public class GeneratorIT {
         .setGoals(List.of("clean", "verify"))
         .setDebug(false)
         .setJavaHome(new File(System.getenv("JAVA_HOME")))
-        .setMavenHome(new File(System.getenv("MAVEN_HOME")));
+        .setMavenHome(new File(System.getProperty("maven.home")));
 
     Invoker invoker = new DefaultInvoker();
     try {

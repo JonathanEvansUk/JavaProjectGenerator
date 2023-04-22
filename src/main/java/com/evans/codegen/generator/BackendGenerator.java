@@ -167,7 +167,7 @@ public class BackendGenerator {
 
 
   private void generateMaven() throws IOException {
-    MavenProject mavenProject = new MavenProject("com.evans", "testproject", JavaVersion.JDK_18);
+    MavenProject mavenProject = new MavenProject("com.evans", "testproject", JavaVersion.JDK_17);
     mavenGenerator.generate(mavenProject);
 
     String appName = "MyApp";

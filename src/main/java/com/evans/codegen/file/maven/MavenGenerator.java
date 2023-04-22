@@ -9,6 +9,8 @@ public class MavenGenerator implements FileGenerator<MavenProject> {
 
     public enum JavaVersion {
       JDK_1_8("1.8"),
+
+      JDK_17("17"),
       JDK_18("18");
 
       private final String value;
