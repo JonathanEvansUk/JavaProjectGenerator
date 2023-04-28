@@ -10,6 +10,10 @@ import com.evans.codegen.domain.FieldDefinition.RelationalField;
 import com.evans.codegen.domain.FieldDefinition.RelationalField.ManyToOneField;
 import com.evans.codegen.domain.FieldDefinition.RelationalField.OneToManyField;
 import com.evans.codegen.domain.Model;
+import com.evans.codegen.file.docker.DockerCompose;
+import com.evans.codegen.file.docker.DockerComposeGenerator;
+import com.evans.codegen.file.docker.Dockerfile;
+import com.evans.codegen.file.docker.DockerfileGenerator;
 import com.evans.codegen.file.java.application.Application;
 import com.evans.codegen.file.java.application.ApplicationGenerator;
 import com.evans.codegen.file.java.controller.Controller;
@@ -67,7 +71,8 @@ public class BackendGenerator {
   private final MavenGenerator mavenGenerator;
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
   private final TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator;
-
+  private final DockerfileGenerator dockerfileGenerator;
+  private final DockerComposeGenerator dockerComposeGenerator;
   private final OpenAPISpecGenerator openAPISpecGenerator;
 
   @Inject
@@ -84,7 +89,9 @@ public class BackendGenerator {
       MavenGenerator mavenGenerator,
       ApplicationPropertiesGenerator applicationPropertiesGenerator,
       TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator,
-      OpenAPISpecGenerator openAPISpecGenerator) {
+      OpenAPISpecGenerator openAPISpecGenerator,
+      DockerfileGenerator dockerfileGenerator,
+      DockerComposeGenerator dockerComposeGenerator) {
     this.repositoryGenerator = repositoryGenerator;
     this.serviceGenerator = serviceGenerator;
     this.controllerGenerator = controllerGenerator;
@@ -98,13 +105,18 @@ public class BackendGenerator {
     this.applicationPropertiesGenerator = applicationPropertiesGenerator;
     this.testApplicationMysqlPropertiesGenerator = testApplicationMysqlPropertiesGenerator;
     this.openAPISpecGenerator = openAPISpecGenerator;
+    this.dockerfileGenerator = dockerfileGenerator;
+    this.dockerComposeGenerator = dockerComposeGenerator;
   }
 
   public void generate(List<Model> models) throws IOException {
     String appName = "MyApp";
     String groupId = "com.evans";
-    generateMaven(appName, groupId);
+    MavenProject mavenProject = new MavenProject(appName, groupId, "testproject",
+        JavaVersion.JDK_17);
+    generateMaven(mavenProject);
     generateApplication();
+    generateDocker(mavenProject);
     generateOpenAPISpec(appName, models);
 
     record NameAndPackage(String modelName,
@@ -177,15 +189,15 @@ public class BackendGenerator {
   private void generateOpenAPISpec(String appName, List<Model> models) throws IOException {
 
     List<OpenAPISpec.OpenAPIModel> openAPIModels = models.stream()
-            .map(this::convert)
-            .toList();
+        .map(this::convert)
+        .toList();
 
     OpenAPISpec openAPISpec = new OpenAPISpec(
-            appName,
-            "Example Project Summary",
-            "Example Project Description",
-            "com.evans",
-            openAPIModels
+        appName,
+        "Example Project Summary",
+        "Example Project Description",
+        "com.evans",
+        openAPIModels
     );
 
     openAPISpecGenerator.generate(openAPISpec);
@@ -236,21 +248,29 @@ public class BackendGenerator {
     };
   }
 
-
-  private void generateMaven(String appName, String groupId) throws IOException {
-    MavenProject mavenProject = new MavenProject(groupId, "testproject", JavaVersion.JDK_17);
+  private void generateMaven(MavenProject mavenProject) throws IOException {
     mavenGenerator.generate(mavenProject);
 
-    ApplicationProperties applicationProperties = new ApplicationProperties(appName);
+    ApplicationProperties applicationProperties = new ApplicationProperties(mavenProject.appName());
     applicationPropertiesGenerator.generate(applicationProperties);
 
-    TestApplicationMysqlProperties testApplicationMysqlProperties = new TestApplicationMysqlProperties(appName);
+    TestApplicationMysqlProperties testApplicationMysqlProperties = new TestApplicationMysqlProperties(
+        mavenProject.appName());
     testApplicationMysqlPropertiesGenerator.generate(testApplicationMysqlProperties);
   }
 
   private void generateApplication() throws IOException {
     Application application = new Application("com.evans", "MyApp", Collections.emptyList());
     applicationGenerator.generate(application);
+  }
+
+  private void generateDocker(MavenProject mavenProject) throws IOException {
+    Dockerfile dockerfile = new Dockerfile(mavenProject.artifactId());
+    dockerfileGenerator.generate(dockerfile);
+
+    DockerCompose dockerCompose = new DockerCompose(mavenProject.artifactId(), "MyApp");
+    dockerComposeGenerator.generate(dockerCompose);
+
   }
 
   private void generate(Model model, Map<String, String> importsByModelName,
@@ -454,7 +474,8 @@ public class BackendGenerator {
         dtoConverterImports);
     dtoConverterGenerator.generate(dtoConverter);
 
-    String controllerNameCamel = controller.className().substring(0, 1).toLowerCase() + controller.className().substring(1);
+    String controllerNameCamel =
+        controller.className().substring(0, 1).toLowerCase() + controller.className().substring(1);
 
     ControllerTest controllerTest = new ControllerTest(
         controller.packageName(),

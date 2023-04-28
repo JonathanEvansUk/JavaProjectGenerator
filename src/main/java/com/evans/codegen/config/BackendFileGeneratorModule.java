@@ -1,5 +1,7 @@
 package com.evans.codegen.config;
 
+import com.evans.codegen.file.docker.DockerComposeGenerator;
+import com.evans.codegen.file.docker.DockerfileGenerator;
 import com.evans.codegen.file.java.application.ApplicationGenerator;
 import com.evans.codegen.file.java.controller.ControllerGenerator;
 import com.evans.codegen.file.java.dto.DTOConverterGenerator;
@@ -62,6 +64,16 @@ public class BackendFileGeneratorModule {
   @Provides
   public ApplicationPropertiesGenerator applicationPropertiesGenerator() {
     return new ApplicationPropertiesGenerator();
+  }
+
+  @Provides
+  public DockerfileGenerator dockerfileGenerator() {
+    return new DockerfileGenerator();
+  }
+
+  @Provides
+  public DockerComposeGenerator dockerComposeGenerator() {
+    return new DockerComposeGenerator();
   }
 
   @Provides

@@ -5,7 +5,10 @@ import com.evans.codegen.file.FileGenerator;
 
 public class MavenGenerator implements FileGenerator<MavenProject> {
 
-  public record MavenProject(String groupId, String artifactId, JavaVersion javaVersion) {
+  public record MavenProject(String appName,
+                             String groupId,
+                             String artifactId,
+                             JavaVersion javaVersion) {
 
     public enum JavaVersion {
       JDK_1_8("1.8"),
