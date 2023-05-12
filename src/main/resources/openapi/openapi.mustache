@@ -1,0 +1,153 @@
+openapi: "3.0.3"
+info:
+  title: {{projectName}}
+  description: {{projectDescription}}
+  contact:
+    name: API Support
+    url: https://www.example.com/support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+paths:
+{{#models}}
+  /{{nameCamel}}:
+    get:
+      summary: Get {{name}}
+      description: Get {{name}}
+      operationId: get{{name}}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/{{name}}'
+        '500':
+          description: Internal Server Error
+    post:
+      summary: Create {{name}}
+      description: Create {{name}}
+      operationId: create{{name}}
+      requestBody:
+        description: {{name}} object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/{{name}}'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{{name}}'
+        '500':
+          description: Internal Server Error
+  /{{nameCamel}}/{id}:
+    get:
+      summary: Get {{name}} by id
+      description: Get {{name}} by id
+      parameters:
+        - name: id
+          in: path
+          description: id of {{name}}
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{{name}}'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      summary: Update {{name}} by id
+      description: Update {{name}} by id
+      parameters:
+        - name: id
+          in: path
+          description: id of {{name}}
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: {{name}} object that needs to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/{{name}}'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{{name}}'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: Delete {{name}} by id
+      description: Delete {{name}} by id
+      parameters:
+        - name: id
+          in: path
+          description: id of {{name}}
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/{{name}}'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+{{/models}}
+
+components:
+  parameters:
+{{#models}}
+    request{{name}}:
+      name: {{name}}
+      in: path
+      description: Identifier of {{name}}
+      required: true
+      schema:
+        $ref: '#/components/schemas/{{name}}'
+{{/models}}
+
+  schemas:
+{{#models}}
+    {{name}}:
+      type: object
+      properties:
+      {{#fields}}
+        {{name}}:
+        {{#hasType}}
+          type: {{type}}
+        {{/hasType}}
+        {{#hasRef}}
+          $ref: '#/components/schemas/{{ref}}'
+        {{/hasRef}}
+      {{/fields}}
+{{/models}}

@@ -12,6 +12,7 @@ import com.evans.codegen.file.java.test.ControllerTestGenerator;
 import com.evans.codegen.file.maven.ApplicationPropertiesGenerator;
 import com.evans.codegen.file.maven.MavenGenerator;
 import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator;
+import com.evans.codegen.file.openapi.OpenAPISpecGenerator;
 import dagger.Module;
 import dagger.Provides;
 
@@ -76,5 +77,10 @@ public class BackendFileGeneratorModule {
   @Provides
   public TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator() {
     return new TestApplicationMysqlPropertiesGenerator();
+  }
+
+  @Provides
+  public OpenAPISpecGenerator openAPISpecGenerator() {
+    return new OpenAPISpecGenerator();
   }
 }

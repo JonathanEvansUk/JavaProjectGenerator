@@ -39,6 +39,8 @@ import com.evans.codegen.file.maven.MavenGenerator.MavenProject;
 import com.evans.codegen.file.maven.MavenGenerator.MavenProject.JavaVersion;
 import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator;
 import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator.TestApplicationMysqlProperties;
+import com.evans.codegen.file.openapi.OpenAPISpec;
+import com.evans.codegen.file.openapi.OpenAPISpecGenerator;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -66,6 +68,8 @@ public class BackendGenerator {
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
   private final TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator;
 
+  private final OpenAPISpecGenerator openAPISpecGenerator;
+
   @Inject
   public BackendGenerator(
       RepositoryGenerator repositoryGenerator,
@@ -79,7 +83,8 @@ public class BackendGenerator {
       ControllerITGenerator controllerITGenerator,
       MavenGenerator mavenGenerator,
       ApplicationPropertiesGenerator applicationPropertiesGenerator,
-      TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator) {
+      TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator,
+      OpenAPISpecGenerator openAPISpecGenerator) {
     this.repositoryGenerator = repositoryGenerator;
     this.serviceGenerator = serviceGenerator;
     this.controllerGenerator = controllerGenerator;
@@ -92,11 +97,14 @@ public class BackendGenerator {
     this.mavenGenerator = mavenGenerator;
     this.applicationPropertiesGenerator = applicationPropertiesGenerator;
     this.testApplicationMysqlPropertiesGenerator = testApplicationMysqlPropertiesGenerator;
+    this.openAPISpecGenerator = openAPISpecGenerator;
   }
 
   public void generate(List<Model> models) throws IOException {
-    generateMaven();
+    String appName = "MyApp";
+    generateMaven(appName);
     generateApplication();
+    generateOpenAPISpec(appName, models);
 
     record NameAndPackage(String modelName,
                           String packageName) {
@@ -165,12 +173,64 @@ public class BackendGenerator {
     }
   }
 
+  private void generateOpenAPISpec(String appName, List<Model> models) throws IOException {
 
-  private void generateMaven() throws IOException {
+    List<OpenAPISpec.OpenAPIModel> openAPIModels = models.stream()
+            .map(this::convert)
+            .toList();
+
+    OpenAPISpec openAPISpec = new OpenAPISpec(
+            appName,
+            "Example Project Summary",
+            "Example Project Description",
+            openAPIModels
+    );
+
+    openAPISpecGenerator.generate(openAPISpec);
+  }
+
+  // TODO rename and extract
+  private OpenAPISpec.OpenAPIModel convert(Model model) {
+    return new OpenAPISpec.OpenAPIModel(
+        model.name(),
+        model.nameCamel(),
+        model.fields().stream()
+            .map(field ->
+                new OpenAPISpec.OpenAPIModel.OpenAPIField(
+                    field.name(),
+                    resolveOpenAPIType(field),
+                    resolveOpenAPIRef(field)
+                )
+            )
+            .toList()
+    );
+  }
+
+  private String resolveOpenAPIType(FieldDefinition field) {
+    return switch (field.type()) {
+      case STRING, JSON -> "string";
+      case ID -> "integer";
+      case DOUBLE -> "number";
+      case BOOLEAN -> "boolean";
+      case DATE -> "date";
+      case DATE_TIME -> "date-time";
+      case ENUM -> "enum";
+      case ONE_TO_MANY, MANY_TO_ONE -> null;
+    };
+  }
+
+  private String resolveOpenAPIRef(FieldDefinition field) {
+    return switch (field.type()) {
+      case ONE_TO_MANY, MANY_TO_ONE -> field.nameCapitalised();
+      default -> null;
+    };
+  }
+
+
+  private void generateMaven(String appName) throws IOException {
     MavenProject mavenProject = new MavenProject("com.evans", "testproject", JavaVersion.JDK_17);
     mavenGenerator.generate(mavenProject);
 
-    String appName = "MyApp";
     ApplicationProperties applicationProperties = new ApplicationProperties(appName);
     applicationPropertiesGenerator.generate(applicationProperties);
 
