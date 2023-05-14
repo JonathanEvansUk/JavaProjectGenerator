@@ -66,12 +66,6 @@ public class Main {
 
     generator.generate(List.of(authFile, device));
 
-//    Device {
-//      String deviceId;
-//      String reference;
-//      AuthFile authFile;
-//    }
-
     System.out.println("Finished generating");
   }
 }

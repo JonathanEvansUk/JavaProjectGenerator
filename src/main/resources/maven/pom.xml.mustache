@@ -18,6 +18,8 @@
     <properties>
         <maven.compiler.source>{{javaVersion.value}}</maven.compiler.source>
         <maven.compiler.target>{{javaVersion.value}}</maven.compiler.target>
+        <openapi.api.package>{{groupId}}.openapi.api</openapi.api.package>
+        <openapi.model.package>{{groupId}}.openapi.model</openapi.model.package>
     </properties>
 
     <dependencies>
@@ -113,11 +115,12 @@
                             </inputSpec>
 
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.evans.openapi.api</apiPackage>
-                            <modelPackage>com.evans.openapi.model</modelPackage>
+                            <apiPackage>${openapi.api.package}</apiPackage>
+                            <modelPackage>${openapi.model.package}</modelPackage>
                             <generateApis>true</generateApis>
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
+                            <modelNameSuffix>DTO</modelNameSuffix>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <skipDefaultInterface>true</skipDefaultInterface>

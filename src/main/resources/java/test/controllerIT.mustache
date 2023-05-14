@@ -23,7 +23,7 @@ public class {{className}} {
   private WebTestClient webTestClient;
 
   @Test
-  public void findAll() {
+  public void getAll{{entityName}}() {
     webTestClient.get().uri("/{{entityNameCamel}}")
         .exchange()
         .expectStatus().isOk();
@@ -38,7 +38,7 @@ public class {{className}} {
   {{/manyToOneSideModels}}
 
   @Test
-  public void findById() {
+  public void get{{entityName}}ById() {
     webTestClient.get().uri("/{{entityNameCamel}}/{id}", 99L)
         .exchange()
         .expectStatus().isNotFound();
@@ -52,7 +52,7 @@ public class {{className}} {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue({{dtoName}})
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isCreated();
   }
 
   @Test
@@ -64,7 +64,7 @@ public class {{className}} {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue({{dtoName}})
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isCreated();
 
     {{dtoType}} updated{{dtoType}} = {{>updatedPojoInstance}}
     webTestClient.put().uri("/{{entityNameCamel}}/{id}", 1L)
@@ -83,7 +83,7 @@ public class {{className}} {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue({{dtoName}})
         .exchange()
-        .expectStatus().isOk()
+        .expectStatus().isCreated()
         .expectBody({{dtoType}}.class)
         .returnResult()
         .getResponseBody();

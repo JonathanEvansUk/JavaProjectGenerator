@@ -25,6 +25,7 @@ public class ControllerTestGenerator implements JavaFileGenerator<ControllerTest
                                String serviceName,
                                String dtoName,
                                String dtoType,
+                               String entityName,
                                List<String> imports) implements JavaClassTemplateData {
 
   }

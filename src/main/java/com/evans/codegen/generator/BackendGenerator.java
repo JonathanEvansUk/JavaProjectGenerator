@@ -102,7 +102,8 @@ public class BackendGenerator {
 
   public void generate(List<Model> models) throws IOException {
     String appName = "MyApp";
-    generateMaven(appName);
+    String groupId = "com.evans";
+    generateMaven(appName, groupId);
     generateApplication();
     generateOpenAPISpec(appName, models);
 
@@ -122,7 +123,7 @@ public class BackendGenerator {
       }
 
       private static String generateDTOImport(Model model, String basePackage) {
-        return basePackage + ".controller.dto." + model.name() + "DTO";
+        return basePackage + ".openapi.model." + model.name() + "DTO";
       }
     }
 
@@ -169,7 +170,7 @@ public class BackendGenerator {
 
     for (Model model : models) {
       generate(model, importsByModelName,
-          manyToOneRelationshipsForModel.getOrDefault(model, List.of()));
+          manyToOneRelationshipsForModel.getOrDefault(model, List.of()), groupId);
     }
   }
 
@@ -183,6 +184,7 @@ public class BackendGenerator {
             appName,
             "Example Project Summary",
             "Example Project Description",
+            "com.evans",
             openAPIModels
     );
 
@@ -199,7 +201,8 @@ public class BackendGenerator {
                 new OpenAPISpec.OpenAPIModel.OpenAPIField(
                     field.name(),
                     resolveOpenAPIType(field),
-                    resolveOpenAPIRef(field)
+                    resolveOpenAPIRef(field),
+                    resolveOpenAPIFormat(field)
                 )
             )
             .toList()
@@ -226,9 +229,16 @@ public class BackendGenerator {
     };
   }
 
+  private String resolveOpenAPIFormat(FieldDefinition field) {
+    return switch (field.type()) {
+      case ID -> "int64";
+      default -> null;
+    };
+  }
 
-  private void generateMaven(String appName) throws IOException {
-    MavenProject mavenProject = new MavenProject("com.evans", "testproject", JavaVersion.JDK_17);
+
+  private void generateMaven(String appName, String groupId) throws IOException {
+    MavenProject mavenProject = new MavenProject(groupId, "testproject", JavaVersion.JDK_17);
     mavenGenerator.generate(mavenProject);
 
     ApplicationProperties applicationProperties = new ApplicationProperties(appName);
@@ -244,8 +254,9 @@ public class BackendGenerator {
   }
 
   private void generate(Model model, Map<String, String> importsByModelName,
-      List<Model> manyToOneSideModels) throws IOException {
-    String basePackage = "com.evans";
+      List<Model> manyToOneSideModels, String groupId) throws IOException {
+    // TODO add app name package - e.g com.evans.app
+    String basePackage = groupId;
     String repositoryPackage = basePackage + ".repository";
     String entityImport = repositoryPackage + "." + model.name();
 
@@ -317,7 +328,7 @@ public class BackendGenerator {
 
     String dtoType = model.name() + "DTO";
     String dtoPackage = basePackage + ".controller" + ".dto";
-    String dtoImport = dtoPackage + "." + dtoType;
+    String dtoImport = basePackage + ".openapi.model." + dtoType;
 
     String servicePackage = basePackage + ".service";
     String dtoNameCamel = modelNameCamel + "DTO";
@@ -355,6 +366,7 @@ public class BackendGenerator {
     String serviceImport = servicePackage + "." + serviceType;
 
     Controller controller = new Controller(basePackage + ".controller",
+        groupId,
         model.name() + "Controller",
         modelNameCamel,
         entityIdTypeSimpleName,
@@ -453,6 +465,7 @@ public class BackendGenerator {
         serviceName,
         dtoNameCamel,
         dtoType,
+        model.name(),
         List.of(serviceImport, dtoImport));
     controllerTestGenerator.generate(controllerTest);
 
@@ -462,6 +475,7 @@ public class BackendGenerator {
         dtoNameCamel,
         dtoType,
         modelNameCamel,
+        model.name(),
         fields,
         manyToOneSideModels,
         List.of(dtoImport));

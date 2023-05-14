@@ -33,68 +33,71 @@ public class {{className}} {
   }
 
   @Test
-  public void findAll() {
+  public void getAll{{entityName}}() {
     when({{serviceName}}.findAll()).thenReturn(List.of());
 
-    List<{{dtoType}}> all = {{controllerName}}.findAll();
+    ResponseEntity<List<{{dtoType}}>> response = {{controllerName}}.getAll{{entityName}}();
 
-    assertTrue(all.isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertTrue(response.getBody().isEmpty());
   }
 
   @Test
-  public void findById() {
+  public void get{{entityName}}ById() {
     long id = 1L;
     when({{serviceName}}.findById(id)).thenReturn(Optional.empty());
 
-    ResponseEntity<{{dtoType}}> byId = {{controllerName}}.findById(id);
+    ResponseEntity<{{dtoType}}> byId = {{controllerName}}.get{{entityName}}ById(id);
 
     assertEquals(HttpStatus.NOT_FOUND, byId.getStatusCode());
     assertFalse(byId.hasBody());
   }
 
   @Test
-  public void create() {
+  public void create{{entityName}}() {
     {{dtoType}} {{dtoName}} = new {{dtoType}}();
 
     when({{serviceName}}.save({{dtoName}})).thenReturn({{dtoName}});
 
-    {{dtoType}} created = {{controllerName}}.create({{dtoName}});
+    ResponseEntity<{{dtoType}}> response = {{controllerName}}.create{{entityName}}({{dtoName}});
 
-    assertEquals({{dtoName}}, created);
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    assertEquals({{dtoName}}, response.getBody());
   }
 
   @Test
-  public void update() {
+  public void update{{entityName}}ById() {
     long id = 1L;
     {{dtoType}} {{dtoName}} = new {{dtoType}}();
 
     when({{serviceName}}.update(id, {{dtoName}})).thenReturn({{dtoName}});
 
-    {{dtoType}} updated = {{controllerName}}.update(id, {{dtoName}});
+    ResponseEntity<{{dtoType}}> response = {{controllerName}}.update{{entityName}}ById(id, {{dtoName}});
 
-    assertEquals({{dtoName}}, updated);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals({{dtoName}}, response.getBody());
   }
 
   @Test
-  public void delete_notFound() {
+  public void delete{{entityName}}ById_notFound() {
     long id = 1L;
 
     when({{serviceName}}.delete(id)).thenReturn(Optional.empty());
 
-    ResponseEntity<{{dtoType}}> response = {{controllerName}}.delete(id);
+    ResponseEntity<{{dtoType}}> response = {{controllerName}}.delete{{entityName}}ById(id);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
   @Test
-  public void delete() {
+  public void delete{{entityName}}ById() {
     long id = 1L;
 
     {{dtoType}} {{dtoName}} = new {{dtoType}}();
 
     when({{serviceName}}.delete(id)).thenReturn(Optional.of({{dtoName}}));
 
-    ResponseEntity<{{dtoType}}> response = {{controllerName}}.delete(id);
+    ResponseEntity<{{dtoType}}> response = {{controllerName}}.delete{{entityName}}ById(id);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     assertFalse(response.hasBody());

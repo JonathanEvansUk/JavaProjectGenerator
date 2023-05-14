@@ -15,8 +15,8 @@ paths:
   /{{nameCamel}}:
     get:
       summary: Get {{name}}
-      description: Get {{name}}
-      operationId: get{{name}}
+      description: Get all {{name}}
+      operationId: getAll{{name}}
       responses:
         '200':
           description: OK
@@ -52,6 +52,7 @@ paths:
     get:
       summary: Get {{name}} by id
       description: Get {{name}} by id
+      operationId: get{{name}}ById
       parameters:
         - name: id
           in: path
@@ -74,6 +75,7 @@ paths:
     put:
       summary: Update {{name}} by id
       description: Update {{name}} by id
+      operationId: update{{name}}ById
       parameters:
         - name: id
           in: path
@@ -103,6 +105,7 @@ paths:
     delete:
       summary: Delete {{name}} by id
       description: Delete {{name}} by id
+      operationId: delete{{name}}ById
       parameters:
         - name: id
           in: path
@@ -146,6 +149,9 @@ components:
         {{#hasType}}
           type: {{type}}
         {{/hasType}}
+        {{#hasFormat}}
+          format: {{format}}
+        {{/hasFormat}}
         {{#hasRef}}
           $ref: '#/components/schemas/{{ref}}'
         {{/hasRef}}

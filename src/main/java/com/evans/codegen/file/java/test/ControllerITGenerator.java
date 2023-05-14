@@ -24,6 +24,7 @@ public class ControllerITGenerator implements JavaFileGenerator<ControllerIT> {
                              String dtoName,
                              String dtoType,
                              String entityNameCamel,//TODO rename this maybe to reflect the fact it is url
+                             String entityName,
                              List<Field> fields,
                              List<Model> manyToOneSideModels,
                              List<String> imports) implements JavaClassTemplateData {}

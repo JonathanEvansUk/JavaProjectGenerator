@@ -1,5 +1,7 @@
 package {{packageName}};
 
+import {{groupId}}.openapi.api.{{entityName}}Api;
+import {{groupId}}.openapi.model.{{entityName}}DTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +22,7 @@ import {{.}};
 @CrossOrigin
 @RestController
 @RequestMapping("/{{entityNameCamel}}")
-public class {{className}} {
+public class {{className}} implements {{entityName}}Api {
 
   private final {{serviceType}} {{serviceName}};
 
@@ -29,36 +31,36 @@ public class {{className}} {
   }
 
   @GetMapping
-  public List<{{dtoType}}> findAll() {
-    return {{serviceName}}.findAll();
+  public ResponseEntity<List<{{dtoType}}>> getAll{{entityName}}() {
+    return ResponseEntity.ok({{serviceName}}.findAll());
   }
   {{#manyToOneSideModels}}
 
   @GetMapping("/unusedBy{{name}}")
-  public List<{{dtoType}}> findUnusedBy{{name}}() {
-    return {{serviceName}}.findUnusedBy{{name}}();
+  public ResponseEntity<List<{{dtoType}}>> findUnusedBy{{name}}() {
+    return ResponseEntity.of({{serviceName}}.findUnusedBy{{name}}());
   }
   {{/manyToOneSideModels}}
 
   @GetMapping("/{id}")
-  public ResponseEntity<{{dtoType}}> findById(@PathVariable {{entityIdType}} id) {
+  public ResponseEntity<{{dtoType}}> get{{entityName}}ById(@PathVariable {{entityIdType}} id) {
     Optional<{{dtoType}}> {{entityNameCamel}} = {{serviceName}}.findById(id);
 
     return ResponseEntity.of({{entityNameCamel}});
   }
 
   @PostMapping
-  public {{dtoType}} create(@RequestBody {{dtoType}} {{entityNameCamel}}) {
-    return {{serviceName}}.save({{entityNameCamel}});
+  public ResponseEntity<{{dtoType}}> create{{entityName}}(@RequestBody {{dtoType}} {{entityNameCamel}}) {
+    return ResponseEntity.status(201).body({{serviceName}}.save({{entityNameCamel}}));
   }
 
   @PutMapping("/{id}")
-  public {{dtoType}} update(@PathVariable Long id, @RequestBody {{dtoType}} {{entityNameCamel}}) {
-    return {{serviceName}}.update(id, {{entityNameCamel}});
+  public ResponseEntity<{{dtoType}}> update{{entityName}}ById(@PathVariable Long id, @RequestBody {{dtoType}} {{entityNameCamel}}) {
+    return ResponseEntity.ok({{serviceName}}.update(id, {{entityNameCamel}}));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<{{dtoType}}> delete(@PathVariable {{entityIdType}} id) {
+  public ResponseEntity<{{dtoType}}> delete{{entityName}}ById(@PathVariable {{entityIdType}} id) {
     Optional<{{dtoType}}> {{entityNameCamel}} = {{serviceName}}.delete(id);
 
     if ({{entityNameCamel}}.isPresent()) {
