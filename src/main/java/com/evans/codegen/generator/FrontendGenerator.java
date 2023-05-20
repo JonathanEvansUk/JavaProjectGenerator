@@ -122,6 +122,10 @@ public class FrontendGenerator {
             "Utils.js")
         .from(staticReactResourcesPath)
         .to("output/web/src/utils");
+
+    Copy.files(".dockerignore", "Dockerfile", "nginx.conf")
+        .from("src/main/resources/docker/frontend")
+        .to("output/web");
   }
 
   record Copy(List<String> files) {
