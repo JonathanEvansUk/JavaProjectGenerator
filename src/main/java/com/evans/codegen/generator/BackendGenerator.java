@@ -47,7 +47,11 @@ import com.evans.codegen.file.openapi.OpenAPISpec;
 import com.evans.codegen.file.openapi.OpenAPISpecGenerator;
 import lombok.RequiredArgsConstructor;
 
+
+import javax.inject.Inject;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -56,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class BackendGenerator {
@@ -75,6 +78,7 @@ public class BackendGenerator {
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
   private final TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator;
   private final OpenAPISpecGenerator openAPISpecGenerator;
+  private final PostmanCollectionGenerator postmanCollectionGenerator;
   private final DockerfileGenerator dockerfileGenerator;
   private final DockerComposeGenerator dockerComposeGenerator;
 
@@ -85,6 +89,8 @@ public class BackendGenerator {
         JavaVersion.JDK_17);
     generateMaven(mavenProject);
     generateApplication();
+    generateOpenAPISpec(appName, entities);
+    generatePostmanCollection(appName, entities);
     generateDocker(mavenProject);
     generateOpenAPISpec(appName, entities);
 
@@ -241,6 +247,15 @@ public class BackendGenerator {
     applicationGenerator.generate(application);
   }
 
+  private void generatePostmanCollection(String appName, List<Entity> entities) throws IOException {
+    String json = postmanCollectionGenerator.generate(appName, entities);
+
+    Files.writeString(
+            Path.of("output/postman_collection.json"),
+            json
+    );
+  }
+
   private void generateDocker(MavenProject mavenProject) throws IOException {
     Dockerfile dockerfile = new Dockerfile(mavenProject.artifactId());
     dockerfileGenerator.generate(dockerfile);
@@ -251,7 +266,7 @@ public class BackendGenerator {
   }
 
   private void generate(Entity entity, Map<String, String> importsByEntityName,
-                        List<Entity> manyToOneSideEntities, String groupId) throws IOException {
+      List<Entity> manyToOneSideEntities, String groupId) throws IOException {
     // TODO add app name package - e.g com.evans.app
     String basePackage = groupId;
     String repositoryPackage = basePackage + ".repository";
