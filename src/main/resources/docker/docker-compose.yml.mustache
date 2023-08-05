@@ -20,6 +20,7 @@ services:
 
   {{projectName}}:
     build: .
+    # platform: linux/amd64
     ports:
       - "8080:8080"
     depends_on:
@@ -28,7 +29,15 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/{{databaseName}}
       SPRING_DATASOURCE_USERNAME: myappuser
-      DATABASE_PASSWORD: myapppassword
+      SPRING_DATASOURCE_PASSWORD: myapppassword
+    networks:
+      - example-app
+
+  frontend:
+    build: ./web
+    platform: linux/amd64
+    ports:
+      - "80:80"
     networks:
       - example-app
 

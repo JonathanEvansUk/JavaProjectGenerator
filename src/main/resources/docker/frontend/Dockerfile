@@ -2,7 +2,7 @@
 FROM node:current-alpine3.17 as build
 WORKDIR /app
 COPY package.json .
-COPY yarn.lock .
+RUN apk add --no-cache git make clang build-base python3
 RUN yarn install
 COPY . .
 RUN yarn build

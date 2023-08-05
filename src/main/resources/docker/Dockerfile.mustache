@@ -1,5 +1,6 @@
 # Use a lightweight, Alpine-based image of the latest OpenJDK 17
-FROM eclipse-temurin:17-jre-alpine
+#FROM --platform=linux/amd64 eclipse-temurin:17-jre-alpine
+FROM arm64v8/eclipse-temurin:17-jre
 
 # Set the working directory to /app
 WORKDIR /app
