@@ -4,12 +4,12 @@ import com.evans.codegen.domain.FieldDefinition.FieldType;
 import java.util.List;
 
 //TODO find better name for this
-public record Model(String name,
-                    FieldType idType,
-                    FieldDefinition idField,
-                    List<FieldDefinition> fields) {
+public record Entity(String name,
+                     FieldType idType,
+                     FieldDefinition idField,
+                     List<FieldDefinition> fields) {
 
-  public static Model of(String name, List<FieldDefinition> fields) {
+  public static Entity of(String name, List<FieldDefinition> fields) {
     var idField = fields.stream()
         .filter(FieldDefinition::isId)
         .findFirst()
@@ -23,7 +23,7 @@ public record Model(String name,
         .orElseThrow(() -> new RuntimeException(
             "No ID field provided for model: " + name + ", fields: " + fields));
 
-    return new Model(name, idType, idField, fields);
+    return new Entity(name, idType, idField, fields);
   }
 
   public String nameCamel() {

@@ -28,14 +28,14 @@ public class {{className}} {
         .exchange()
         .expectStatus().isOk();
   }
-  {{#manyToOneSideModels}}
+  {{#manyToOneSideEntities}}
 
   @Test public void findUnusedBy{{name}}() {
     webTestClient.get().uri("/{{entityNameCamel}}/unusedBy{{name}}")
       .exchange()
       .expectStatus().isOk();
   }
-  {{/manyToOneSideModels}}
+  {{/manyToOneSideEntities}}
 
   @Test
   public void get{{entityName}}ById() {

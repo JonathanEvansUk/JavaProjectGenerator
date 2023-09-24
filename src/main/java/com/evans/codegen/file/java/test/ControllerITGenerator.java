@@ -1,6 +1,6 @@
 package com.evans.codegen.file.java.test;
 
-import com.evans.codegen.domain.Model;
+import com.evans.codegen.domain.Entity;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.entity.Entity.Field;
@@ -30,6 +30,6 @@ public class ControllerITGenerator implements JavaFileGenerator<ControllerIT> {
                              String entityNameCamel,//TODO rename this maybe to reflect the fact it is url
                              String entityName,
                              List<Field> fields,
-                             List<Model> manyToOneSideModels,
+                             List<Entity> manyToOneSideEntities,
                              List<String> imports) implements JavaClassTemplateData {}
 }

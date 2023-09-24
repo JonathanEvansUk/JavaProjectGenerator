@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.evans.codegen.config.DaggerGeneratorFactory;
+import com.evans.codegen.domain.Entity;
 import com.evans.codegen.domain.FieldDefinition.BooleanField;
 import com.evans.codegen.domain.FieldDefinition.DateField;
 import com.evans.codegen.domain.FieldDefinition.DateTimeField;
 import com.evans.codegen.domain.FieldDefinition.DoubleField;
 import com.evans.codegen.domain.FieldDefinition.IdField;
-import com.evans.codegen.domain.Model;
 import com.evans.codegen.generator.Generator;
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +37,8 @@ public class GeneratorIT {
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
     // define models
-    List<Model> models = List.of(
-        Model.of("Bill",
+    List<Entity> entities = List.of(
+        Entity.of("Bill",
             List.of(
                 new IdField("id", true),
                 new DoubleField("amount", false, "12.34"),
@@ -50,7 +50,7 @@ public class GeneratorIT {
     );
 
     // generate code
-    generator.generate(models);
+    generator.generate(entities);
 
     // verify that output folder contains expected output
     Path expectedOutputFolder = Path.of("src/test/resources/testOutputs/bill");
@@ -63,7 +63,7 @@ public class GeneratorIT {
 
         //verify that relativePath exists in /output
         Path outputFilePath = output.resolve(relativePath);
-        assertTrue(Files.exists(outputFilePath));
+        assertTrue(Files.exists(outputFilePath), "Expected file to exist: " + outputFilePath);
 
         if (Files.isRegularFile(file)) {
           compareFiles(file, outputFilePath);
@@ -77,8 +77,8 @@ public class GeneratorIT {
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
     // define models
-    List<Model> models = List.of(
-        Model.of("Bill",
+    List<Entity> entities = List.of(
+        Entity.of("Bill",
             List.of(
                 new IdField("id", true),
                 new DoubleField("amount", false, "12.34"),
@@ -90,7 +90,7 @@ public class GeneratorIT {
     );
 
     // generate code
-    generator.generate(models);
+    generator.generate(entities);
 
     // run maven verify on the generated project
     InvocationRequest request = new DefaultInvocationRequest()

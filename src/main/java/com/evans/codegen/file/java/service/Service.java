@@ -1,6 +1,6 @@
 package com.evans.codegen.file.java.service;
 
-import com.evans.codegen.domain.Model;
+import com.evans.codegen.domain.Entity;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.entity.Entity.Field;
 import com.evans.codegen.generator.BackendGenerator.Relationship;
@@ -18,7 +18,7 @@ public record Service(String packageName,
                       String repositoryName,
                       List<Field> fields,
                       List<String> imports,
-                      List<Model> manyToOneSideModels) implements JavaClassTemplateData {
+                      List<Entity> manyToOneSideEntities) implements JavaClassTemplateData {
 
   @Override
   public String className() {

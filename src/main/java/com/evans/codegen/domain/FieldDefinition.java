@@ -160,11 +160,11 @@ public sealed interface FieldDefinition {
 
   sealed interface RelationalField extends FieldDefinition {
 
-    Model associationModel();
+    Entity associationEntity();
 
     record OneToManyField(String name,
                           boolean required,
-                          Model associationModel) implements RelationalField {
+                          Entity associationEntity) implements RelationalField {
 
       @Override
       public FieldType type() {
@@ -180,7 +180,7 @@ public sealed interface FieldDefinition {
 
     record ManyToOneField(String name,
                           boolean required,
-                          Model associationModel) implements RelationalField {
+                          Entity associationEntity) implements RelationalField {
 
       @Override
       public FieldType type() {

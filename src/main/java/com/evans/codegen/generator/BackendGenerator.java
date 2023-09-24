@@ -3,13 +3,13 @@ package com.evans.codegen.generator;
 import static com.evans.codegen.StringUtils.capitalise;
 import static java.util.stream.Collectors.toList;
 
+import com.evans.codegen.domain.Entity;
 import com.evans.codegen.domain.FieldDefinition;
 import com.evans.codegen.domain.FieldDefinition.EnumField;
 import com.evans.codegen.domain.FieldDefinition.FieldType;
 import com.evans.codegen.domain.FieldDefinition.RelationalField;
 import com.evans.codegen.domain.FieldDefinition.RelationalField.ManyToOneField;
 import com.evans.codegen.domain.FieldDefinition.RelationalField.OneToManyField;
-import com.evans.codegen.domain.Model;
 import com.evans.codegen.file.docker.DockerCompose;
 import com.evans.codegen.file.docker.DockerComposeGenerator;
 import com.evans.codegen.file.docker.Dockerfile;
@@ -23,7 +23,6 @@ import com.evans.codegen.file.java.dto.DTOConverterGenerator.DTOConverter;
 import com.evans.codegen.file.java.dto.DTOConverterGenerator.DTOConverter.Subconverter;
 import com.evans.codegen.file.java.dto.DTOGenerator;
 import com.evans.codegen.file.java.dto.DTOGenerator.DTO;
-import com.evans.codegen.file.java.entity.Entity;
 import com.evans.codegen.file.java.entity.Entity.Enum;
 import com.evans.codegen.file.java.entity.Entity.Enum.Option;
 import com.evans.codegen.file.java.entity.Entity.Field;
@@ -78,7 +77,7 @@ public class BackendGenerator {
   private final DockerfileGenerator dockerfileGenerator;
   private final DockerComposeGenerator dockerComposeGenerator;
 
-  public void generate(List<Model> models) throws IOException {
+  public void generate(List<Entity> entities) throws IOException {
     String appName = "MyApp";
     String groupId = "com.evans";
     MavenProject mavenProject = new MavenProject(appName, groupId, "testproject",
@@ -86,33 +85,33 @@ public class BackendGenerator {
     generateMaven(mavenProject);
     generateApplication();
     generateDocker(mavenProject);
-    generateOpenAPISpec(appName, models);
+    generateOpenAPISpec(appName, entities);
 
     record NameAndPackage(String modelName,
                           String packageName) {
 
-      static NameAndPackage forModel(Model model, String basePackage) {
-        return new NameAndPackage(model.name(), generateModelImport(model, basePackage));
+      static NameAndPackage forEntity(Entity entity, String basePackage) {
+        return new NameAndPackage(entity.name(), generateEntityImport(entity, basePackage));
       }
 
-      private static String generateModelImport(Model model, String basePackage) {
-        return basePackage + ".repository." + model.name();
+      private static String generateEntityImport(Entity entity, String basePackage) {
+        return basePackage + ".repository." + entity.name();
       }
 
-      static NameAndPackage forDTO(Model model, String basePackage) {
-        return new NameAndPackage(model.name() + "DTO", generateDTOImport(model, basePackage));
+      static NameAndPackage forDTO(Entity entity, String basePackage) {
+        return new NameAndPackage(entity.name() + "DTO", generateDTOImport(entity, basePackage));
       }
 
-      private static String generateDTOImport(Model model, String basePackage) {
-        return basePackage + ".openapi.model." + model.name() + "DTO";
+      private static String generateDTOImport(Entity entity, String basePackage) {
+        return basePackage + ".openapi.model." + entity.name() + "DTO";
       }
     }
 
     String basePackage = "com.evans";
-    Map<String, String> importsByModelName = models.stream()
-        .map(model -> List.of(
-            NameAndPackage.forModel(model, basePackage),
-            NameAndPackage.forDTO(model, basePackage)
+    Map<String, String> importsByEntityName = entities.stream()
+        .map(entity -> List.of(
+            NameAndPackage.forEntity(entity, basePackage),
+            NameAndPackage.forDTO(entity, basePackage)
         ))
         .flatMap(Collection::stream)
         .collect(Collectors.toMap(
@@ -121,43 +120,43 @@ public class BackendGenerator {
         ));
 
     //find all oneToMany relationships, then find the many side
-    Map<Model, List<Model>> manyToOneRelationshipsByModel;
+    Map<Entity, List<Entity>> manyToOneRelationshipsByModel;
 
     //for each model, does it have a oneToMany field?
     // if yes, then we need to add the association model as key and model as list entry
 
-    record OneToManyRelationshipsForModel(Model model,
-                                          List<Model> oneToMany) {}
+    record OneToManyRelationshipsForModel(Entity model,
+                                          List<Entity> oneToMany) {}
 
-    var oneToManyRelationshipsForModels = models.stream()
+    var oneToManyRelationshipsForModels = entities.stream()
         .map(model -> new OneToManyRelationshipsForModel(model, model.fields().stream()
             .filter(FieldDefinition::isOneToMany)
             .map(OneToManyField.class::cast)
-            .map(OneToManyField::associationModel)
+            .map(OneToManyField::associationEntity)
             .toList()))
         .toList();
 
-    record OneToManyRelationship(Model oneSide,
-                                 Model manySide) {}
+    record OneToManyRelationship(Entity oneSide,
+                                 Entity manySide) {}
 
     List<OneToManyRelationship> oneToManyRelationships = oneToManyRelationshipsForModels.stream()
         .flatMap(relationship -> relationship.oneToMany().stream()
             .map(oneToManyModel -> new OneToManyRelationship(relationship.model(), oneToManyModel)))
         .toList();
 
-    Map<Model, List<Model>> manyToOneRelationshipsForModel = oneToManyRelationships.stream()
+    Map<Entity, List<Entity>> manyToOneRelationshipsForModel = oneToManyRelationships.stream()
         .collect(Collectors.groupingBy(OneToManyRelationship::manySide, Collectors.mapping(
             OneToManyRelationship::oneSide, toList())));
 
-    for (Model model : models) {
-      generate(model, importsByModelName,
-          manyToOneRelationshipsForModel.getOrDefault(model, List.of()), groupId);
+    for (Entity entity : entities) {
+      generate(entity, importsByEntityName,
+          manyToOneRelationshipsForModel.getOrDefault(entity, List.of()), groupId);
     }
   }
 
-  private void generateOpenAPISpec(String appName, List<Model> models) throws IOException {
+  private void generateOpenAPISpec(String appName, List<Entity> entities) throws IOException {
 
-    List<OpenAPISpec.OpenAPIModel> openAPIModels = models.stream()
+    List<OpenAPISpec.OpenAPIModel> openAPIModels = entities.stream()
         .map(this::convert)
         .toList();
 
@@ -173,11 +172,11 @@ public class BackendGenerator {
   }
 
   // TODO rename and extract
-  private OpenAPISpec.OpenAPIModel convert(Model model) {
+  private OpenAPISpec.OpenAPIModel convert(Entity entity) {
     return new OpenAPISpec.OpenAPIModel(
-        model.name(),
-        model.nameCamel(),
-        model.fields().stream()
+        entity.name(),
+        entity.nameCamel(),
+        entity.fields().stream()
             .map(field ->
                 new OpenAPISpec.OpenAPIModel.OpenAPIField(
                     field.name(),
@@ -243,8 +242,8 @@ public class BackendGenerator {
 
   }
 
-  private void generate(Model model, Map<String, String> importsByModelName,
-      List<Model> manyToOneSideModels, String groupId) throws IOException {
+  private void generate(Entity model, Map<String, String> importsByModelName,
+                        List<Entity> manyToOneSideEntities, String groupId) throws IOException {
     // TODO add app name package - e.g com.evans.app
     String basePackage = groupId;
     String repositoryPackage = basePackage + ".repository";
@@ -259,8 +258,8 @@ public class BackendGenerator {
     List<String> oneToManyModelNames = model.fields().stream()
         .filter(FieldDefinition::isOneToMany)
         .map(OneToManyField.class::cast)
-        .map(OneToManyField::associationModel)
-        .map(Model::name)
+        .map(OneToManyField::associationEntity)
+        .map(Entity::name)
         .toList();
 
     List<String> oneToManyImports = oneToManyModelNames.stream()
@@ -280,8 +279,8 @@ public class BackendGenerator {
     List<String> manyToOneModelNames = model.fields().stream()
         .filter(field -> field instanceof ManyToOneField)
         .map(ManyToOneField.class::cast)
-        .map(ManyToOneField::associationModel)
-        .map(Model::name)
+        .map(ManyToOneField::associationEntity)
+        .map(Entity::name)
         .toList();
 
     List<String> manyToOneImports = manyToOneModelNames.stream()
@@ -308,7 +307,7 @@ public class BackendGenerator {
         List.of(entityImport, entityIdTypeImport),
         model.name(),
         entityIdTypeSimpleName,
-        manyToOneSideModels);
+        manyToOneSideEntities);
     repositoryGenerator.generate(repository);
 
     String repositoryType = model.name() + "Repository";
@@ -347,7 +346,7 @@ public class BackendGenerator {
         repositoryName,
         fields,
         serviceImports,
-        manyToOneSideModels
+        manyToOneSideEntities
     );
     serviceGenerator.generate(service);
 
@@ -364,7 +363,7 @@ public class BackendGenerator {
         serviceName,
         dtoType,
         List.of(dtoImport, serviceImport, entityIdTypeImport),
-        manyToOneSideModels);
+        manyToOneSideEntities);
     controllerGenerator.generate(controller);
 
     List<String> entityImports = model.fields().stream()
@@ -391,8 +390,8 @@ public class BackendGenerator {
                     .toList()))
         .toList();
 
-    Entity entity = new Entity(basePackage + ".repository", model.name(), entityImports,
-        fields, enums, manyToOneSideModels);
+    com.evans.codegen.file.java.entity.Entity entity = new com.evans.codegen.file.java.entity.Entity(basePackage + ".repository", model.name(), entityImports,
+        fields, enums, manyToOneSideEntities);
     entityGenerator.generate(entity);
 
     List<String> dtoImports = model.fields()
@@ -422,8 +421,8 @@ public class BackendGenerator {
         .filter(field -> field instanceof RelationalField)
         .map(RelationalField.class::cast)
         .map(field -> {
-          String associationModelName = field.associationModel().name();
-          String associationModelNameCamel = field.associationModel().nameCamel();
+          String associationModelName = field.associationEntity().name();
+          String associationModelNameCamel = field.associationEntity().nameCamel();
           return new Subconverter(
               associationModelName,
               associationModelNameCamel + "DTOConverter",
@@ -468,7 +467,7 @@ public class BackendGenerator {
         modelNameCamel,
         model.name(),
         fields,
-        manyToOneSideModels,
+        manyToOneSideEntities,
         List.of(dtoImport));
     controllerITGenerator.generate(controllerIT);
   }
@@ -490,7 +489,7 @@ public class BackendGenerator {
     Relationship relationship = resolveRelationship(fieldDefinition.type());
     String associationModelName = null;
     if (fieldDefinition instanceof RelationalField relationalField) {
-      associationModelName = relationalField.associationModel().name();
+      associationModelName = relationalField.associationEntity().name();
     }
 
     return new Field(
@@ -548,7 +547,7 @@ public class BackendGenerator {
   private TypeInformation resolveOneToManyTypeInformation(OneToManyField field,
       Map<String, String> importsByModelName, boolean forDto) {
 
-    String modelName = field.associationModel().name();
+    String modelName = field.associationEntity().name();
     if (forDto) {
       modelName += "DTO";
     }
@@ -564,7 +563,7 @@ public class BackendGenerator {
   private TypeInformation resolveManyToOneTypeInformation(ManyToOneField field,
       Map<String, String> importsByModelName, boolean forDto) {
 
-    String modelName = field.associationModel().name();
+    String modelName = field.associationEntity().name();
     if (forDto) {
       modelName += "DTO";
     }

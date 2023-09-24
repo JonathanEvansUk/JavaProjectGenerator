@@ -35,7 +35,7 @@ public class {{className}} {
         .map(this::convert)
         .toList();
   }
-  {{#manyToOneSideModels}}
+  {{#manyToOneSideEntities}}
 
   public List<{{dtoType}}> findUnusedBy{{name}}() {
     return {{repositoryName}}.findBy{{name}}IsNull()
@@ -43,7 +43,7 @@ public class {{className}} {
       .map(this::convert)
       .toList();
   }
-  {{/manyToOneSideModels}}
+  {{/manyToOneSideEntities}}
 
   public Optional<{{dtoType}}> findById({{entityIdType}} id) {
     return {{repositoryName}}.findById(id)

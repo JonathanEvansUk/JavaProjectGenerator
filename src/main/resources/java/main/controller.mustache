@@ -34,13 +34,13 @@ public class {{className}} implements {{entityName}}Api {
   public ResponseEntity<List<{{dtoType}}>> getAll{{entityName}}() {
     return ResponseEntity.ok({{serviceName}}.findAll());
   }
-  {{#manyToOneSideModels}}
+  {{#manyToOneSideEntities}}
 
   @GetMapping("/unusedBy{{name}}")
   public ResponseEntity<List<{{dtoType}}>> findUnusedBy{{name}}() {
     return ResponseEntity.of({{serviceName}}.findUnusedBy{{name}}());
   }
-  {{/manyToOneSideModels}}
+  {{/manyToOneSideEntities}}
 
   @GetMapping("/{id}")
   public ResponseEntity<{{dtoType}}> get{{entityName}}ById(@PathVariable {{entityIdType}} id) {

@@ -65,11 +65,11 @@ public class {{className}} {
   private {{{simpleTypeName}}} {{name}}{{#isOneToMany}}= new ArrayList<>(){{/isOneToMany}};
 
 {{/fields}}
-{{#manyToOneSideModels}}
+{{#manyToOneSideEntities}}
   @ManyToOne(fetch = FetchType.LAZY)
   private {{name}} {{nameCamel}};
 
-{{/manyToOneSideModels}}
+{{/manyToOneSideEntities}}
 {{! begin feature: getter methods }}
 {{#fields}}
   public {{{simpleTypeName}}} {{getterName}}() {
@@ -94,11 +94,11 @@ public class {{className}} {
 {{/-last}}
 {{/fields}}
 
-{{#manyToOneSideModels}}
+{{#manyToOneSideEntities}}
   public void set{{name}}({{name}} {{nameCamel}}) {
     this.{{nameCamel}} = {{nameCamel}};
   }
-{{/manyToOneSideModels}}
+{{/manyToOneSideEntities}}
 {{! end feature: setter methods }}
 {{#enums}}
   public enum {{name}} {

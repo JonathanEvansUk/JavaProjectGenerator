@@ -2,8 +2,7 @@ package com.evans.codegen.generator;
 
 import com.evans.codegen.domain.FieldDefinition;
 import com.evans.codegen.domain.FieldDefinition.RelationalField;
-import com.evans.codegen.domain.FieldDefinition.RelationalField.OneToManyField;
-import com.evans.codegen.domain.Model;
+import com.evans.codegen.domain.Entity;
 import com.evans.codegen.file.react.AppJsGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.AppJs;
 import com.evans.codegen.file.react.AppJsGenerator.WebField;
@@ -51,7 +50,7 @@ public class FrontendGenerator {
                 field.name(),
                 field.required(),
                 field.type(),
-                camelise(relationalField.associationModel().name())
+                camelise(relationalField.associationEntity().name())
             );
           }
 
@@ -64,8 +63,8 @@ public class FrontendGenerator {
     return string.substring(0, 1).toLowerCase() + string.substring(1);
   }
 
-  public void generate(List<Model> models) throws IOException {
-    var webModels = models.stream()
+  public void generate(List<Entity> entities) throws IOException {
+    var webModels = entities.stream()
         .map(model -> new WebModel(model.name(), convert(model.fields())))
         .toList();
 

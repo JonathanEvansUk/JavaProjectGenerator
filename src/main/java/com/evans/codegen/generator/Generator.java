@@ -1,6 +1,6 @@
 package com.evans.codegen.generator;
 
-import com.evans.codegen.domain.Model;
+import com.evans.codegen.domain.Entity;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -17,10 +17,10 @@ public class Generator {
   private final BackendGenerator backendGenerator;
   private final FrontendGenerator frontendGenerator;
 
-  public void generate(List<Model> models) throws IOException {
+  public void generate(List<Entity> entities) throws IOException {
 //    clearOutputDirectory();
-    backendGenerator.generate(models);
-    frontendGenerator.generate(models);
+    backendGenerator.generate(entities);
+    frontendGenerator.generate(entities);
   }
 
   private void clearOutputDirectory() throws IOException {

@@ -3,7 +3,6 @@ package com.evans.codegen.file.java.entity;
 import static com.evans.codegen.StringUtils.capitalise;
 
 import com.evans.codegen.domain.FieldDefinition.FieldType;
-import com.evans.codegen.domain.Model;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.generator.BackendGenerator.Relationship;
 import java.util.List;
@@ -15,7 +14,7 @@ public record Entity(String packageName,
                      List<String> imports,
                      List<Field> fields,
                      List<Enum> enums,
-                     List<Model> manyToOneSideModels) implements JavaClassTemplateData {
+                     List<com.evans.codegen.domain.Entity> manyToOneSideEntities) implements JavaClassTemplateData {
 
   Set<Relationship> fieldRelationships() {
     return fields.stream().map(Field::relationship).collect(Collectors.toSet());
@@ -33,7 +32,7 @@ public record Entity(String packageName,
     return fieldRelationships().contains(Relationship.MANY_TO_ONE);
   }
 
-  boolean hasManyToOneSide() { return !manyToOneSideModels().isEmpty(); }
+  boolean hasManyToOneSide() { return !manyToOneSideEntities().isEmpty(); }
 
   boolean hasManyToOneAnnotation() {
     return hasManyToOne() || hasManyToOneSide();
