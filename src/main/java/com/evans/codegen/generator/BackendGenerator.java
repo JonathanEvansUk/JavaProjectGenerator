@@ -223,12 +223,11 @@ public class BackendGenerator {
 
   private String resolveOpenAPIType(FieldDefinition field) {
     return switch (field.type()) {
-      case STRING, JSON -> "string";
+      case STRING, JSON, DATE_TIME, DATE -> "string";
+      case STRING, JSON, DATE_TIME, DATE -> "string";
       case ID -> "integer";
       case DOUBLE -> "number";
       case BOOLEAN -> "boolean";
-      case DATE -> "date";
-      case DATE_TIME -> "date-time";
       case ENUM -> "enum";
       case ONE_TO_MANY, MANY_TO_ONE -> null;
     };
@@ -244,6 +243,9 @@ public class BackendGenerator {
   private String resolveOpenAPIFormat(FieldDefinition field) {
     return switch (field.type()) {
       case ID -> "int64";
+      case DATE -> "date";
+      case DATE_TIME -> "date-time";
+      case DOUBLE -> "double";
       default -> null;
     };
   }
