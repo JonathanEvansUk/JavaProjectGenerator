@@ -1,17 +1,21 @@
 package com.evans.codegen.generator;
 
 import com.evans.codegen.domain.Model;
+import com.evans.codegen.domain.postman.Body;
 import com.evans.codegen.domain.postman.Collection;
-import com.evans.codegen.domain.postman.Collection.*;
-import com.evans.codegen.domain.postman.Collection.Items.Item;
+import com.evans.codegen.domain.postman.Entry;
+import com.evans.codegen.domain.postman.Info;
+import com.evans.codegen.domain.postman.Items;
+import com.evans.codegen.domain.postman.Items.Item;
+import com.evans.codegen.domain.postman.Request;
+import com.evans.codegen.domain.postman.Url;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.inject.Inject;
 
 public class PostmanCollectionGenerator {
 
