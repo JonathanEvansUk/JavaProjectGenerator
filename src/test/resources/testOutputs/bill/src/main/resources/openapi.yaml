@@ -1,0 +1,155 @@
+openapi: "3.0.3"
+info:
+  title: MyApp
+  description: Example Project Description
+  contact:
+    name: API Support
+    url: https://www.example.com/support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+paths:
+  /bill:
+    get:
+      summary: Get Bill
+      description: Get all Bill
+      operationId: getAllBill
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bill'
+        '500':
+          description: Internal Server Error
+    post:
+      summary: Create Bill
+      description: Create Bill
+      operationId: createBill
+      requestBody:
+        description: Bill object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bill'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '500':
+          description: Internal Server Error
+  /bill/{id}:
+    get:
+      summary: Get Bill by id
+      description: Get Bill by id
+      operationId: getBillById
+      parameters:
+        - name: id
+          in: path
+          description: id of Bill
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      summary: Update Bill by id
+      description: Update Bill by id
+      operationId: updateBillById
+      parameters:
+        - name: id
+          in: path
+          description: id of Bill
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Bill object that needs to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bill'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: Delete Bill by id
+      description: Delete Bill by id
+      operationId: deleteBillById
+      parameters:
+        - name: id
+          in: path
+          description: id of Bill
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+
+components:
+  parameters:
+    requestBill:
+      name: Bill
+      in: path
+      description: Identifier of Bill
+      required: true
+      schema:
+        $ref: '#/components/schemas/Bill'
+
+  schemas:
+    Bill:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        dateReceived:
+          type: string
+          format: date
+        paid:
+          type: boolean
+        datePaid:
+          type: string
+          format: date-time

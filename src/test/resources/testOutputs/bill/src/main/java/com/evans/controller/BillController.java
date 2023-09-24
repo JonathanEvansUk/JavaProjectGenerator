@@ -1,5 +1,7 @@
 package com.evans.controller;
 
+import com.evans.openapi.api.BillApi;
+import com.evans.openapi.model.BillDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
-import com.evans.controller.dto.BillDTO;
+import com.evans.openapi.model.BillDTO;
 import com.evans.service.BillService;
 import java.lang.Long;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/bill")
-public class BillController {
+public class BillController implements BillApi {
 
   private final BillService billService;
 
@@ -29,29 +31,29 @@ public class BillController {
   }
 
   @GetMapping
-  public List<BillDTO> findAll() {
-    return billService.findAll();
+  public ResponseEntity<List<BillDTO>> getAllBill() {
+    return ResponseEntity.ok(billService.findAll());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<BillDTO> findById(@PathVariable Long id) {
+  public ResponseEntity<BillDTO> getBillById(@PathVariable Long id) {
     Optional<BillDTO> bill = billService.findById(id);
 
     return ResponseEntity.of(bill);
   }
 
   @PostMapping
-  public BillDTO create(@RequestBody BillDTO bill) {
-    return billService.save(bill);
+  public ResponseEntity<BillDTO> createBill(@RequestBody BillDTO bill) {
+    return ResponseEntity.status(201).body(billService.save(bill));
   }
 
   @PutMapping("/{id}")
-  public BillDTO update(@PathVariable Long id, @RequestBody BillDTO bill) {
-    return billService.update(id, bill);
+  public ResponseEntity<BillDTO> updateBillById(@PathVariable Long id, @RequestBody BillDTO bill) {
+    return ResponseEntity.ok(billService.update(id, bill));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<BillDTO> delete(@PathVariable Long id) {
+  public ResponseEntity<BillDTO> deleteBillById(@PathVariable Long id) {
     Optional<BillDTO> bill = billService.delete(id);
 
     if (bill.isPresent()) {

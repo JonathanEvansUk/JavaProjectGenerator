@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import com.evans.repository.Bill;
-import com.evans.controller.dto.BillDTO;
+import com.evans.openapi.model.BillDTO;
 import com.evans.service.converter.BillDTOConverter;
 import com.evans.repository.BillRepository;
 import java.lang.Long;

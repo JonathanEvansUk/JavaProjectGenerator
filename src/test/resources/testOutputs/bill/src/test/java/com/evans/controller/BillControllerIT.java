@@ -1,6 +1,6 @@
 package com.evans.controller;
 
-import com.evans.controller.dto.BillDTO;
+import com.evans.openapi.model.BillDTO;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,14 +21,14 @@ public class BillControllerIT {
   private WebTestClient webTestClient;
 
   @Test
-  public void findAll() {
+  public void getAllBill() {
     webTestClient.get().uri("/bill")
         .exchange()
         .expectStatus().isOk();
   }
 
   @Test
-  public void findById() {
+  public void getBillById() {
     webTestClient.get().uri("/bill/{id}", 99L)
         .exchange()
         .expectStatus().isNotFound();
@@ -47,7 +47,7 @@ public class BillControllerIT {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(billDTO)
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isCreated();
   }
 
   @Test
@@ -64,7 +64,7 @@ public class BillControllerIT {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(billDTO)
         .exchange()
-        .expectStatus().isOk();
+        .expectStatus().isCreated();
 
     BillDTO updatedBillDTO = new BillDTO();
     updatedBillDTO.setId(1L);
@@ -94,7 +94,7 @@ public class BillControllerIT {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(billDTO)
         .exchange()
-        .expectStatus().isOk()
+        .expectStatus().isCreated()
         .expectBody(BillDTO.class)
         .returnResult()
         .getResponseBody();

@@ -3,7 +3,7 @@ package com.evans.service.converter;
 import org.springframework.stereotype.Service;
 
 import com.evans.repository.Bill;
-import com.evans.controller.dto.BillDTO;
+import com.evans.openapi.model.BillDTO;
 
 @Service
 public class BillDTOConverter {

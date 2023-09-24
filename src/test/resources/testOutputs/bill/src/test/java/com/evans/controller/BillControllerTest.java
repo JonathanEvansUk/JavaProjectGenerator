@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.evans.service.BillService;
-import com.evans.controller.dto.BillDTO;
+import com.evans.openapi.model.BillDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class BillControllerTest {
@@ -32,68 +32,71 @@ public class BillControllerTest {
   }
 
   @Test
-  public void findAll() {
+  public void getAllBill() {
     when(billService.findAll()).thenReturn(List.of());
 
-    List<BillDTO> all = billController.findAll();
+    ResponseEntity<List<BillDTO>> response = billController.getAllBill();
 
-    assertTrue(all.isEmpty());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertTrue(response.getBody().isEmpty());
   }
 
   @Test
-  public void findById() {
+  public void getBillById() {
     long id = 1L;
     when(billService.findById(id)).thenReturn(Optional.empty());
 
-    ResponseEntity<BillDTO> byId = billController.findById(id);
+    ResponseEntity<BillDTO> byId = billController.getBillById(id);
 
     assertEquals(HttpStatus.NOT_FOUND, byId.getStatusCode());
     assertFalse(byId.hasBody());
   }
 
   @Test
-  public void create() {
+  public void createBill() {
     BillDTO billDTO = new BillDTO();
 
     when(billService.save(billDTO)).thenReturn(billDTO);
 
-    BillDTO created = billController.create(billDTO);
+    ResponseEntity<BillDTO> response = billController.createBill(billDTO);
 
-    assertEquals(billDTO, created);
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    assertEquals(billDTO, response.getBody());
   }
 
   @Test
-  public void update() {
+  public void updateBillById() {
     long id = 1L;
     BillDTO billDTO = new BillDTO();
 
     when(billService.update(id, billDTO)).thenReturn(billDTO);
 
-    BillDTO updated = billController.update(id, billDTO);
+    ResponseEntity<BillDTO> response = billController.updateBillById(id, billDTO);
 
-    assertEquals(billDTO, updated);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(billDTO, response.getBody());
   }
 
   @Test
-  public void delete_notFound() {
+  public void deleteBillById_notFound() {
     long id = 1L;
 
     when(billService.delete(id)).thenReturn(Optional.empty());
 
-    ResponseEntity<BillDTO> response = billController.delete(id);
+    ResponseEntity<BillDTO> response = billController.deleteBillById(id);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
   @Test
-  public void delete() {
+  public void deleteBillById() {
     long id = 1L;
 
     BillDTO billDTO = new BillDTO();
 
     when(billService.delete(id)).thenReturn(Optional.of(billDTO));
 
-    ResponseEntity<BillDTO> response = billController.delete(id);
+    ResponseEntity<BillDTO> response = billController.deleteBillById(id);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     assertFalse(response.hasBody());

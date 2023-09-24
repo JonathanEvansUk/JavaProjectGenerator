@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: MyApp
+      MYSQL_USER: myappuser
+      MYSQL_PASSWORD: myapppassword
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    networks:
+      - example-app
+
+  testproject:
+    build: .
+    # platform: linux/amd64
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/MyApp
+      SPRING_DATASOURCE_USERNAME: myappuser
+      SPRING_DATASOURCE_PASSWORD: myapppassword
+    networks:
+      - example-app
+
+  frontend:
+    build: ./web
+    platform: linux/amd64
+    ports:
+      - "80:80"
+    networks:
+      - example-app
+
+
+volumes:
+  mysql-data:
+
+networks:
+  example-app:
+    name: example-app
