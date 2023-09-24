@@ -2,7 +2,7 @@ package com.evans.codegen.generator;
 
 import com.evans.codegen.domain.FieldDefinition.FieldType;
 import com.evans.codegen.file.react.AppJsGenerator.WebField;
-import com.evans.codegen.file.react.AppJsGenerator.WebModel;
+import com.evans.codegen.file.react.AppJsGenerator.WebEntity;
 import com.evans.codegen.file.react.CreateEntityGenerator.EntityForm;
 import com.evans.codegen.generator.EntityFormMapper.JsonFormSchema.Property;
 import com.evans.codegen.generator.EntityFormMapper.JsonFormSchema.Property.Items;
@@ -26,9 +26,9 @@ public class EntityFormMapper {
 
   private final ObjectMapper objectMapper;
 
-  public EntityForm createEntityForm(WebModel model, String formTitle)
+  public EntityForm createEntityForm(WebEntity entity, String formTitle)
       throws JsonProcessingException {
-    LinkedHashMap<String, Property> properties = model.fields().stream()
+    LinkedHashMap<String, Property> properties = entity.fields().stream()
         // remove ID fields as we want this to be auto-generated and hidden from the user
         .filter(field -> field.type() != FieldType.ID)
         .collect(Collectors.toMap(WebField::name, this::createProperty, (u, v) -> {
@@ -36,7 +36,7 @@ public class EntityFormMapper {
           throw new IllegalStateException("There cannot be 2 fields with the same name");
         }, LinkedHashMap::new));
 
-    var required = model.fields().stream()
+    var required = entity.fields().stream()
         // remove ID fields as we want this to be auto-generated and hidden from the user
         .filter(field -> field.type() != FieldType.ID)
         .filter(WebField::required)
@@ -47,7 +47,7 @@ public class EntityFormMapper {
     String schema = objectMapper.enable(SerializationFeature.INDENT_OUTPUT)
         .writeValueAsString(formSchema);
 
-    return new EntityForm(model, schema);
+    return new EntityForm(entity, schema);
   }
 
   private Property createProperty(WebField field) {

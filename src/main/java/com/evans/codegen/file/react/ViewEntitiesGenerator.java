@@ -1,7 +1,7 @@
 package com.evans.codegen.file.react;
 
 import com.evans.codegen.file.FileGenerator;
-import com.evans.codegen.file.react.AppJsGenerator.WebModel;
+import com.evans.codegen.file.react.AppJsGenerator.WebEntity;
 import com.evans.codegen.file.react.ViewEntitiesGenerator.EntitiesList;
 import lombok.RequiredArgsConstructor;
 
@@ -26,5 +26,5 @@ public class ViewEntitiesGenerator implements FileGenerator<EntitiesList> {
     return FileGenerator.super.outputDirectory(templateData) + "web/src/routes";
   }
 
-  public record EntitiesList(List<WebModel> models) {}
+  public record EntitiesList(List<WebEntity> entities) {}
 }

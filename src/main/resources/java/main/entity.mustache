@@ -86,7 +86,7 @@ public class {{className}} {
   public void {{setterName}}({{{simpleTypeName}}} {{name}}) {
     this.{{name}} = {{name}};
     {{#isOneToMany}}
-    {{name}}.forEach({{associationModelName}} -> {{associationModelName}}.set{{className}}(this));
+    {{name}}.forEach({{associationEntityName}} -> {{associationEntityName}}.set{{className}}(this));
     {{/isOneToMany}}
   }
 {{^-last}}

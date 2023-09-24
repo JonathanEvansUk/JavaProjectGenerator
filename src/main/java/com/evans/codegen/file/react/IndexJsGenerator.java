@@ -1,7 +1,7 @@
 package com.evans.codegen.file.react;
 
 import com.evans.codegen.file.FileGenerator;
-import com.evans.codegen.file.react.AppJsGenerator.WebModel;
+import com.evans.codegen.file.react.AppJsGenerator.WebEntity;
 import com.evans.codegen.file.react.IndexJsGenerator.IndexJs;
 import lombok.RequiredArgsConstructor;
 
@@ -26,5 +26,5 @@ public class IndexJsGenerator implements FileGenerator<IndexJs> {
     return FileGenerator.super.outputDirectory(templateData) + "web/src";
   }
 
-  public record IndexJs(List<WebModel> models) {}
+  public record IndexJs(List<WebEntity> entities) {}
 }

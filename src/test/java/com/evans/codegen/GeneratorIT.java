@@ -36,7 +36,7 @@ public class GeneratorIT {
   public void verifyFilesAreExactlyGeneratedToMatchOutput() throws IOException {
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
-    // define models
+    // define entities
     List<Entity> entities = List.of(
         Entity.of("Bill",
             List.of(
@@ -76,7 +76,7 @@ public class GeneratorIT {
   public void generate() throws IOException {
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
-    // define models
+    // define entities
     List<Entity> entities = List.of(
         Entity.of("Bill",
             List.of(

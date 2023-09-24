@@ -6,16 +6,16 @@ import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import DeleteModal from "../../utils/DeleteModal";
 import DeleteButton from "../../utils/DeleteButton";
-{{#model.hasJsonFields}}
+{{#entity.hasJsonFields}}
 import { JsonViewer } from "@textea/json-viewer";
 import { JSON_VIEWER_THEME } from "../../utils/JsonViewerTheme";
-{{/model.hasJsonFields}}
-{{#model.hasRelationalFields}}
+{{/entity.hasJsonFields}}
+{{#entity.hasRelationalFields}}
 import { JsonViewer } from "@textea/json-viewer";
 import { JSON_VIEWER_THEME } from "../../utils/JsonViewerTheme";
-{{/model.hasRelationalFields}}
-export default function {{model.nameCapitalised}}List() {
-  let [{{model.name}}List, set{{model.nameCapitalised}}List] = useState([]);
+{{/entity.hasRelationalFields}}
+export default function {{entity.nameCapitalised}}List() {
+  let [{{entity.name}}List, set{{entity.nameCapitalised}}List] = useState([]);
 
   const [showDelete, setShowDelete] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -26,28 +26,28 @@ export default function {{model.nameCapitalised}}List() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8080/{{model.name}}")
+    fetch("http://localhost:8080/{{entity.name}}")
     .then(response => response.json())
     .then(data => {
-      set{{model.nameCapitalised}}List(data);
+      set{{entity.nameCapitalised}}List(data);
     });
   },[]);
 
   const tableHeaders = [
-    {{#model.fields}}
+    {{#entity.fields}}
       "{{name}}"{{^-last}},{{/-last}}
-    {{/model.fields}}
+    {{/entity.fields}}
   ];
 
-  console.log({{model.name}}List);
-  const rows = {{model.name}}List.map({{model.name}} => createRow({{model.name}}, tableHeaders, handleDeleteShow));
+  console.log({{entity.name}}List);
+  const rows = {{entity.name}}List.map({{entity.name}} => createRow({{entity.name}}, tableHeaders, handleDeleteShow));
 
   const performDelete = deleteId => {
     console.log("Deleting: ", deleteId);
-    fetch(`http://localhost:8080/{{model.name}}/${deleteId}`, {
+    fetch(`http://localhost:8080/{{entity.name}}/${deleteId}`, {
       method: "DELETE"
     })
-      .then(() => set{{model.nameCapitalised}}List({{model.name}}List.filter({{model.name}} => {{model.name}}.id !== deleteId)))
+      .then(() => set{{entity.nameCapitalised}}List({{entity.name}}List.filter({{entity.name}} => {{entity.name}}.id !== deleteId)))
       .then(() => setDeleteId(null))
       .then(() => hideDelete());
   };
@@ -55,9 +55,9 @@ export default function {{model.nameCapitalised}}List() {
   return (
     <Card>
       <Card.Header className="d-flex justify-content-between align-items-center">
-        <h4 className="m-0 font-weight-normal">{{model.nameCapitalised}}</h4>
-        <Button as={Link} to="/entities/{{model.name}}/create">
-          Create a {{model.nameCapitalised}}
+        <h4 className="m-0 font-weight-normal">{{entity.nameCapitalised}}</h4>
+        <Button as={Link} to="/entities/{{entity.name}}/create">
+          Create a {{entity.nameCapitalised}}
         </Button>
       </Card.Header>
       <Table responsive>
@@ -75,40 +75,40 @@ export default function {{model.nameCapitalised}}List() {
 
       <DeleteModal
           show={showDelete}
-          title="Delete {{model.nameCapitalised}}"
-          body={`Are you sure you want to delete {{model.nameCapitalised}}: ${deleteId}`}
+          title="Delete {{entity.nameCapitalised}}"
+          body={`Are you sure you want to delete {{entity.nameCapitalised}}: ${deleteId}`}
           hide={hideDelete}
           action={() => performDelete(deleteId)}
       />
     </Card>);
 };
 
-const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
+const createRow = ({{entity.name}}, tableHeaders, handleDeleteShow) => {
   return (
-    <tr key={ {{model.name}}.id }>
-      {{#model.fields}}
+    <tr key={ {{entity.name}}.id }>
+      {{#entity.fields}}
         <td key="{{name}}" className="align-middle" style={ {"lineHeight": "1em"} }>
         {{#displayAsText}}
-          { {{model.name}}["{{name}}"] }
+          { {{entity.name}}["{{name}}"] }
         {{/displayAsText}}
         {{^displayAsText}}
           {{#isDate}}
-            { {{model.name}}["{{name}}"] && new Date({{model.name}}["{{name}}"]).toLocaleString()}
+            { {{entity.name}}["{{name}}"] && new Date({{entity.name}}["{{name}}"]).toLocaleString()}
           {{/isDate}}
           {{#isBoolean}}
-            <i className={ {{model.name}}["{{name}}"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>
+            <i className={ {{entity.name}}["{{name}}"] ? "bi bi-check-lg text-success" : ""} style={ { "fontSize": "2em", "lineHeight": "1em"} }></i>
           {{/isBoolean}}
           {{#isRelational}}
             {{#isOneToMany}}
-              { {{model.name}}["{{name}}"].map({{associationModelType}} => <div key={ {{associationModelType}}.id }>{create{{associationModelTypeCapitalised}}({{associationModelType}})}</div>) }
+              { {{entity.name}}["{{name}}"].map({{associationEntityType}} => <div key={ {{associationEntityType}}.id }>{create{{associationEntityTypeCapitalised}}({{associationEntityType}})}</div>) }
             {{/isOneToMany}}
             {{#isManyToOne}}
-              { create{{associationModelTypeCapitalised}}({{model.name}}["{{name}}"]) }
+              { create{{associationEntityTypeCapitalised}}({{entity.name}}["{{name}}"]) }
             {{/isManyToOne}}
           {{/isRelational}}
           {{#isJson}}
             <JsonViewer editable={false}
-                        value={ JSON.parse({{model.name}}["{{name}}"]) }
+                        value={ JSON.parse({{entity.name}}["{{name}}"]) }
                         defaultInspectDepth={0}
                         rootName={false}
                         displayDataTypes={false}
@@ -117,35 +117,35 @@ const createRow = ({{model.name}}, tableHeaders, handleDeleteShow) => {
           {{/isJson}}
         {{/displayAsText}}
         </td>
-      {{/model.fields}}
+      {{/entity.fields}}
       <td>
         <div className="float-right">
-          <Button as={Link} to={"/entities/{{model.name}}/" + {{model.name}}.id} variant="info" size="sm">
+          <Button as={Link} to={"/entities/{{entity.name}}/" + {{entity.name}}.id} variant="info" size="sm">
             <i className="bi bi-eye-fill pr-1"></i>
             View</Button>
-          <Button className="mx-sm-1" as={Link} to={"/entities/{{model.name}}/" + {{model.name}}.id + "/edit"} variant="primary" size="sm">
+          <Button className="mx-sm-1" as={Link} to={"/entities/{{entity.name}}/" + {{entity.name}}.id + "/edit"} variant="primary" size="sm">
             <i className="bi bi-pencil-fill pr-1"></i>
             Edit</Button>
-          <DeleteButton id={ {{model.name}}.id } handleDeleteShow={handleDeleteShow} />
+          <DeleteButton id={ {{entity.name}}.id } handleDeleteShow={handleDeleteShow} />
         </div>
       </td>
     </tr>
   );
 };
 
-{{#model.fields}}
+{{#entity.fields}}
   {{#isRelational}}
-const create{{associationModelTypeCapitalised}} = ({{associationModelType}}) => {
-  if ({{associationModelType}} === undefined) {
+const create{{associationEntityTypeCapitalised}} = ({{associationEntityType}}) => {
+  if ({{associationEntityType}} === undefined) {
     return ("-");
   }
-  //const {id} = {{associationModelType}};
+  //const {id} = {{associationEntityType}};
   //return (
-  //  <Link to={"/entities/{{associationModelType}}/" + id}>{JSON.stringify({{associationModelType}})}</Link>
+  //  <Link to={"/entities/{{associationEntityType}}/" + id}>{JSON.stringify({{associationEntityType}})}</Link>
   //);
 
   return (<JsonViewer editable={false}
-                      value={ {{associationModelType}} }
+                      value={ {{associationEntityType}} }
                       defaultInspectDepth={0}
                       rootName={false}
                       displayDataTypes={false}
@@ -153,4 +153,4 @@ const create{{associationModelTypeCapitalised}} = ({{associationModelType}}) => 
                       theme={JSON_VIEWER_THEME}/>);
 };
   {{/isRelational}}
-{{/model.fields}}
+{{/entity.fields}}

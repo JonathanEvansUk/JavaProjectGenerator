@@ -2,7 +2,7 @@ package com.evans.codegen.file.java.service;
 
 import com.evans.codegen.domain.Entity;
 import com.evans.codegen.file.java.JavaClassTemplateData;
-import com.evans.codegen.file.java.entity.Entity.Field;
+import com.evans.codegen.file.java.entity.DataEntity.Field;
 import com.evans.codegen.generator.BackendGenerator.Relationship;
 import java.util.List;
 

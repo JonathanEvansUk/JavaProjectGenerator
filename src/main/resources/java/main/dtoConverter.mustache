@@ -38,7 +38,7 @@ public class {{className}} {
 
     {{#fields}}
     {{#isOneToMany}}
-    {{dtoNameCamel}}.set{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}().stream().map(this::convert{{associationModelType}}).toList());
+    {{dtoNameCamel}}.set{{nameCapitalised}}({{entityNameCamel}}.get{{nameCapitalised}}().stream().map(this::convert{{associationEntityType}}).toList());
     {{/isOneToMany}}
     {{#isManyToOne}}
     if ({{entityNameCamel}}.get{{nameCapitalised}}() != null) {

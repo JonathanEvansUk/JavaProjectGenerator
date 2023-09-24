@@ -6,7 +6,7 @@ import com.evans.codegen.domain.Entity;
 import com.evans.codegen.file.react.AppJsGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.AppJs;
 import com.evans.codegen.file.react.AppJsGenerator.WebField;
-import com.evans.codegen.file.react.AppJsGenerator.WebModel;
+import com.evans.codegen.file.react.AppJsGenerator.WebEntity;
 import com.evans.codegen.file.react.CreateEntityGenerator;
 import com.evans.codegen.file.react.CreateEntityGenerator.EntityForm;
 import com.evans.codegen.file.react.EditEntityGenerator;
@@ -64,30 +64,30 @@ public class FrontendGenerator {
   }
 
   public void generate(List<Entity> entities) throws IOException {
-    var webModels = entities.stream()
-        .map(model -> new WebModel(model.name(), convert(model.fields())))
+    var webEntities = entities.stream()
+        .map(entity -> new WebEntity(entity.name(), convert(entity.fields())))
         .toList();
 
     packageJsonGenerator.generate(new PackageJson("MyApp"));
-    appJsGenerator.generate(new AppJs(webModels));
-    indexJsGenerator.generate(new IndexJs(webModels));
-    viewEntitiesGenerator.generate(new EntitiesList(webModels));
+    appJsGenerator.generate(new AppJs(webEntities));
+    indexJsGenerator.generate(new IndexJs(webEntities));
+    viewEntitiesGenerator.generate(new EntitiesList(webEntities));
 
-    for (WebModel model : webModels) {
+    for (WebEntity entity : webEntities) {
 
-      EntityForm createEntityForm = entityFormMapper.createEntityForm(model,
-          "Create a " + model.nameCapitalised());
+      EntityForm createEntityForm = entityFormMapper.createEntityForm(entity,
+          "Create a " + entity.nameCapitalised());
       createEntityGenerator.generate(createEntityForm);
 
-      EntityForm viewEntityForm = entityFormMapper.createEntityForm(model,
-          "View " + model.nameCapitalised());
+      EntityForm viewEntityForm = entityFormMapper.createEntityForm(entity,
+          "View " + entity.nameCapitalised());
       viewSingleEntityGenerator.generate(viewEntityForm);
 
-      EntityForm editEntityForm = entityFormMapper.createEntityForm(model,
-          "Edit " + model.nameCapitalised());
+      EntityForm editEntityForm = entityFormMapper.createEntityForm(entity,
+          "Edit " + entity.nameCapitalised());
       editEntityGenerator.generate(editEntityForm);
 
-      entityListGenerator.generate(new EntityList(model));
+      entityListGenerator.generate(new EntityList(entity));
     }
 
     String staticReactResourcesPath = "src/main/resources/react";

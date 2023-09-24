@@ -3,7 +3,7 @@ package com.evans.codegen.file.java.dto;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.dto.DTOGenerator.DTO;
-import com.evans.codegen.file.java.entity.Entity.Field;
+import com.evans.codegen.file.java.entity.DataEntity.Field;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;

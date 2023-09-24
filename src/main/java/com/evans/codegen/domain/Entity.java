@@ -14,14 +14,14 @@ public record Entity(String name,
         .filter(FieldDefinition::isId)
         .findFirst()
         .orElseThrow(() -> new RuntimeException(
-            "No ID field provided for model: " + name + ", fields: " + fields));
+            "No ID field provided for entity: " + name + ", fields: " + fields));
 
     var idType = fields.stream()
         .filter(FieldDefinition::isId)
         .map(FieldDefinition::type)
         .findFirst()
         .orElseThrow(() -> new RuntimeException(
-            "No ID field provided for model: " + name + ", fields: " + fields));
+            "No ID field provided for entity: " + name + ", fields: " + fields));
 
     return new Entity(name, idType, idField, fields);
   }

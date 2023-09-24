@@ -14,18 +14,18 @@ public class {{className}} {
   private final {{dtoConverterType}} {{dtoConverterName}};
   {{#fields}}
     {{#isRelationalField}}
-  private final {{associationModelType}}Repository {{associationModelName}}Repository;
+  private final {{associationEntityType}}Repository {{associationEntityName}}Repository;
     {{/isRelationalField}}
   {{/fields}}
 
   public {{className}}({{repositoryType}} {{repositoryName}}, {{dtoConverterType}} {{dtoConverterName}}{{#hasRelationalFields}},{{/hasRelationalFields}}
     {{#relationalFields}}
-      {{associationModelType}}Repository {{associationModelName}}Repository{{^-last}},{{/-last}}
+      {{associationEntityType}}Repository {{associationEntityName}}Repository{{^-last}},{{/-last}}
     {{/relationalFields}}) {
     this.{{repositoryName}} = {{repositoryName}};
     this.{{dtoConverterName}} = {{dtoConverterName}};
     {{#relationalFields}}
-    this.{{associationModelName}}Repository = {{associationModelName}}Repository;
+    this.{{associationEntityName}}Repository = {{associationEntityName}}Repository;
     {{/relationalFields}}
   }
 
@@ -56,16 +56,16 @@ public class {{className}} {
 
     {{#fields}}
       {{#isOneToMany}}
-    var {{associationModelName}}Ids = {{dtoNameCamel}}.{{getterName}}().stream()
-        .map({{associationModelType}}DTO::getId)
+    var {{associationEntityName}}Ids = {{dtoNameCamel}}.{{getterName}}().stream()
+        .map({{associationEntityType}}DTO::getId)
         .toList();
 
-    var {{name}} = {{associationModelName}}Repository.findAllById({{associationModelName}}Ids);
+    var {{name}} = {{associationEntityName}}Repository.findAllById({{associationEntityName}}Ids);
       {{/isOneToMany}}
       {{#isManyToOne}}
     if ({{dtoNameCamel}}.{{getterName}}() != null) {
-      var {{associationModelName}}Id = {{dtoNameCamel}}.{{getterName}}().getId();
-      {{associationModelName}}Repository.findById({{associationModelName}}Id).ifPresent({{entityNameCamel}}::{{setterName}});
+      var {{associationEntityName}}Id = {{dtoNameCamel}}.{{getterName}}().getId();
+      {{associationEntityName}}Repository.findById({{associationEntityName}}Id).ifPresent({{entityNameCamel}}::{{setterName}});
     }
       {{/isManyToOne}}
     {{/fields}}
@@ -87,16 +87,16 @@ public class {{className}} {
     // reset any oneToMany relationships
     if (current{{entityType}}.isPresent()) {
       current{{entityType}}.get().{{getterName}}()
-          .forEach({{associationModelType}} -> {{associationModelType}}.set{{entityType}}(null));
+          .forEach({{associationEntityType}} -> {{associationEntityType}}.set{{entityType}}(null));
     }
 
     {{/oneToManyFields}}
     {{#oneToManyFields}}
-    var {{associationModelName}}Ids = {{dtoNameCamel}}.{{getterName}}().stream()
-        .map({{associationModelType}}DTO::getId)
+    var {{associationEntityName}}Ids = {{dtoNameCamel}}.{{getterName}}().stream()
+        .map({{associationEntityType}}DTO::getId)
         .toList();
 
-    var {{name}} = {{associationModelName}}Repository.findAllById({{associationModelName}}Ids);
+    var {{name}} = {{associationEntityName}}Repository.findAllById({{associationEntityName}}Ids);
     {{/oneToManyFields}}
     {{entityType}} {{entityNameCamel}} = convert({{dtoNameCamel}});
     {{#oneToManyFields}}
@@ -104,9 +104,9 @@ public class {{className}} {
     {{/oneToManyFields}}
 
     {{#manyToOneFields}}
-    var {{associationModelName}} = {{dtoNameCamel}}.{{getterName}}();
-    if ({{associationModelName}} != null) {
-      {{associationModelName}}Repository.findById({{associationModelName}}.getId()).ifPresent({{entityNameCamel}}::{{setterName}});
+    var {{associationEntityName}} = {{dtoNameCamel}}.{{getterName}}();
+    if ({{associationEntityName}} != null) {
+      {{associationEntityName}}Repository.findById({{associationEntityName}}.getId()).ifPresent({{entityNameCamel}}::{{setterName}});
     }
     {{/manyToOneFields}}
 
@@ -122,7 +122,7 @@ public class {{className}} {
       {{#fields}}
         {{#isOneToMany}}
       {{entityNameCamel}}.get().{{getterName}}()
-        .forEach({{associationModelName}} -> {{associationModelName}}.set{{entityType}}(null));
+        .forEach({{associationEntityName}} -> {{associationEntityName}}.set{{entityType}}(null));
         {{/isOneToMany}}
       {{/fields}}
       {{repositoryName}}.delete({{entityNameCamel}}.get());

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record Entity(String packageName,
-                     String className,
-                     List<String> imports,
-                     List<Field> fields,
-                     List<Enum> enums,
-                     List<com.evans.codegen.domain.Entity> manyToOneSideEntities) implements JavaClassTemplateData {
+public record DataEntity(String packageName,
+                         String className,
+                         List<String> imports,
+                         List<Field> fields,
+                         List<Enum> enums,
+                         List<com.evans.codegen.domain.Entity> manyToOneSideEntities) implements JavaClassTemplateData {
 
   Set<Relationship> fieldRelationships() {
     return fields.stream().map(Field::relationship).collect(Collectors.toSet());
@@ -50,7 +50,7 @@ public record Entity(String packageName,
                       String simpleTypeName,
                       FieldType fieldType,
                       Relationship relationship,
-                      String associationModelType,
+                      String associationEntityType,
                       String example) {
 
     String getterName() {
@@ -108,9 +108,9 @@ public record Entity(String packageName,
       return example != null;
     }
 
-    String associationModelName() {
-      return associationModelType().substring(0, 1).toLowerCase()
-          + associationModelType().substring(1);
+    String associationEntityName() {
+      return associationEntityType().substring(0, 1).toLowerCase()
+          + associationEntityType().substring(1);
     }
 
     String nameCapitalised() {

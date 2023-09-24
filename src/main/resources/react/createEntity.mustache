@@ -2,35 +2,35 @@ import Form from "@rjsf/bootstrap-4";
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-{{#model.hasJsonFields}}
+{{#entity.hasJsonFields}}
 import JsonFileUploadWidget from "../../utils/JsonFileUploadWidget";
-{{/model.hasJsonFields}}
+{{/entity.hasJsonFields}}
 
-export default function Create{{model.nameCapitalised}}() {
+export default function Create{{entity.nameCapitalised}}() {
   const navigate = useNavigate();
-  {{#model.relationalFields}}
+  {{#entity.relationalFields}}
   {{#isOneToMany}}
   const [{{name}}, set{{nameCapitalised}}] = useState([]);
   {{/isOneToMany}}
   {{#isManyToOne}}
   const [{{name}}List, set{{nameCapitalised}}List] = useState([]);
   {{/isManyToOne}}
-  {{/model.relationalFields}}
-  {{#model.hasRelationalFields}}
+  {{/entity.relationalFields}}
+  {{#entity.hasRelationalFields}}
   useEffect(() => {
     const fetchData = async () => {
-      const [{{#model.relationalFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.relationalFields}}] = await Promise.all([
-      {{#model.relationalFields}}
+      const [{{#entity.relationalFields}}{{name}}Response{{^-last}}, {{/-last}}{{/entity.relationalFields}}] = await Promise.all([
+      {{#entity.relationalFields}}
       {{#isOneToMany}}
-        fetch(`http://localhost:8080/{{associationModelType}}/unusedBy{{model.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
+        fetch(`http://localhost:8080/{{associationEntityType}}/unusedBy{{entity.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
       {{/isOneToMany}}
       {{#isManyToOne}}
-        fetch(`http://localhost:8080/{{associationModelType}}`).then(response => response.json()){{^-last}},{{/-last}}
+        fetch(`http://localhost:8080/{{associationEntityType}}`).then(response => response.json()){{^-last}},{{/-last}}
       {{/isManyToOne}}
-      {{/model.relationalFields}}
+      {{/entity.relationalFields}}
       ]);
 
-      {{#model.relationalFields}}
+      {{#entity.relationalFields}}
       console.log({{name}}Response);
       {{#isOneToMany}}
       set{{nameCapitalised}}({{name}}Response);
@@ -38,32 +38,32 @@ export default function Create{{model.nameCapitalised}}() {
       {{#isManyToOne}}
       set{{nameCapitalised}}List({{name}}Response);
       {{/isManyToOne}}
-      {{/model.relationalFields}}
+      {{/entity.relationalFields}}
     };
 
     fetchData();
   }, []);
-  {{/model.hasRelationalFields}}
-  {{#model.fields}}
+  {{/entity.hasRelationalFields}}
+  {{#entity.fields}}
   {{#isOneToMany}}
   console.log({{name}});
   {{/isOneToMany}}
-  {{/model.fields}}
+  {{/entity.fields}}
   const submitForm = ({ formData }) => {
     console.log(JSON.stringify(formData));
 
-    {{#model.relationalFields}}
+    {{#entity.relationalFields}}
       {{#isOneToMany}}
     formData.{{name}} = formData.{{name}}.map(
-      id => {{name}}.find({{associationModelType}} => {{associationModelType}}.id === id)
+      id => {{name}}.find({{associationEntityType}} => {{associationEntityType}}.id === id)
     );
       {{/isOneToMany}}
       {{#isManyToOne}}
-    formData.{{name}} = {{name}}List.find({{associationModelType}} => {{associationModelType}}.id === formData.{{name}});
+    formData.{{name}} = {{name}}List.find({{associationEntityType}} => {{associationEntityType}}.id === formData.{{name}});
       {{/isManyToOne}}
-    {{/model.relationalFields}}
+    {{/entity.relationalFields}}
 
-    fetch("http://localhost:8080/{{model.name}}", {
+    fetch("http://localhost:8080/{{entity.name}}", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -77,23 +77,23 @@ export default function Create{{model.nameCapitalised}}() {
         return response;
       })
       .then(response => console.log(response))
-      .then(() => navigate("/entities/{{model.nameCapitalised}}"))
+      .then(() => navigate("/entities/{{entity.nameCapitalised}}"))
       .catch(error => console.log(error));
   };
 
   const schema = {{{schema}}};
   const uiSchema = {
-    {{#model.jsonFields}}
+    {{#entity.jsonFields}}
     "{{name}}" : { "ui:widget": "jsonFileUploadWidget" }{{^-last}},{{/-last}}
-    {{/model.jsonFields}}
+    {{/entity.jsonFields}}
   };
-  {{#model.hasJsonFields}}
+  {{#entity.hasJsonFields}}
 
   const widgets = {
     "jsonFileUploadWidget": JsonFileUploadWidget
   };
-  {{/model.hasJsonFields}}
-  {{#model.fields}}
+  {{/entity.hasJsonFields}}
+  {{#entity.fields}}
     {{#isRelational}}
   if ({{name}}{{#isManyToOne}}List{{/isManyToOne}}.length > 0) {
       {{#isOneToMany}}
@@ -110,7 +110,7 @@ export default function Create{{model.nameCapitalised}}() {
       "ui:description": (
         <div>
           There are currently no unused {{name}}.{" "}
-          <Button variant="info" size="sm" as={Link} to={"/entities/{{associationModelType}}"}>
+          <Button variant="info" size="sm" as={Link} to={"/entities/{{associationEntityType}}"}>
             Add
           </Button>
         </div>
@@ -119,7 +119,7 @@ export default function Create{{model.nameCapitalised}}() {
     };
   }
     {{/isRelational}}
-  {{/model.fields}}
+  {{/entity.fields}}
 
-  return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema} {{#model.hasJsonFields}}widgets={widgets}{{/model.hasJsonFields}} />);
+  return (<Form schema={schema} onSubmit={submitForm} uiSchema={uiSchema} {{#entity.hasJsonFields}}widgets={widgets}{{/entity.hasJsonFields}} />);
 };

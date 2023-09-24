@@ -16,12 +16,12 @@ public class EditEntityGenerator implements FileGenerator<EntityForm> {
 
   @Override
   public String outputFileName(EntityForm templateData) {
-    return "Edit" + templateData.model().nameCapitalised() + ".js";
+    return "Edit" + templateData.entity().nameCapitalised() + ".js";
   }
 
   @Override
   public String outputDirectory(EntityForm templateData) {
     return FileGenerator.super.outputDirectory(templateData) + "web/src/routes/"
-        + templateData.model().name();
+        + templateData.entity().name();
   }
 }

@@ -16,12 +16,12 @@ public class ViewSingleEntityGenerator implements FileGenerator<EntityForm> {
 
   @Override
   public String outputFileName(EntityForm templateData) {
-    return "View" + templateData.model().nameCapitalised() + ".js";
+    return "View" + templateData.entity().nameCapitalised() + ".js";
   }
 
   @Override
   public String outputDirectory(EntityForm templateData) {
     return FileGenerator.super.outputDirectory(templateData) + "web/src/routes/"
-        + templateData.model().name();
+        + templateData.entity().name();
   }
 }

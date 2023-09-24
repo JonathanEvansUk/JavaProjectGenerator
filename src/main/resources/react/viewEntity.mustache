@@ -2,51 +2,51 @@ import Form from "@rjsf/bootstrap-4";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { replaceNullsWithUndefined } from "../../utils/Utils.js";
-{{#model.hasJsonFields}}
+{{#entity.hasJsonFields}}
 import JsonFileUploadWidget from "../../utils/JsonFileUploadWidget";
-{{/model.hasJsonFields}}
+{{/entity.hasJsonFields}}
 
-export default function View{{model.nameCapitalised}}() {
+export default function View{{entity.nameCapitalised}}() {
   const { id } = useParams();
 
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/{{model.name}}/${id}`)
+    fetch(`http://localhost:8080/{{entity.name}}/${id}`)
       .then(response => response.json())
       .then(data => replaceNullsWithUndefined(data))
-      {{#model.hasRelationalFields}}
+      {{#entity.hasRelationalFields}}
       .then(data => ({
         ...data,
-        {{#model.relationalFields}}
+        {{#entity.relationalFields}}
           {{#isOneToMany}}
-        {{name}}: data.{{name}}.map({{associationModelType}} => JSON.stringify({{associationModelType}})){{^-last}},{{/-last}}
+        {{name}}: data.{{name}}.map({{associationEntityType}} => JSON.stringify({{associationEntityType}})){{^-last}},{{/-last}}
           {{/isOneToMany}}
           {{#isManyToOne}}
         {{name}}: JSON.stringify(data.{{name}})
           {{/isManyToOne}}
-        {{/model.relationalFields}}
+        {{/entity.relationalFields}}
         }))
-      {{/model.hasRelationalFields}}
+      {{/entity.hasRelationalFields}}
     .then(data => setFormData(data));
   },[]);
 
   const schema = {{{schema}}};
-  {{#model.hasJsonFields}}
+  {{#entity.hasJsonFields}}
 
   const widgets = {
     "jsonFileUploadWidget": JsonFileUploadWidget
   };
 
-  {{/model.hasJsonFields}}
+  {{/entity.hasJsonFields}}
   const uiSchema = {
-  {{#model.jsonFields}}
+  {{#entity.jsonFields}}
     "{{name}}" : { "ui:widget": "jsonFileUploadWidget" },
-  {{/model.jsonFields}}
+  {{/entity.jsonFields}}
    "ui:submitButtonOptions": {
       "norender": true,
     }
   };
 
-  return (<Form schema={schema} formData={formData} uiSchema={uiSchema} {{#model.hasJsonFields}}widgets={widgets}{{/model.hasJsonFields}} readonly  disabled/>);
+  return (<Form schema={schema} formData={formData} uiSchema={uiSchema} {{#entity.hasJsonFields}}widgets={widgets}{{/entity.hasJsonFields}} readonly  disabled/>);
 };

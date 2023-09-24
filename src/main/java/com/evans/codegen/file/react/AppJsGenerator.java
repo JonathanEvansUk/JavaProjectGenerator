@@ -29,14 +29,14 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
     return FileGenerator.super.outputDirectory(templateData) + "web/src";
   }
 
-  public record AppJs(List<WebModel> models) {
+  public record AppJs(List<WebEntity> entities) {
 
   }
 
-  public record WebModel(String name,
-                         List<WebField> fields) {
+  public record WebEntity(String name,
+                          List<WebField> fields) {
 
-    public WebModel {
+    public WebEntity {
       name = name.substring(0, 1).toLowerCase() + name.substring(1);
     }
 
@@ -80,7 +80,7 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
   public record WebField(String name,
                          boolean required,
                          FieldType type,
-                         String associationModelType,
+                         String associationEntityType,
                          List<String> enumOptions) {
 
     private static final Set<FieldType> FIELDS_TO_DISPLAY_AS_TEXT = Set.of(
@@ -94,8 +94,8 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
       this(name, required, type, null, List.of());
     }
 
-    public WebField(String name, boolean required, FieldType type, String associationModelType) {
-      this(name, required, type, associationModelType, List.of());
+    public WebField(String name, boolean required, FieldType type, String associationEntityType) {
+      this(name, required, type, associationEntityType, List.of());
     }
 
     boolean isBoolean() {
@@ -118,8 +118,8 @@ public class AppJsGenerator implements FileGenerator<AppJs> {
       return capitalise(name());
     }
 
-    String associationModelTypeCapitalised() {
-      return capitalise(associationModelType());
+    String associationEntityTypeCapitalised() {
+      return capitalise(associationEntityType());
     }
 
     boolean isManyToOne() {

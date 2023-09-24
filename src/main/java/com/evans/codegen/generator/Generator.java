@@ -18,7 +18,7 @@ public class Generator {
   private final FrontendGenerator frontendGenerator;
 
   public void generate(List<Entity> entities) throws IOException {
-//    clearOutputDirectory();
+    clearOutputDirectory();
     backendGenerator.generate(entities);
     frontendGenerator.generate(entities);
   }

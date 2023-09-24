@@ -3,63 +3,63 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { replaceNullsWithUndefined } from "../../utils/Utils.js";
-{{#model.hasJsonFields}}
+{{#entity.hasJsonFields}}
 import JsonFileUploadWidget from "../../utils/JsonFileUploadWidget";
-{{/model.hasJsonFields}}
+{{/entity.hasJsonFields}}
 
-export default function Edit{{model.nameCapitalised}}() {
+export default function Edit{{entity.nameCapitalised}}() {
   const [formData, setFormData] = useState(null);
   const { id } = useParams();
 
-{{#model.relationalFields}}
+{{#entity.relationalFields}}
   {{#isOneToMany}}
   const [{{name}}, set{{nameCapitalised}}] = useState([]);
   {{/isOneToMany}}
   {{#isManyToOne}}
   const [{{name}}List, set{{nameCapitalised}}List] = useState([]);
   {{/isManyToOne}}
-{{/model.relationalFields}}
+{{/entity.relationalFields}}
 
   useEffect(() => {
     const fetchData = async () => {
-      const [current{{model.nameCapitalised}}{{#model.hasRelationalFields}}, {{/model.hasRelationalFields}}{{#model.relationalFields}}{{name}}Response{{^-last}}, {{/-last}}{{/model.relationalFields}}] = await Promise.all([
-          fetchExisting(id){{#model.hasRelationalFields}}, {{/model.hasRelationalFields}}
-          {{#model.relationalFields}}
+      const [current{{entity.nameCapitalised}}{{#entity.hasRelationalFields}}, {{/entity.hasRelationalFields}}{{#entity.relationalFields}}{{name}}Response{{^-last}}, {{/-last}}{{/entity.relationalFields}}] = await Promise.all([
+          fetchExisting(id){{#entity.hasRelationalFields}}, {{/entity.hasRelationalFields}}
+          {{#entity.relationalFields}}
             {{#isOneToMany}}
-          fetch(`http://localhost:8080/{{associationModelType}}/unusedBy{{model.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
+          fetch(`http://localhost:8080/{{associationEntityType}}/unusedBy{{entity.nameCapitalised}}`).then(response => response.json()){{^-last}},{{/-last}}
             {{/isOneToMany}}
             {{#isManyToOne}}
-          fetch(`http://localhost:8080/{{associationModelType}}`).then(response => response.json()){{^-last}},{{/-last}}
+          fetch(`http://localhost:8080/{{associationEntityType}}`).then(response => response.json()){{^-last}},{{/-last}}
             {{/isManyToOne}}
-          {{/model.relationalFields}}
+          {{/entity.relationalFields}}
       ]);
 
-      setFormData(current{{model.nameCapitalised}});
-      {{#model.relationalFields}}
+      setFormData(current{{entity.nameCapitalised}});
+      {{#entity.relationalFields}}
         {{#isOneToMany}}
       set{{nameCapitalised}}({{name}}Response);
         {{/isOneToMany}}
         {{#isManyToOne}}
       set{{nameCapitalised}}List({{name}}Response);
         {{/isManyToOne}}
-      {{/model.relationalFields}}
+      {{/entity.relationalFields}}
     };
 
     fetchData();
   }, []);
 
   const submitForm = ({ formData }) => {
-    {{#model.relationalFields}}
+    {{#entity.relationalFields}}
       {{#isOneToMany}}
     formData.{{name}} = formData.{{name}}.map(
-      id => {{name}}.find({{associationModelType}} => {{associationModelType}}.id === id)
+      id => {{name}}.find({{associationEntityType}} => {{associationEntityType}}.id === id)
     );
       {{/isOneToMany}}
       {{#isManyToOne}}
-    formData.{{name}} = {{name}}List.find({{associationModelType}} => {{associationModelType}}.id === formData.{{name}});
+    formData.{{name}} = {{name}}List.find({{associationEntityType}} => {{associationEntityType}}.id === formData.{{name}});
       {{/isManyToOne}}
-    {{/model.relationalFields}}
-    fetch("http://localhost:8080/{{model.name}}/" + id, {
+    {{/entity.relationalFields}}
+    fetch("http://localhost:8080/{{entity.name}}/" + id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -70,17 +70,17 @@ export default function Edit{{model.nameCapitalised}}() {
 
   const schema = {{{schema}}};
   const uiSchema = {
-    {{#model.jsonFields}}
+    {{#entity.jsonFields}}
     "{{name}}" : { "ui:widget": "jsonFileUploadWidget" }{{^-last}},{{/-last}}
-    {{/model.jsonFields}}
+    {{/entity.jsonFields}}
   };
-  {{#model.hasJsonFields}}
+  {{#entity.hasJsonFields}}
 
   const widgets = {
     "jsonFileUploadWidget": JsonFileUploadWidget
   };
-  {{/model.hasJsonFields}}
-  {{#model.relationalFields}}
+  {{/entity.hasJsonFields}}
+  {{#entity.relationalFields}}
   if ({{name}}{{#isManyToOne}}List{{/isManyToOne}}.length > 0) {
     {{#isOneToMany}}
     schema.properties.{{name}}.items.enum = {{name}}.map(item => item.id);
@@ -96,7 +96,7 @@ export default function Edit{{model.nameCapitalised}}() {
       "ui:description": (
         <div>
           There are currently no {{name}}.{" "}
-          <Button as={Link} to={"/entities/{{associationModelType}}"}>
+          <Button as={Link} to={"/entities/{{associationEntityType}}"}>
             Add
           </Button>
         </div>
@@ -104,24 +104,24 @@ export default function Edit{{model.nameCapitalised}}() {
       "ui:label": false
     };
   }
-  {{/model.relationalFields}}
-  return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} {{#model.hasJsonFields}}widgets={widgets}{{/model.hasJsonFields}} />);
+  {{/entity.relationalFields}}
+  return (<Form schema={schema} formData={formData} onSubmit={submitForm} uiSchema={uiSchema} {{#entity.hasJsonFields}}widgets={widgets}{{/entity.hasJsonFields}} />);
 };
 
 const fetchExisting = (id) => {
-  return fetch(`http://localhost:8080/{{model.name}}/${id}`)
+  return fetch(`http://localhost:8080/{{entity.name}}/${id}`)
       .then(response => response.json())
       .then(data => replaceNullsWithUndefined(data))
-      {{#model.hasRelationalFields}}
+      {{#entity.hasRelationalFields}}
       .then(data => ({
         ...data,
-        {{#model.relationalFields}}
+        {{#entity.relationalFields}}
           {{#isOneToMany}}
-        {{name}}: data.{{name}}.map({{associationModelType}} => {{associationModelType}}.id){{^-last}},{{/-last}}
+        {{name}}: data.{{name}}.map({{associationEntityType}} => {{associationEntityType}}.id){{^-last}},{{/-last}}
           {{/isOneToMany}}
           {{#isManyToOne}}
         {{name}}: data.{{name}}.id{{^-last}},{{/-last}}
           {{/isManyToOne}}
-        {{/model.relationalFields}}
-      })){{/model.hasRelationalFields}};
+        {{/entity.relationalFields}}
+      })){{/entity.hasRelationalFields}};
 };

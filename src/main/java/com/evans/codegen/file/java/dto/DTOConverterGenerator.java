@@ -5,7 +5,7 @@ import static com.evans.codegen.StringUtils.capitalise;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.dto.DTOConverterGenerator.DTOConverter;
-import com.evans.codegen.file.java.entity.Entity.Field;
+import com.evans.codegen.file.java.entity.DataEntity.Field;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
@@ -33,7 +33,7 @@ public class DTOConverterGenerator implements JavaFileGenerator<DTOConverter> {
       return !subconverters().isEmpty();
     }
 
-    public record Subconverter(String modelName,
+    public record Subconverter(String entityName,
                                String name,
                                String dtoType,
                                String entityType,

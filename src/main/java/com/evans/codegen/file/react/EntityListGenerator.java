@@ -1,7 +1,7 @@
 package com.evans.codegen.file.react;
 
 import com.evans.codegen.file.FileGenerator;
-import com.evans.codegen.file.react.AppJsGenerator.WebModel;
+import com.evans.codegen.file.react.AppJsGenerator.WebEntity;
 import com.evans.codegen.file.react.EntityListGenerator.EntityList;
 import lombok.RequiredArgsConstructor;
 
@@ -17,14 +17,14 @@ public class EntityListGenerator implements FileGenerator<EntityList> {
 
   @Override
   public String outputFileName(EntityList templateData) {
-    return templateData.model().nameCapitalised() + "List.js";
+    return templateData.entity().nameCapitalised() + "List.js";
   }
 
   @Override
   public String outputDirectory(EntityList templateData) {
     return FileGenerator.super.outputDirectory(templateData) + "web/src/routes/"
-        + templateData.model().name();
+        + templateData.entity().name();
   }
 
-  public record EntityList(WebModel model) {}
+  public record EntityList(WebEntity entity) {}
 }

@@ -3,7 +3,7 @@ package com.evans.codegen.file.java.test;
 import com.evans.codegen.domain.Entity;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
-import com.evans.codegen.file.java.entity.Entity.Field;
+import com.evans.codegen.file.java.entity.DataEntity.Field;
 import com.evans.codegen.file.java.test.ControllerITGenerator.ControllerIT;
 import lombok.RequiredArgsConstructor;
 

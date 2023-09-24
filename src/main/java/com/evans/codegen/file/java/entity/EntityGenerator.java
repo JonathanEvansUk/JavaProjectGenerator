@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
-public class EntityGenerator implements JavaFileGenerator<Entity> {
+public class EntityGenerator implements JavaFileGenerator<DataEntity> {
 
   @Override
   public String templateName() {
