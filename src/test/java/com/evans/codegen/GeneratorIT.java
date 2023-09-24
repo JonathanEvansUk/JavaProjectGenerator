@@ -28,8 +28,12 @@ import org.junit.jupiter.api.Test;
 
 public class GeneratorIT {
 
+  /**
+   * This test is used to strictly verify the output matches the expected output.
+   * This test is useful when refactoring the generator logic to ensure you are still outputting the same data.
+   */
   @Test
-  public void generate() throws IOException {
+  public void verifyFilesAreExactlyGeneratedToMatchOutput() throws IOException {
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
     // define models
@@ -41,7 +45,6 @@ public class GeneratorIT {
                 new DateField("dateReceived", false, "2023-01-03"),
                 new BooleanField("paid", false),
                 new DateTimeField("datePaid", false, "2023-01-03T10:15:30.00Z")
-//                new EnumField("paymentType", List.of("Credit", "Debit"), true)
             )
         )
     );
@@ -67,6 +70,27 @@ public class GeneratorIT {
         }
       });
     }
+  }
+
+  @Test
+  public void generate() throws IOException {
+    Generator generator = DaggerGeneratorFactory.create().getGenerator();
+
+    // define models
+    List<Model> models = List.of(
+        Model.of("Bill",
+            List.of(
+                new IdField("id", true),
+                new DoubleField("amount", false, "12.34"),
+                new DateField("dateReceived", false, "2023-01-03"),
+                new BooleanField("paid", false),
+                new DateTimeField("datePaid", false, "2023-01-03T10:15:30.00Z")
+            )
+        )
+    );
+
+    // generate code
+    generator.generate(models);
 
     // run maven verify on the generated project
     InvocationRequest request = new DefaultInvocationRequest()
