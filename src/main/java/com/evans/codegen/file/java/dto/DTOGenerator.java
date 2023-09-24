@@ -4,9 +4,13 @@ import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.dto.DTOGenerator.DTO;
 import com.evans.codegen.file.java.entity.Entity.Field;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 import java.util.List;
 
-public record DTOGenerator() implements JavaFileGenerator<DTO> {
+@RequiredArgsConstructor(onConstructor_ = @Inject)
+public class DTOGenerator implements JavaFileGenerator<DTO> {
 
   @Override
   public String templateName() {

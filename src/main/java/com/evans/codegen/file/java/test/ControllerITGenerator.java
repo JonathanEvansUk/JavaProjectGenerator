@@ -5,8 +5,12 @@ import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.entity.Entity.Field;
 import com.evans.codegen.file.java.test.ControllerITGenerator.ControllerIT;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class ControllerITGenerator implements JavaFileGenerator<ControllerIT> {
 
   @Override

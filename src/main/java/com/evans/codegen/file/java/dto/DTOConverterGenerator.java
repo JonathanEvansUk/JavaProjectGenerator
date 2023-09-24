@@ -6,8 +6,12 @@ import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.dto.DTOConverterGenerator.DTOConverter;
 import com.evans.codegen.file.java.entity.Entity.Field;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class DTOConverterGenerator implements JavaFileGenerator<DTOConverter> {
 
   @Override

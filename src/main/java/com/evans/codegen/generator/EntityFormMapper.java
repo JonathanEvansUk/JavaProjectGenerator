@@ -13,20 +13,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.RequiredArgsConstructor;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class EntityFormMapper {
 
   private final ObjectMapper objectMapper;
-
-  @Inject
-  public EntityFormMapper(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
-  }
 
   public EntityForm createEntityForm(WebModel model, String formTitle)
       throws JsonProcessingException {

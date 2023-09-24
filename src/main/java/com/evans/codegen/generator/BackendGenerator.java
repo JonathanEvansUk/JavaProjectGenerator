@@ -45,6 +45,8 @@ import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator;
 import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator.TestApplicationMysqlProperties;
 import com.evans.codegen.file.openapi.OpenAPISpec;
 import com.evans.codegen.file.openapi.OpenAPISpecGenerator;
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -56,6 +58,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class BackendGenerator {
 
   private final RepositoryGenerator repositoryGenerator;
@@ -71,43 +74,9 @@ public class BackendGenerator {
   private final MavenGenerator mavenGenerator;
   private final ApplicationPropertiesGenerator applicationPropertiesGenerator;
   private final TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator;
+  private final OpenAPISpecGenerator openAPISpecGenerator;
   private final DockerfileGenerator dockerfileGenerator;
   private final DockerComposeGenerator dockerComposeGenerator;
-  private final OpenAPISpecGenerator openAPISpecGenerator;
-
-  @Inject
-  public BackendGenerator(
-      RepositoryGenerator repositoryGenerator,
-      ServiceGenerator serviceGenerator,
-      ControllerGenerator controllerGenerator,
-      EntityGenerator entityGenerator,
-      ApplicationGenerator applicationGenerator,
-      DTOGenerator dtoGenerator,
-      DTOConverterGenerator dtoConverterGenerator,
-      ControllerTestGenerator controllerTestGenerator,
-      ControllerITGenerator controllerITGenerator,
-      MavenGenerator mavenGenerator,
-      ApplicationPropertiesGenerator applicationPropertiesGenerator,
-      TestApplicationMysqlPropertiesGenerator testApplicationMysqlPropertiesGenerator,
-      OpenAPISpecGenerator openAPISpecGenerator,
-      DockerfileGenerator dockerfileGenerator,
-      DockerComposeGenerator dockerComposeGenerator) {
-    this.repositoryGenerator = repositoryGenerator;
-    this.serviceGenerator = serviceGenerator;
-    this.controllerGenerator = controllerGenerator;
-    this.entityGenerator = entityGenerator;
-    this.applicationGenerator = applicationGenerator;
-    this.dtoGenerator = dtoGenerator;
-    this.dtoConverterGenerator = dtoConverterGenerator;
-    this.controllerTestGenerator = controllerTestGenerator;
-    this.controllerITGenerator = controllerITGenerator;
-    this.mavenGenerator = mavenGenerator;
-    this.applicationPropertiesGenerator = applicationPropertiesGenerator;
-    this.testApplicationMysqlPropertiesGenerator = testApplicationMysqlPropertiesGenerator;
-    this.openAPISpecGenerator = openAPISpecGenerator;
-    this.dockerfileGenerator = dockerfileGenerator;
-    this.dockerComposeGenerator = dockerComposeGenerator;
-  }
 
   public void generate(List<Model> models) throws IOException {
     String appName = "MyApp";

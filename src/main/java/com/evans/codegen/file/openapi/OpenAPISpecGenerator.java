@@ -1,7 +1,11 @@
 package com.evans.codegen.file.openapi;
 
 import com.evans.codegen.file.FileGenerator;
+import lombok.RequiredArgsConstructor;
 
+import javax.inject.Inject;
+
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class OpenAPISpecGenerator implements FileGenerator<OpenAPISpec> {
 
     @Override

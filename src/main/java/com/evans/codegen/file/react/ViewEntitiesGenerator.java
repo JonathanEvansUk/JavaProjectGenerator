@@ -3,8 +3,12 @@ package com.evans.codegen.file.react;
 import com.evans.codegen.file.FileGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.WebModel;
 import com.evans.codegen.file.react.ViewEntitiesGenerator.EntitiesList;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class ViewEntitiesGenerator implements FileGenerator<EntitiesList> {
 
   @Override

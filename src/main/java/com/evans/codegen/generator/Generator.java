@@ -1,6 +1,8 @@
 package com.evans.codegen.generator;
 
 import com.evans.codegen.domain.Model;
+import lombok.RequiredArgsConstructor;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,16 +11,11 @@ import java.util.Comparator;
 import java.util.List;
 import javax.inject.Inject;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class Generator {
 
   private final BackendGenerator backendGenerator;
   private final FrontendGenerator frontendGenerator;
-
-  @Inject
-  public Generator(BackendGenerator backendGenerator, FrontendGenerator frontendGenerator) {
-    this.backendGenerator = backendGenerator;
-    this.frontendGenerator = frontendGenerator;
-  }
 
   public void generate(List<Model> models) throws IOException {
 //    clearOutputDirectory();

@@ -20,6 +20,8 @@ import com.evans.codegen.file.react.PackageJsonGenerator.PackageJson;
 import com.evans.codegen.file.react.ViewEntitiesGenerator;
 import com.evans.codegen.file.react.ViewEntitiesGenerator.EntitiesList;
 import com.evans.codegen.file.react.ViewSingleEntityGenerator;
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +29,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import javax.inject.Inject;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class FrontendGenerator {
 
   private final PackageJsonGenerator packageJsonGenerator;
@@ -39,27 +42,6 @@ public class FrontendGenerator {
   private final EditEntityGenerator editEntityGenerator;
 
   private final EntityFormMapper entityFormMapper;
-
-  @Inject
-  public FrontendGenerator(PackageJsonGenerator packageJsonGenerator,
-      AppJsGenerator appJsGenerator,
-      IndexJsGenerator indexJsGenerator,
-      CreateEntityGenerator createEntityGenerator,
-      EntityListGenerator entityListGenerator,
-      ViewEntitiesGenerator viewEntitiesGenerator,
-      ViewSingleEntityGenerator viewSingleEntityGenerator,
-      EditEntityGenerator editEntityGenerator,
-      EntityFormMapper entityFormMapper) {
-    this.packageJsonGenerator = packageJsonGenerator;
-    this.appJsGenerator = appJsGenerator;
-    this.indexJsGenerator = indexJsGenerator;
-    this.createEntityGenerator = createEntityGenerator;
-    this.entityListGenerator = entityListGenerator;
-    this.viewEntitiesGenerator = viewEntitiesGenerator;
-    this.viewSingleEntityGenerator = viewSingleEntityGenerator;
-    this.editEntityGenerator = editEntityGenerator;
-    this.entityFormMapper = entityFormMapper;
-  }
 
   private List<WebField> convert(List<FieldDefinition> fields) {
     return fields.stream()

@@ -3,8 +3,12 @@ package com.evans.codegen.file.java.test;
 import com.evans.codegen.file.java.JavaClassTemplateData;
 import com.evans.codegen.file.java.JavaFileGenerator;
 import com.evans.codegen.file.java.test.ControllerTestGenerator.ControllerTest;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class ControllerTestGenerator implements JavaFileGenerator<ControllerTest> {
 
   @Override

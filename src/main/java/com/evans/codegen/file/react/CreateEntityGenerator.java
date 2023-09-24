@@ -3,7 +3,11 @@ package com.evans.codegen.file.react;
 import com.evans.codegen.file.FileGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.WebModel;
 import com.evans.codegen.file.react.CreateEntityGenerator.EntityForm;
+import lombok.RequiredArgsConstructor;
 
+import javax.inject.Inject;
+
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class CreateEntityGenerator implements FileGenerator<EntityForm> {
 
   @Override

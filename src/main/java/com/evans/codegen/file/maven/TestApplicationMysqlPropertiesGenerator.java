@@ -2,8 +2,12 @@ package com.evans.codegen.file.maven;
 
 import com.evans.codegen.file.FileGenerator;
 import com.evans.codegen.file.maven.TestApplicationMysqlPropertiesGenerator.TestApplicationMysqlProperties;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 
 // Testcontainers specific application properties with mysql profile
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class TestApplicationMysqlPropertiesGenerator
     implements FileGenerator<TestApplicationMysqlProperties> {
 

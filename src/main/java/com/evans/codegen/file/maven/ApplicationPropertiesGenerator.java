@@ -2,7 +2,11 @@ package com.evans.codegen.file.maven;
 
 import com.evans.codegen.file.FileGenerator;
 import com.evans.codegen.file.maven.ApplicationPropertiesGenerator.ApplicationProperties;
+import lombok.RequiredArgsConstructor;
 
+import javax.inject.Inject;
+
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class ApplicationPropertiesGenerator implements FileGenerator<ApplicationProperties> {
 
   @Override

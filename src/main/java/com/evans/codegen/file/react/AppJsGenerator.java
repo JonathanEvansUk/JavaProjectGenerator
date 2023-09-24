@@ -5,9 +5,13 @@ import static com.evans.codegen.StringUtils.capitalise;
 import com.evans.codegen.domain.FieldDefinition.FieldType;
 import com.evans.codegen.file.FileGenerator;
 import com.evans.codegen.file.react.AppJsGenerator.AppJs;
+import lombok.RequiredArgsConstructor;
+
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class AppJsGenerator implements FileGenerator<AppJs> {
 
   @Override

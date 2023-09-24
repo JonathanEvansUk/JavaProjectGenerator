@@ -2,7 +2,11 @@ package com.evans.codegen.file.maven;
 
 import com.evans.codegen.file.maven.MavenGenerator.MavenProject;
 import com.evans.codegen.file.FileGenerator;
+import lombok.RequiredArgsConstructor;
 
+import javax.inject.Inject;
+
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class MavenGenerator implements FileGenerator<MavenProject> {
 
   public record MavenProject(String appName,
