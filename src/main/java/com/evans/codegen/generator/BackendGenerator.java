@@ -224,7 +224,6 @@ public class BackendGenerator {
   private String resolveOpenAPIType(FieldDefinition field) {
     return switch (field.type()) {
       case STRING, JSON, DATE_TIME, DATE -> "string";
-      case STRING, JSON, DATE_TIME, DATE -> "string";
       case ID -> "integer";
       case DOUBLE -> "number";
       case BOOLEAN -> "boolean";
