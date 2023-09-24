@@ -119,9 +119,6 @@ public class BackendGenerator {
             NameAndPackage::packageName
         ));
 
-    //find all oneToMany relationships, then find the many side
-    Map<Entity, List<Entity>> manyToOneRelationshipsByModel;
-
     //for each model, does it have a oneToMany field?
     // if yes, then we need to add the association model as key and model as list entry
 
