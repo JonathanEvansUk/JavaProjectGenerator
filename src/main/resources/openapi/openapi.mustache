@@ -153,7 +153,13 @@ components:
           format: {{format}}
         {{/hasFormat}}
         {{#hasRef}}
+            {{^hasItems}}
           $ref: '#/components/schemas/{{ref}}'
+            {{/hasItems}}
+            {{#hasItems}}
+          items:
+            $ref: '#/components/schemas/{{ref}}'
+            {{/hasItems}}
         {{/hasRef}}
       {{/fields}}
 {{/models}}

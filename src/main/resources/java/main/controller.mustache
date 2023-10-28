@@ -38,7 +38,7 @@ public class {{className}} implements {{entityName}}Api {
 
   @GetMapping("/unusedBy{{name}}")
   public ResponseEntity<List<{{dtoType}}>> findUnusedBy{{name}}() {
-    return ResponseEntity.of({{serviceName}}.findUnusedBy{{name}}());
+    return ResponseEntity.ok({{serviceName}}.findUnusedBy{{name}}());
   }
   {{/manyToOneSideEntities}}
 

@@ -6,7 +6,7 @@ public record OpenAPISpec(String projectName, String projectSummary, String proj
                           String groupId, List<OpenAPIModel> models) {
   public record OpenAPIModel(String name, String nameCamel, List<OpenAPIField> fields) {
 
-    public record OpenAPIField(String name, String type, String ref, String format) {
+    public record OpenAPIField(String name, String type, String ref, String format, boolean isOneToMany) {
       boolean hasType() {
         return type != null;
       }
@@ -17,6 +17,10 @@ public record OpenAPISpec(String projectName, String projectSummary, String proj
 
       boolean hasFormat() {
         return format != null;
+      }
+
+      boolean hasItems() {
+        return isOneToMany;
       }
     }
   }

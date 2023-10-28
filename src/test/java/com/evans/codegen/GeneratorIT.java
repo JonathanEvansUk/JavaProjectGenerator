@@ -1,30 +1,24 @@
 package com.evans.codegen;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import com.evans.codegen.config.DaggerGeneratorFactory;
 import com.evans.codegen.domain.Entity;
-import com.evans.codegen.domain.FieldDefinition.BooleanField;
-import com.evans.codegen.domain.FieldDefinition.DateField;
-import com.evans.codegen.domain.FieldDefinition.DateTimeField;
-import com.evans.codegen.domain.FieldDefinition.DoubleField;
-import com.evans.codegen.domain.FieldDefinition.IdField;
+import com.evans.codegen.domain.FieldDefinition.*;
+import com.evans.codegen.domain.FieldDefinition.RelationalField.ManyToOneField;
+import com.evans.codegen.domain.FieldDefinition.RelationalField.OneToManyField;
 import com.evans.codegen.generator.Generator;
+import org.apache.maven.shared.invoker.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GeneratorIT {
 
@@ -37,17 +31,7 @@ public class GeneratorIT {
     Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
     // define entities
-    List<Entity> entities = List.of(
-        Entity.of("Bill",
-            List.of(
-                new IdField("id", true),
-                new DoubleField("amount", false, "12.34"),
-                new DateField("dateReceived", false, "2023-01-03"),
-                new BooleanField("paid", false),
-                new DateTimeField("datePaid", false, "2023-01-03T10:15:30.00Z")
-            )
-        )
-    );
+    List<Entity> entities = basicEntityWithNoRelationships();
 
     // generate code
     generator.generate(entities);
@@ -72,22 +56,69 @@ public class GeneratorIT {
     }
   }
 
-  @Test
-  public void generate() throws IOException {
-    Generator generator = DaggerGeneratorFactory.create().getGenerator();
+  private static Stream<List<Entity>> entities() {
+    return Stream.of(
+        entitiesWithManyToOneRelationship(),
+        entitiesWithOneToManyRelationship()
+    );
+  }
 
-    // define entities
-    List<Entity> entities = List.of(
-        Entity.of("Bill",
-            List.of(
-                new IdField("id", true),
-                new DoubleField("amount", false, "12.34"),
-                new DateField("dateReceived", false, "2023-01-03"),
-                new BooleanField("paid", false),
-                new DateTimeField("datePaid", false, "2023-01-03T10:15:30.00Z")
-            )
+  private static List<Entity> entitiesWithManyToOneRelationship() {
+    Entity author = Entity.of("Author",
+        List.of(
+            new IdField("id", true),
+            new StringField("name", false, "John Doe"),
+            new StringField("email", false, "")
         )
     );
+
+    Entity post = Entity.of("Post",
+        List.of(
+            new IdField("id", true),
+            new StringField("title", false, "Hello World"),
+            new ManyToOneField("author", false, author)
+        ));
+
+    return List.of(
+        post,
+        author
+    );
+  }
+
+  private static List<Entity> entitiesWithOneToManyRelationship() {
+    Entity post = Entity.of("Post",
+        List.of(
+            new IdField("id", true),
+            new StringField("title", false, "Hello World")
+        ));
+
+    Entity author = Entity.of("Author",
+        List.of(
+            new IdField("id", true),
+            new StringField("name", false, "John Doe"),
+            new OneToManyField("posts", false, post)
+        )
+    );
+
+
+    return List.of(
+        post,
+        author
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("entities")
+  public void shouldGenerateWithoutAnyFailures(List<Entity> entities) {
+    Generator generator = DaggerGeneratorFactory.create().getGenerator();
+
+    assertDoesNotThrow(() -> generator.generate(entities));
+  }
+
+  @ParameterizedTest
+  @MethodSource("entities")
+  public void generate(List<Entity> entities) throws IOException {
+    Generator generator = DaggerGeneratorFactory.create().getGenerator();
 
     // generate code
     generator.generate(entities);
@@ -114,6 +145,20 @@ public class GeneratorIT {
     } catch (MavenInvocationException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static List<Entity> basicEntityWithNoRelationships() {
+    return List.of(
+        Entity.of("Bill",
+            List.of(
+                new IdField("id", true),
+                new DoubleField("amount", false, "12.34"),
+                new DateField("dateReceived", false, "2023-01-03"),
+                new BooleanField("paid", false),
+                new DateTimeField("datePaid", false, "2023-01-03T10:15:30.00Z")
+            )
+        )
+    );
   }
 
   private void compareFiles(Path expectedPath, Path actualPath) {

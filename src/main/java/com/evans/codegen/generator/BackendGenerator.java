@@ -180,7 +180,8 @@ public class BackendGenerator {
                     field.name(),
                     resolveOpenAPIType(field),
                     resolveOpenAPIRef(field),
-                    resolveOpenAPIFormat(field)
+                    resolveOpenAPIFormat(field),
+                    resolveOpenAPIItems(field)
                 )
             )
             .toList()
@@ -194,13 +195,15 @@ public class BackendGenerator {
       case DOUBLE -> "number";
       case BOOLEAN -> "boolean";
       case ENUM -> "enum";
-      case ONE_TO_MANY, MANY_TO_ONE -> null;
+      case ONE_TO_MANY -> "array";
+      case MANY_TO_ONE -> null;
     };
   }
 
   private String resolveOpenAPIRef(FieldDefinition field) {
     return switch (field.type()) {
-      case ONE_TO_MANY, MANY_TO_ONE -> field.nameCapitalised();
+      case ONE_TO_MANY -> ((OneToManyField) field).associationEntity().name();
+      case MANY_TO_ONE -> field.nameCapitalised();
       default -> null;
     };
   }
@@ -212,6 +215,13 @@ public class BackendGenerator {
       case DATE_TIME -> "date-time";
       case DOUBLE -> "double";
       default -> null;
+    };
+  }
+
+  private boolean resolveOpenAPIItems(FieldDefinition fieldDefinition) {
+    return switch (fieldDefinition.type()) {
+      case ONE_TO_MANY -> true;
+      default -> false;
     };
   }
 
