@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import javax.inject.Inject;
 
 @RequiredArgsConstructor(onConstructor_ = @Inject)
-
 public class RepositoryGenerator implements JavaFileGenerator<Repository> {
 
   @Override
