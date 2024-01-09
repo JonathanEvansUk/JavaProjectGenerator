@@ -1,6 +1,6 @@
 package com.evans.codegen.generator;
 
-import com.evans.codegen.domain.Model;
+import com.evans.codegen.domain.Entity;
 import com.evans.codegen.domain.postman.Body;
 import com.evans.codegen.domain.postman.Collection;
 import com.evans.codegen.domain.postman.Entry;
@@ -28,7 +28,7 @@ public class PostmanCollectionGenerator {
     this.objectMapper = objectMapper;
   }
 
-  public String generate(String appName, List<Model> models) throws JsonProcessingException {
+  public String generate(String appName, List<Entity> entities) throws JsonProcessingException {
 
     Info info = new Info(
             appName,
@@ -39,10 +39,10 @@ public class PostmanCollectionGenerator {
 
     String baseUrl = "localhost:8080/";
 
-    List<Items> items = models.stream()
-            .map(model -> {
+    List<Items> items = entities.stream()
+            .map(entity -> {
               try {
-                return createRequestFolder(baseUrl, model);
+                return createRequestFolder(baseUrl, entity);
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
@@ -60,38 +60,38 @@ public class PostmanCollectionGenerator {
     return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(collection);
   }
 
-  private Items createRequestFolder(String baseUrl, Model model) throws JsonProcessingException {
-    Url entityUrl = new Url("localhost", 8080, List.of(model.nameCamel()));
+  private Items createRequestFolder(String baseUrl, Entity entity) throws JsonProcessingException {
+    Url entityUrl = new Url("localhost", 8080, List.of(entity.nameCamel()));
 
     Item getAllRequest = new Item(
             UUID.randomUUID().toString(),
-            "Get all " + model.name(),
+            "Get all " + entity.name(),
             List.of(),
             List.of(),
             new Request(
                     entityUrl,
                     "GET",
-                    "Request to get all " + model.name())
+                    "Request to get all " + entity.name())
     );
 
 
     ObjectNode objectNode = objectMapper.createObjectNode();
-    model.fields()
+    entity.fields()
             .forEach(field -> objectNode.put(field.name(), field.example()));
 
     String id = "1";
     Url byIdUrl = new Url(
             "localhost", 8080,
-            List.of(model.nameCamel(), ":id"),
+            List.of(entity.nameCamel(), ":id"),
             List.of(new Entry("id", id)));
 
     String createRequestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
     Item createRequest = new Item(
             UUID.randomUUID().toString(),
-            "Create " + model.name(),
+            "Create " + entity.name(),
             List.of(),
             List.of(),
-            new Request(entityUrl, "POST", "Request to create a " + model.name(),
+            new Request(entityUrl, "POST", "Request to create a " + entity.name(),
                     new Body(
                             "raw",
                             createRequestBody,
@@ -101,30 +101,30 @@ public class PostmanCollectionGenerator {
 
     Item getByIdRequest = new Item(
             UUID.randomUUID().toString(),
-            "Get " + model.name() + " by id",
+            "Get " + entity.name() + " by id",
             List.of(),
             List.of(),
-            new Request(byIdUrl, "GET", "Request to get a " + model.name() + " by id")
+            new Request(byIdUrl, "GET", "Request to get a " + entity.name() + " by id")
     );
 
     Item updateByIdRequest = new Item(
             UUID.randomUUID().toString(),
-            "Update " + model.name() + " by id",
+            "Update " + entity.name() + " by id",
             List.of(),
             List.of(),
-            new Request(byIdUrl, "PUT", "Request to update a " + model.name() + " by id")
+            new Request(byIdUrl, "PUT", "Request to update a " + entity.name() + " by id")
     );
 
     Item deleteByIdRequest = new Item(
             UUID.randomUUID().toString(),
-            "Delete " + model.name() + " by id",
+            "Delete " + entity.name() + " by id",
             List.of(),
             List.of(),
-            new Request(byIdUrl, "DELETE", "Request to delete a " + model.name() + " by id")
+            new Request(byIdUrl, "DELETE", "Request to delete a " + entity.name() + " by id")
     );
 
-    return new Items.Folder(model.name(),
-            "Description for " + model.name(),
+    return new Items.Folder(entity.name(),
+            "Description for " + entity.name(),
             List.of(getAllRequest, createRequest, getByIdRequest, updateByIdRequest, deleteByIdRequest));
   }
 
